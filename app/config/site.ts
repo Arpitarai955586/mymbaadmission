@@ -4,7 +4,7 @@ export const siteIdentity = {
   name: "MyMbaAdmission",
   tagline: "Search • Explore • Achieve",
   description: "Get expert guidance for MBA admissions. Search colleges, compare courses, and get personalized counseling for your dream career.",
-  logo: "/logo.jpg",
+  logo: "/logo.png",
   colors: themeColors,
   contact: {
     // Updated with the new contact numbers

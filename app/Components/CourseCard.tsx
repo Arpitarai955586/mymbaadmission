@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Course, formatFees } from '../config/courses';
 import { Clock, DollarSign, GraduationCap, BookOpen } from 'lucide-react';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
 interface CourseCardProps {
   course: Course;
@@ -13,9 +14,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     <Link href={`/courses/${course._id}`}>
       <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer group">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#922B21] to-[#7A2318] p-6 text-white">
+        <div className="bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] p-6 text-white">
           <div className="flex items-center justify-between mb-4">
-            <span className="px-3 py-1 bg-[#D4AC0D] text-white text-xs font-bold rounded-full">
+            <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
               {course.degree}
             </span>
             <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -23,7 +24,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             </div>
           </div>
           
-          <h3 className="text-2xl font-bold mb-2 group-hover:text-[#D4AC0D] transition-colors">
+          <h3 className="text-2xl font-bold mb-2 group-hover:text-[#F97316] transition-colors">
             {course.name}
           </h3>
           
@@ -37,7 +38,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           {/* Duration */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#F8F9F9] rounded-lg flex items-center justify-center">
-              <Clock className="text-[#922B21]" size={18} />
+              <Clock className="text-[#1E40AF]" size={18} />
             </div>
             <div>
               <p className="text-sm text-gray-500">Duration</p>
@@ -48,7 +49,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           {/* Fees */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#F8F9F9] rounded-lg flex items-center justify-center">
-              <DollarSign className="text-[#D4AC0D]" size={18} />
+              <DollarSign className="text-[#F97316]" size={18} />
             </div>
             <div>
               <p className="text-sm text-gray-500">Average Fees</p>
@@ -59,7 +60,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           {/* Degree */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#F8F9F9] rounded-lg flex items-center justify-center">
-              <GraduationCap className="text-[#922B21]" size={18} />
+              <GraduationCap className="text-[#1E40AF]" size={18} />
             </div>
             <div>
               <p className="text-sm text-gray-500">Degree Type</p>
@@ -75,7 +76,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
                 {course.entrance_exams.map((examId, index) => (
                   <span 
                     key={index}
-                    className="px-3 py-1 bg-[#F8F9F9] text-[#922B21] text-xs font-bold rounded-full border border-[#D4AC0D]/20"
+                    className="px-3 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-bold rounded-full border border-[#F97316]/20"
                   >
                     {examId.toUpperCase()}
                   </span>
@@ -86,7 +87,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
           {/* Action Button */}
           <div className="pt-4">
-            <button className="w-full bg-[#F8F9F9] hover:bg-[#922B21] hover:text-white text-[#922B21] font-semibold py-3 rounded-lg transition-all duration-300 group-hover:shadow-md flex items-center justify-center gap-2">
+            <button className="w-full bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
               <BookOpen size={16} />
               View Details
             </button>

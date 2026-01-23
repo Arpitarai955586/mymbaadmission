@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Landmark, Building, MapPin, TowerControl as Tower } from 'lucide-react';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
 const cities = [
   { name: "INDIA", icon: <Landmark size={32} strokeWidth={1.5} /> },
@@ -19,11 +20,34 @@ const cities = [
 ];
 
 const ExploreByCity: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState("Engineering");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Responsive items to show
+  // Mobile: 2, Tablet: 4, Desktop: 6
+  const itemsToShow = {
+    mobile: 2,
+    tablet: 4,
+    desktop: 6
+  };
+
+  const nextSlide = () => {
+    if (currentIndex < cities.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      setCurrentIndex(0); // Loop back to start
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    } else {
+      setCurrentIndex(cities.length - 1); // Loop to end
+    }
+  };
 
   return (
-    <section className="bg-[#F8F9F9] py-16 px-6">
+    <section className="bg-[#F8F9F9] py-16 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto relative">
         {/* Header Section */}
         <div className="mb-8 border-b border-[#922B21]/20 pb-6">
@@ -33,49 +57,62 @@ const ExploreByCity: React.FC = () => {
           </p>
         </div>
 
-        {/* Category Switcher Tabs */}
-        {/* <div className="flex gap-4 mb-8">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-8 py-2.5 rounded-full text-sm font-bold transition-all ${
-                activeCategory === cat
-                  ? "bg-[#922B21] text-white"
-                  : "bg-[#F8F9F9] text-[#2C3E50] border border-[#922B21]/30 hover:bg-[#922B21] hover:text-white"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div> */}
-
         {/* Carousel Container */}
-        <div className="relative group">
+        <div className="relative group px-4">
           {/* Navigation Buttons */}
-          <button className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white border border-[#922B21]/20 p-2 rounded-full shadow-md text-[#1A1A1B] hover:bg-[#922B21] hover:text-white transition-colors">
+          <button 
+            onClick={prevSlide}
+            className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-[#1E40AF]/20 p-2 rounded-full shadow-md text-[#1A1A1B] hover:bg-[#1E40AF] hover:text-white transition-colors"
+          >
             <ChevronLeft size={24} />
           </button>
-          <button className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white border border-[#922B21]/20 p-2 rounded-full shadow-md text-[#1A1A1B] hover:bg-[#922B21] hover:text-white transition-colors">
+          
+          <button 
+            onClick={nextSlide}
+            className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-[#1E40AF]/20 p-2 rounded-full shadow-md text-[#1A1A1B] hover:bg-[#1E40AF] hover:text-white transition-colors"
+          >
             <ChevronRight size={24} />
           </button>
 
-          {/* Grid Layout (2 rows as per image) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {cities.map((city, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center justify-center gap-4 py-8 rounded-xl border border-[#D4AC0D]/20 bg-gradient-to-br from-white via-white to-[#F8F9F9]/60 hover:shadow-lg hover:border-[#922B21]/40 transition-all cursor-pointer group/card"
-              >
-                <div className="text-[#922B21] transition-transform group-hover/card:-translate-y-1">
-                  {city.icon}
+          {/* Slider Window */}
+          <div className="overflow-hidden">
+            <div 
+              className="flex transition-transform duration-500 ease-out"
+              style={{ 
+                transform: `translateX(-${currentIndex * (100 / 6)}%)`,
+                // Note: The denominator (6) should ideally match your desktop grid count
+              }}
+            >
+              {cities.map((city, index) => (
+                <div
+                  key={index}
+                  className="min-w-[50%] md:min-w-[25%] lg:min-w-[16.66%] p-2"
+                >
+                  <div className="flex flex-col items-center justify-center gap-4 py-8 rounded-xl border border-[#F97316]/20 bg-gradient-to-br from-white via-white to-[#F8F9F9]/60 hover:shadow-lg hover:border-[#1E40AF]/40 transition-all cursor-pointer group/card h-full">
+                    <div className="text-[#1E40AF] transition-transform group-hover/card:-translate-y-1">
+                      {city.icon}
+                    </div>
+                    <span className="text-[11px] font-black text-[#1A1A1B] tracking-wider text-center px-2">
+                      {city.name}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[11px] font-black text-[#1A1A1B] tracking-wider">
-                  {city.name}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+        </div>
+
+        {/* Pagination Dots (Optional) */}
+        <div className="flex justify-center gap-2 mt-6">
+            {cities.map((_, i) => (
+                <div 
+                    key={i} 
+                    className={`h-1.5 transition-all rounded-full ${currentIndex === i ? "w-6" : "w-2"}`}
+                    style={{
+                      backgroundColor: currentIndex === i ? themeColors.primary : `${themeColors.accent}30`
+                    }}
+                />
+            ))}
         </div>
       </div>
     </section>

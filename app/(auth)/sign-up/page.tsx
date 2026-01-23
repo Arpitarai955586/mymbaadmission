@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { siteIdentity } from '../../config/site'
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -62,7 +64,14 @@ export default function SignUpPage() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <img src="/logo.jpg" alt="My MBA Admission" className="h-16 mx-auto mb-4" />
+            <div className="relative w-16 h-16 mx-auto mb-4">
+              <Image 
+                src={siteIdentity.logo} 
+                alt={siteIdentity.name} 
+                fill
+                className="object-contain"
+              />
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Create an account
             </h1>

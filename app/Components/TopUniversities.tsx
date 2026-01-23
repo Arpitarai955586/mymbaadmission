@@ -195,7 +195,7 @@ const TopUniversities = () => {
                   </button>
                   <Link 
                     href={`/colleges/${uni.slug}`}
-                    className="flex-1 border border-[#922B21] text-[#922B21] px-3 py-2 rounded-lg text-sm font-bold hover:bg-[#922B21] hover:text-white transition-colors text-center"
+                    className="flex-1 border border-[#1E40AF] text-[#1E40AF] px-3 py-2 rounded-lg text-sm font-bold hover:bg-[#1E40AF] hover:text-white transition-colors text-center"
                   >
                     View Details
                   </Link>

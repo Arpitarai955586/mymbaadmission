@@ -4,6 +4,7 @@ import { ArrowRight, Calendar, Globe, ExternalLink } from 'lucide-react';
 import { useModal } from '../Context/ModalContext';
 import Link from 'next/link';
 import { getActiveExams, Exam } from '../config/exams';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
 interface ExamCardProps {
   exam: Exam;
@@ -12,17 +13,17 @@ interface ExamCardProps {
 
 const ExamCard = ({ exam, openModal }: ExamCardProps) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-[#922B21]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group">
-      <div className="p-4 border-b border-[#922B21]/10">
+    <div className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group">
+      <div className="p-4 border-b border-[#1E40AF]/10">
         <div className="flex items-center justify-between mb-3">
-          <span className="px-3 py-1 bg-[#D4AC0D] text-white text-xs font-bold rounded-full">
+          <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
             {exam.type}
           </span>
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
             {exam.status}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-[#1A1A1B] mb-2 group-hover:text-[#922B21] transition-colors">
+        <h3 className="text-lg font-bold text-[#1A1A1B] mb-2 group-hover:text-[#1E40AF] transition-colors">
           {exam.name}
         </h3>
         <p className="text-[#2C3E50] text-sm leading-relaxed">{exam.full_name}</p>
@@ -31,14 +32,14 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
       <div className="p-4">
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <Calendar size={14} className="text-[#922B21]" />
+            <Calendar size={14} className="text-[#1E40AF]" />
             <div>
               <p className="text-xs text-[#2C3E50]">Month</p>
               <p className="text-sm font-bold text-[#1A1A1B]">{exam.exam_month}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Globe size={14} className="text-[#922B21]" />
+            <Globe size={14} className="text-[#1E40AF]" />
             <div>
               <p className="text-xs text-[#2C3E50]">Type</p>
               <p className="text-sm font-bold text-[#1A1A1B]">{exam.type}</p>
@@ -51,7 +52,7 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
             href={exam.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#922B21] hover:text-[#7A2318] text-sm font-medium flex items-center gap-1 transition-colors"
+            className="text-[#1E40AF] hover:text-[#1E3A8A] text-sm font-medium flex items-center gap-1 transition-colors"
           >
             {exam.website.replace('https://', '').replace('http://', '')}
             <ExternalLink size={12} />
@@ -61,7 +62,7 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
         <div className="flex gap-2">
           <button 
             onClick={openModal}
-            className="flex-1 bg-[#922B21] hover:bg-[#7A2318] text-white font-bold py-2 rounded-lg transition-colors text-sm"
+            className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-2 rounded-lg transition-colors text-sm"
           >
             Apply Now
           </button>
@@ -69,7 +70,7 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
             href={exam.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center px-3 py-2 border border-[#922B21]/30 text-[#922B21] hover:bg-[#922B21] hover:text-white rounded-lg transition-colors"
+            className="flex items-center justify-center px-3 py-2 border border-[#1E40AF]/30 text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white rounded-lg transition-colors"
           >
             <ExternalLink size={14} />
           </a>
@@ -87,13 +88,13 @@ const TopExams = () => {
     <section className="bg-[#F8F9F9] py-16 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 space-y-6">
-          <div className="inline-flex items-center gap-2 bg-white text-[#922B21] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#D4AC0D]">
-            <span className="w-2 h-2 bg-[#D4AC0D] rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-white text-[#1E40AF] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316]">
+            <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
             TOP EXAMS
           </div>
           
           <h2 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1B] leading-tight">
-            Upcoming <span className="text-[#922B21]">Entrance Exams</span>
+            Upcoming <span className="text-[#1E40AF]">Entrance Exams</span>
           </h2>
           
           <p className="text-[#2C3E50] text-xl max-w-3xl mx-auto leading-relaxed">
@@ -111,7 +112,7 @@ const TopExams = () => {
         <div className="text-center">
           <Link 
             href="/exams"
-            className="inline-flex items-center gap-3 bg-[#922B21] hover:bg-[#7A2318] text-white px-8 py-4 rounded-xl text-lg font-bold transition-all active:scale-95 shadow-lg hover:shadow-[#922B21]/20"
+            className="bg-[#1E40AF] hover:bg-[#1E3A8A] text-white px-8 py-4 rounded-xl text-lg font-bold inline-flex items-center gap-3 transition-all active:scale-95 shadow-lg hover:shadow-[#1E40AF]/20"
           >
             View All Exams
             <ArrowRight size={20} />

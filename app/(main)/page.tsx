@@ -24,7 +24,6 @@ const page = () => {
       <FeaturedCourses/>
       <DreamCollegeCTA/>
       <FeaturedColleges/>
-      <TopUniversities/>
       <ExploreByCity/>
       <WhyChooseUs/>
       <BlogSection/>

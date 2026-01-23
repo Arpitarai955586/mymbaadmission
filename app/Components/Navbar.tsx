@@ -27,11 +27,11 @@ const Navbar: React.FC = () => {
       <div className="hidden sm:flex bg-[#1A1A1B] text-white px-6 py-2.5 justify-between text-[12px] font-medium tracking-wide">
         <div className="flex gap-6">
           <span className="flex items-center gap-1.5 opacity-90">
-            <DynamicIcon name="phone" size={12} className="text-[#D4AC0D]" /> 
+            <DynamicIcon name="phone" size={12} className="text-[#F97316]" /> 
             {siteIdentity.contact.phone[0]}
           </span>
           <span className="flex items-center gap-1.5 opacity-90">
-            <DynamicIcon name="mail" size={12} className="text-[#D4AC0D]" /> 
+            <DynamicIcon name="mail" size={12} className="text-[#F97316]" /> 
             {siteIdentity.contact.email}
           </span>
         </div>
@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="font-extrabold text-base md:text-lg text-[#1A1A1B] tracking-tight">{siteIdentity.name}</span>
-                <span className="text-[8px] text-[#922B21] font-bold tracking-[0.15em] uppercase italic">{siteIdentity.tagline}</span>
+                <span className="text-[8px] text-[#F97316] font-bold tracking-[0.15em] uppercase italic">{siteIdentity.tagline}</span>
               </div>
             </Link>
           </div>
@@ -68,10 +68,10 @@ const Navbar: React.FC = () => {
                 <Link 
                   key={link.name} 
                   href={link.href} 
-                  className="hover:text-[#922B21] transition-all relative group py-2"
+                  className="hover:text-[#1E40AF] transition-all relative group py-2"
                 >
                   {link.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#922B21] transition-all group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#1E40AF] transition-all group-hover:w-full"></span>
                 </Link>
               ))}
             </div>
@@ -81,7 +81,7 @@ const Navbar: React.FC = () => {
           <div className="flex justify-end items-center gap-4">
             <button 
               onClick={openModal} 
-              className="hidden sm:flex bg-[#922B21] hover:bg-[#1A1A1B] text-white px-6 py-2.5 rounded-full items-center gap-2 text-[13px] font-bold transition-all shadow-md active:scale-95"
+              className="hidden sm:flex bg-[#1E40AF] hover:bg-[#1E3A8A] text-white px-6 py-2.5 rounded-full items-center gap-2 text-[13px] font-bold transition-all shadow-md active:scale-95"
             >
               <DynamicIcon name="phone" size={14} /> Get Guidance
             </button>
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
                 key={link.name} 
                 href={link.href} 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between p-4 bg-gray-50 text-gray-800 font-bold text-lg rounded-2xl hover:bg-[#922B21]/5 hover:text-[#922B21] transition-all"
+                className="flex items-center justify-between p-4 bg-gray-50 text-gray-800 font-bold text-lg rounded-2xl hover:bg-[#1E40AF]/5 hover:text-[#1E40AF] transition-all"
               >
                 <div className="flex items-center gap-4">
                   <DynamicIcon name={link.icon as any} size={22} className="text-gray-400" />
@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
                   openModal();
                   setIsMobileMenuOpen(false);
                 }} 
-                className="bg-[#922B21] text-white w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-xl shadow-[#922B21]/20"
+                className="bg-[#1E40AF] text-white w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-xl shadow-[#1E40AF]/20"
               >
                 <DynamicIcon name="phone" size={22} /> Get Admission Support
               </button>

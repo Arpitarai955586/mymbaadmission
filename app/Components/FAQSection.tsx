@@ -4,6 +4,7 @@ import { ChevronDown, Search, Phone, Mail, MessageCircle } from 'lucide-react';
 import { faqData, contactMethods, colors } from '../config/data';
 import { siteIdentity } from '../config/site';
 import { DynamicIcon } from '../config/icons';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
 const FAQSection = () => {
   const [activeIndex, setActiveIndex] = useState<number | string | null>(null);
@@ -42,12 +43,12 @@ const FAQSection = () => {
           className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
           aria-expanded={isOpen}
         >
-          <span className={`font-semibold text-sm md:text-base pr-4 ${isOpen ? "" : "text-slate-800"}`} style={{color: isOpen ? colors.primary : undefined}}>
+          <span className={`font-semibold text-sm md:text-base pr-4 ${isOpen ? "" : "text-slate-800"}`} style={{color: isOpen ? themeColors.primary : undefined}}>
             {faq.question}
           </span>
           <ChevronDown 
             size={18} 
-            className={`shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} style={{color: isOpen ? colors.primary : "rgb(148 163 184)"}}
+            className={`shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} style={{color: isOpen ? themeColors.primary : "rgb(148 163 184)"}}
           />
         </button>
         <div 
@@ -70,8 +71,12 @@ const FAQSection = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 bg-[#F8F9F9] text-[#1E40AF] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316] mb-4">
+              <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
+              FAQ
+            </div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Got <span className="text-[#922B21]">Questions?</span>
+              Got <span className="text-[#1E40AF]">Questions?</span>
             </h2>
             <p className="text-slate-500 mt-2">Find quick answers to common admission queries.</p>
           </div>
@@ -81,7 +86,7 @@ const FAQSection = () => {
             <input 
               type="text" 
               placeholder="Search keywords..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#922B21]/20 outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-[#1E40AF]/20 outline-none transition-all"
               onChange={(e) => setSearchQuery(e.target.value)}
               value={searchQuery}
             />
@@ -103,9 +108,9 @@ const FAQSection = () => {
                 : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
               }`}
               style={{
-                backgroundColor: selectedCategory === cat ? colors.primary : undefined,
+                backgroundColor: selectedCategory === cat ? themeColors.primary : undefined,
                 color: selectedCategory === cat ? 'white' : undefined,
-                borderColor: selectedCategory === cat ? colors.primary : undefined
+                borderColor: selectedCategory === cat ? themeColors.primary : undefined
               }}
             >
               {cat}
@@ -129,7 +134,7 @@ const FAQSection = () => {
             <button 
               onClick={() => {setSearchQuery(""); setSelectedCategory("All");}}
               className="mt-2 text-sm font-bold hover:underline"
-              style={{color: colors.primary}}
+              style={{color: themeColors.primary}}
             >
               Clear filters
             </button>
@@ -142,11 +147,11 @@ const FAQSection = () => {
             <div 
               key={contact.id}
               className={`flex items-center gap-3 text-slate-700 transition-colors ${
-                contact.type === 'phone' ? 'cursor-pointer hover:text-[#922B21]' : ''
+                contact.type === 'phone' ? 'cursor-pointer hover:text-[#1E40AF]' : ''
               }`}
-              style={{color: contact.type === 'phone' ? colors.primary : undefined}}
+              style={{color: contact.type === 'phone' ? themeColors.primary : undefined}}
             >
-              <span style={{color: colors.primary}}>
+              <span style={{color: themeColors.primary}}>
                 <DynamicIcon name={contact.type as any} size={20} />
               </span>
               <span className="font-semibold">{contact.value}</span>

@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
+import { siteIdentity } from '../../config/site'
 
 
 
@@ -46,11 +48,12 @@ export default function LoginPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Logo/Brand inside card */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center mb-4">
-              <img 
-                src="/logo.jpg" 
-                alt="My MBA Admission" 
-                className="h-16 w-auto"
+            <div className="inline-flex items-center justify-center mb-4 relative w-16 h-16">
+              <Image 
+                src={siteIdentity.logo} 
+                alt={siteIdentity.name} 
+                fill
+                className="object-contain"
               />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>

@@ -62,7 +62,7 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
 
         {/* Action Button */}
         <div className="pt-4 border-t border-gray-100">
-          <button className="w-full bg-[#F8F9F9] hover:bg-[#922B21] hover:text-white text-[#922B21] font-semibold py-3 rounded-lg transition-all duration-300 group-hover:shadow-md">
+          <button className="w-full bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-3 rounded-lg transition-all duration-300 group-hover:shadow-md">
             View Details
           </button>
         </div>

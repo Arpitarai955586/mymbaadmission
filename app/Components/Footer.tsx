@@ -35,9 +35,9 @@ const Footer: React.FC = () => {
         <div>
           <h3 className="font-bold text-lg mb-6 tracking-wide uppercase">Quick Links</h3>
           <ul className="space-y-4 text-gray-300 text-sm">
-            <li><Link href="/about" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">About Us</Link></li>
-            <li><Link href="/blogs" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Blogs</Link></li>
-            <li><Link href="/exams" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Exams</Link></li>
+            <li><Link href="/about" className="text-gray-300 hover:text-[#F97316] transition-colors">About Us</Link></li>
+            <li><Link href="/blogs" className="text-gray-300 hover:text-[#F97316] transition-colors">Blogs</Link></li>
+            <li><Link href="/exams" className="text-gray-300 hover:text-[#F97316] transition-colors">Exams</Link></li>
           </ul>
         </div>
 
@@ -45,9 +45,9 @@ const Footer: React.FC = () => {
         <div>
           <h3 className="font-bold text-lg mb-6 tracking-wide uppercase">Explore</h3>
           <ul className="space-y-4 text-gray-300 text-sm">
-            <li><Link href="/terms" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Terms & Conditions</Link></li>
-            <li><Link href="/privacy" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Privacy Policy</Link></li>
-            <li><Link href="/contact" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Contact Us</Link></li>
+            <li><Link href="/terms" className="text-gray-300 hover:text-[#F97316] transition-colors">Terms & Conditions</Link></li>
+            <li><Link href="/privacy" className="text-gray-300 hover:text-[#F97316] transition-colors">Privacy Policy</Link></li>
+            <li><Link href="/contact" className="text-gray-300 hover:text-[#F97316] transition-colors">Contact Us</Link></li>
           </ul>
         </div>
 
@@ -57,27 +57,27 @@ const Footer: React.FC = () => {
           <div className="space-y-6 text-sm text-gray-300">
             {/* Dynamic Address from Config */}
             <div className="flex gap-3">
-              <MapPin size={18} className="text-[#D4AC0D] shrink-0 mt-1" />
+              <MapPin size={18} className="text-[#F97316] shrink-0 mt-1" />
               <div>
                 <p className="font-bold text-white mb-1">Head Office:</p>
                 <p>{siteIdentity.contact.address}</p>
               </div>
             </div>
 
-            {/* Dynamic Phone Numbers */}
+            {/* Hardcoded Phone Numbers */}
             <div className="flex gap-3">
-              <Phone size={18} className="text-[#D4AC0D] shrink-0 mt-1" />
+              <Phone size={18} className="text-[#F97316] shrink-0 mt-1" />
               <div>
                 <p className="font-bold text-white mb-1">Call Us:</p>
-                {siteIdentity.contact.phone.map((num, index) => (
-                  <p key={index} className="block">{num}</p>
-                ))}
+                <p className="block">6239311536</p>
+                <p className="block">9810718430</p>
+                <p className="block">9310134887</p>
               </div>
             </div>
 
             {/* Dynamic Email */}
             <div className="flex gap-3">
-              <Mail size={18} className="text-[#D4AC0D] shrink-0 mt-1" />
+              <Mail size={18} className="text-[#F97316] shrink-0 mt-1" />
               <div>
                 <p className="font-bold text-white mb-1">Email:</p>
                 <p>{siteIdentity.contact.email}</p>
@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
       {/* WhatsApp Floating Button */}
       <div className="fixed bottom-6 left-6 z-50">
         <a 
-          href={`https://wa.me/${siteIdentity.contact.phone[0].replace(/\D/g, '')}`} 
+          href={`https://wa.me/6239311536`} 
           target="_blank" 
           rel="noopener noreferrer"
           className="bg-[#25d366] p-3 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
@@ -102,7 +102,7 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Bottom Copyright */}
-      <div className="mt-16 pt-8 border-t border-[#922B21]/30 text-center text-sm text-gray-400">
+      <div className="mt-16 pt-8 border-t border-[#1E40AF]/30 text-center text-sm text-gray-400">
         <p>© 2026 All Rights Reserved — {siteIdentity.name}</p>
       </div>
     </footer>

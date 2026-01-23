@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
 interface Testimonial {
   id: number;
@@ -49,6 +50,10 @@ const TestimonialsSection = () => {
         
         {/* Header Section */}
         <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-[#F8F9F9] text-[#1E40AF] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316]">
+            <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
+            TESTIMONIALS
+          </div>
           <h2 className="text-4xl font-bold text-[#1A1A1B] mb-4">
             What Students Say About GetAdmissionInfo
           </h2>
@@ -60,7 +65,7 @@ const TestimonialsSection = () => {
             <span className="font-bold text-[#1A1A1B] text-lg">4.8</span>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={18} className="fill-[#D4AC0D] text-[#D4AC0D]" />
+                <Star key={i} size={18} className="fill-[#F97316] text-[#F97316]" />
               ))}
             </div>
             <span className="text-[#2C3E50] font-medium ml-1">(Based on 5,200+ Reviews)</span>
@@ -72,14 +77,14 @@ const TestimonialsSection = () => {
           {/* Navigation Arrows */}
           <button 
             onClick={scrollPrev}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg p-3 rounded-full text-[#1A1A1B] hover:bg-[#F8F9F9] transition-colors hidden xl:flex border border-[#922B21]"
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg p-3 rounded-full text-[#1A1A1B] hover:bg-[#F8F9F9] transition-colors hidden xl:flex border border-[#1E40AF]"
           >
             <ChevronLeft size={24} />
           </button>
           
           <button 
             onClick={scrollNext}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg p-3 rounded-full text-[#1A1A1B] hover:bg-[#F8F9F9] transition-colors hidden xl:flex border border-[#922B21]"
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg p-3 rounded-full text-[#1A1A1B] hover:bg-[#F8F9F9] transition-colors hidden xl:flex border border-[#1E40AF]"
           >
             <ChevronRight size={24} />
           </button>
@@ -92,8 +97,8 @@ const TestimonialsSection = () => {
                   key={testimonial.id} 
                   className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_25%] px-3"
                 >
-                  <div className="bg-white rounded-2xl p-8 h-full flex flex-col items-center text-center shadow-sm border border-[#922B21]/10">
-                    <div className="w-20 h-20 rounded-full overflow-hidden mb-6 border-4 border-[#D4AC0D]/20 shadow-sm">
+                  <div className="bg-white rounded-2xl p-8 h-full flex flex-col items-center text-center shadow-sm border border-[#1E40AF]/10">
+                    <div className="w-20 h-20 rounded-full overflow-hidden mb-6 border-4 border-[#F97316]/20 shadow-sm">
                       <img 
                         src={testimonial.image} 
                         alt={testimonial.name} 
@@ -107,7 +112,7 @@ const TestimonialsSection = () => {
                       <h4 className="font-bold text-[#1A1A1B] text-base mb-1">{testimonial.name}</h4>
                       <div className="flex justify-center gap-0.5">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={16} className="fill-[#D4AC0D] text-[#D4AC0D]" />
+                          <Star key={i} size={16} className="fill-[#F97316] text-[#F97316]" />
                         ))}
                       </div>
                     </div>
@@ -124,8 +129,11 @@ const TestimonialsSection = () => {
                 key={index}
                 onClick={() => emblaApi?.scrollTo(index)}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
-                  index === selectedIndex ? 'w-8 bg-[#922B21]' : 'w-2.5 bg-[#D4AC0D]/30'
+                  index === selectedIndex ? 'w-8' : 'w-2.5'
                 }`}
+                style={{
+                  backgroundColor: index === selectedIndex ? themeColors.primary : `${themeColors.accent}30`
+                }}
               />
             ))}
           </div>

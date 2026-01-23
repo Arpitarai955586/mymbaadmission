@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
 interface CourseCardProps {
   title: string;
@@ -28,18 +29,17 @@ const CourseCard = ({ title, description, image, predictorName, href }: CourseCa
           {description}
         </p>
       </div>
-
-      {/* Buttons */}
+      
       <div className="space-y-3">
         <Link 
           href={href}
-          className="block w-full bg-white text-[#1A1A1B] py-2.5 rounded-xl font-semibold text-sm hover:bg-[#F8F9F9] transition-colors border border-[#922B21]/20 text-center"
+          className="block w-full bg-white text-[#1A1A1B] py-2.5 rounded-xl font-semibold text-sm hover:bg-[#F8F9F9] transition-colors border border-[#1E40AF]/20 text-center"
         >
           Explore Exams
         </Link>
-        <button className="w-full bg-[#D4AC0D] text-[#1A1A1B] py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#922B21] hover:text-white transition-colors">
+        <button className="w-full bg-[#F97316] text-[#1A1A1B] py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#EA580C] hover:text-white transition-colors">
           {predictorName} Rank Predictor
-          <span className="bg-[#922B21] text-white text-[10px] px-1.5 py-0.5 rounded italic">NEW</span>
+          <span className="bg-[#1E40AF] text-white text-[10px] px-1.5 py-0.5 rounded italic">NEW</span>
         </button>
       </div>
     </div>
@@ -76,10 +76,14 @@ const CourseSection = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header Text */}
         <div className="text-center mb-12 space-y-2">
-          <h2 className="text-4xl font-extrabold text-[#1A1A1B]">Explore Top Courses</h2>
+          <h2 className="text-4xl font-extrabold text-[#1A1A1A1B]">Explore Top Courses</h2>
           <p className="text-[#2C3E50] font-medium">
             Get guidance, rankings, and tools to choose the right college & course for your career.
           </p>
+          <div className="inline-flex items-center gap-2 bg-[#F8F9F9] text-[#1E40AF] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316]">
+            <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
+            FEATURED COURSES
+          </div>
         </div>
 
         {/* Grid Container */}

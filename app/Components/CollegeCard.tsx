@@ -1,8 +1,9 @@
 "use client";
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Award, BookOpen } from 'lucide-react';
+import Image from 'next/image';
+import { MapPin, BookOpen, Award } from 'lucide-react';
+import { themeColors, colorCombos, themeClasses } from '../config/theme';
 import { College } from '../config/colleges';
 
 interface CollegeCardProps {
@@ -40,13 +41,13 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
         {/* College Information */}
         <div className="p-6 space-y-4">
           {/* College Name */}
-          <h3 className="text-xl font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#922B21] transition-colors">
+          <h3 className="text-xl font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
             {college.name}
           </h3>
 
           {/* Location */}
           <div className="flex items-center gap-2 text-gray-600">
-            <MapPin size={16} className="text-[#D4AC0D]" />
+            <MapPin size={16} className="text-[#F97316]" />
             <span className="text-sm">{college.location.city}, {college.location.state}</span>
           </div>
 
@@ -55,7 +56,7 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
             {college.tags.slice(0, 2).map((tag, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-[#F8F9F9] text-[#922B21] text-xs font-medium rounded-full border border-[#D4AC0D]/20"
+                className="px-3 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-medium rounded-full border border-[#F97316]/20"
               >
                 {tag}
               </span>
@@ -65,11 +66,11 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
           {/* Quick Info */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <BookOpen size={14} className="text-[#922B21]" />
+              <BookOpen size={14} className="text-[#1E40AF]" />
               <span>{college.courses_offered.length} Courses</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Award size={14} className="text-[#D4AC0D]" />
+              <Award size={14} className="text-[#F97316]" />
               <span>{college.exams_accepted.join(', ').toUpperCase()}</span>
             </div>
           </div>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useModal } from '../../Context/ModalContext';
 import { useSearchParams } from 'next/navigation';
 import { examsData, Exam } from '../../config/exams';
+import { themeColors, colorCombos, themeClasses } from '../../config/theme';
 
 const categories = ["All", "National", "State"];
 const difficulties = ["All", "Active"];
@@ -53,15 +54,18 @@ function ExamsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8F9F9]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#922B21] via-[#7A2318] to-[#1A1A1B] text-white py-16 px-6">
+      <section className="bg-gradient-to-br from-[#1E40AF] via-[#1E3A8A] to-[#1A1A1B] text-white py-16 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-[#F97316] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316] mb-4">
+              <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
+              EXAMS
+            </div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-              Competitive Exams Portal
+              Competitive Exams & Tests
             </h1>
             <p className="text-xl text-white/90 max-w-3xl mx-auto">
-              Explore comprehensive information about all major competitive exams in India. 
-              Get detailed insights, eligibility criteria, and preparation strategies.
+              Complete information about entrance exams, dates, eligibility, and preparation resources
             </p>
           </div>
 
@@ -74,7 +78,7 @@ function ExamsPageContent() {
                 placeholder="Search for exams, courses, or categories..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl text-[#1A1A1B] placeholder-gray-400 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-[#D4AC0D]"
+                className="w-full pl-12 pr-4 py-4 rounded-xl text-[#1A1A1B] placeholder-gray-400 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F97316]"
               />
             </div>
           </div>
@@ -82,7 +86,7 @@ function ExamsPageContent() {
       </section>
 
       {/* Filters Section */}
-      <section className="bg-white border-b border-[#922B21]/10 py-6 px-6 sticky top-0 z-40">
+      <section className="bg-white border-b border-[#1E40AF]/10 py-6 px-6 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Category Filters */}
@@ -93,8 +97,8 @@ function ExamsPageContent() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     selectedCategory === category
-                      ? "bg-[#922B21] text-white"
-                      : "bg-[#F8F9F9] text-[#2C3E50] border border-[#922B21]/20 hover:bg-[#922B21] hover:text-white"
+                      ? "bg-[#1E40AF] text-white"
+                      : "bg-[#F8F9F9] text-[#2C3E50] border border-[#1E40AF]/20 hover:bg-[#1E40AF] hover:text-white"
                   }`}
                 >
                   {category}
@@ -102,37 +106,35 @@ function ExamsPageContent() {
               ))}
             </div>
 
-            {/* Difficulty Filters & Toggle */}
-            <div className="flex items-center gap-4">
-              <div className="hidden lg:flex gap-2">
-                {difficulties.map((difficulty) => (
-                  <button
-                    key={difficulty}
-                    onClick={() => setSelectedDifficulty(difficulty)}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                      selectedDifficulty === difficulty
-                        ? "bg-[#D4AC0D] text-white"
-                        : "bg-[#F8F9F9] text-[#2C3E50] border border-[#D4AC0D]/20 hover:bg-[#D4AC0D] hover:text-white"
-                    }`}
-                  >
-                    {difficulty}
-                  </button>
-                ))}
-              </div>
+            {/* Difficulty Filters */}
+            <div className="flex items-center gap-2">
+              {difficulties.map((difficulty) => (
+                <button
+                  key={difficulty}
+                  onClick={() => setSelectedDifficulty(difficulty)}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                    selectedDifficulty === difficulty
+                      ? "bg-[#F97316] text-white"
+                      : "bg-[#F8F9F9] text-[#2C3E50] border border-[#F97316]/20 hover:bg-[#F97316] hover:text-white"
+                  }`}
+                >
+                  {difficulty}
+                </button>
+              ))}
+            </div>
               
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#922B21] text-white rounded-lg"
+                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#1E40AF] text-white rounded-lg"
               >
                 <Filter size={16} />
                 Filters
               </button>
             </div>
-          </div>
 
           {/* Mobile Filters */}
           {showFilters && (
-            <div className="lg:hidden mt-4 pt-4 border-t border-[#922B21]/10">
+            <div className="lg:hidden mt-4 pt-4 border-t border-[#1E40AF]/10">
               <div className="flex flex-wrap gap-2">
                 {difficulties.map((difficulty) => (
                   <button
@@ -140,8 +142,8 @@ function ExamsPageContent() {
                     onClick={() => setSelectedDifficulty(difficulty)}
                     className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                       selectedDifficulty === difficulty
-                        ? "bg-[#D4AC0D] text-white"
-                        : "bg-[#F8F9F9] text-[#2C3E50] border border-[#D4AC0D]/20 hover:bg-[#D4AC0D] hover:text-white"
+                        ? "bg-[#F97316] text-white"
+                        : "bg-[#F8F9F9] text-[#2C3E50] border border-[#F97316]/20 hover:bg-[#F97316] hover:text-white"
                     }`}
                   >
                     {difficulty}
@@ -171,18 +173,17 @@ function ExamsPageContent() {
             {displayedExams.map((exam, index) => (
             <div
               key={`${exam._id}-${index}`}
-              className="bg-white rounded-xl shadow-sm border border-[#922B21]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1"
+              className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1"
             >
               {/* Card Header */}
-              <div className="p-4 border-b border-[#922B21]/10">
+              <div className="p-4 border-b border-[#1E40AF]/10">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="px-3 py-1 bg-[#D4AC0D] text-white text-xs font-bold rounded-full">
+                  <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
                     {exam.type}
                   </span>
                   <div className="flex items-center gap-1">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
-                      {exam.status}
-                    </span>
+                    <span className="text-xs text-[#2C3E50]">Difficulty:</span>
+                    <span className="text-xs font-bold text-[#1E40AF]">Active</span>
                   </div>
                 </div>
                 <h3 className="text-lg font-bold text-[#1A1A1B] mb-2">{exam.name}</h3>
@@ -193,14 +194,14 @@ function ExamsPageContent() {
               <div className="p-4">
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-[#922B21]" />
+                    <Calendar size={14} className="text-[#1E40AF]" />
                     <div>
                       <p className="text-xs text-[#2C3E50]">Exam Month</p>
                       <p className="text-sm font-bold text-[#1A1A1B]">{exam.exam_month}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Globe size={14} className="text-[#922B21]" />
+                    <Globe size={14} className="text-[#1E40AF]" />
                     <div>
                       <p className="text-xs text-[#2C3E50]">Type</p>
                       <p className="text-sm font-bold text-[#1A1A1B]">{exam.type}</p>
@@ -209,38 +210,38 @@ function ExamsPageContent() {
                 </div>
 
                 {/* Website Link */}
-                <div className="mb-4">
-                  <a 
-                    href={exam.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#922B21] hover:text-[#7A2318] text-sm font-medium flex items-center gap-1 transition-colors"
-                  >
-                    {exam.website.replace('https://', '').replace('http://', '')}
-                    <BookOpen size={12} />
-                  </a>
-                </div>
+                <a
+                  href={exam.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#1E40AF] hover:text-[#1E3A8A] text-sm font-medium flex items-center gap-1 transition-colors"
+                >
+                  {exam.website.replace('https://', '').replace('http://', '')}
+                  <BookOpen size={12} />
+                </a>
+              </div>
 
-                {/* Action Buttons */}
+              {/* Card Footer - Actions */}
+              <div className="p-4 pt-0">
                 <div className="flex gap-2">
                   <button 
                     onClick={openModal}
-                    className="flex-1 bg-[#922B21] hover:bg-[#7A2318] text-white font-bold py-2 rounded-lg transition-colors text-sm"
+                    className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-2 rounded-lg transition-colors text-sm"
                   >
                     Apply Now
                   </button>
-                  <a 
+                  <a
                     href={exam.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center px-3 py-2 border border-[#922B21]/30 text-[#922B21] hover:bg-[#922B21] hover:text-white rounded-lg transition-colors"
+                    className="flex items-center justify-center px-3 py-2 border border-[#1E40AF]/30 text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white rounded-lg transition-colors"
                   >
                     <BookOpen size={16} />
                   </a>
                 </div>
               </div>
             </div>
-            ))}
+          ))}
           </div>
 
           {/* Load More Button */}
@@ -248,7 +249,7 @@ function ExamsPageContent() {
             <div className="text-center mt-12">
               <button
                 onClick={handleLoadMore}
-                className="px-8 py-3 bg-[#922B21] text-white font-bold rounded-lg hover:bg-[#7A231A] transition-colors duration-200 transform hover:scale-105"
+                className="px-8 py-3 bg-[#1E40AF] text-white font-bold rounded-lg hover:bg-[#1E3A8A] transition-colors duration-200 transform hover:scale-105"
               >
                 Load More Exams
               </button>
@@ -259,7 +260,7 @@ function ExamsPageContent() {
           {displayedExams.length === 0 && (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-[#F8F9F9] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search size={32} className="text-[#922B21]" />
+                <Search size={32} className="text-[#1E40AF]" />
               </div>
               <h3 className="text-xl font-bold text-[#1A1A1B] mb-2">No Exams Found</h3>
               <p className="text-[#2C3E50] mb-4">Try adjusting your search or filters to find what you're looking for.</p>
@@ -269,7 +270,7 @@ function ExamsPageContent() {
                   setSelectedCategory("All");
                   setSelectedDifficulty("All");
                 }}
-                className="px-6 py-2 bg-[#D4AC0D] hover:bg-[#B8940F] text-white font-bold rounded-lg transition-colors"
+                className="px-6 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-lg transition-colors"
               >
                 Clear All Filters
               </button>

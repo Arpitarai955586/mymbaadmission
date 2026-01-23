@@ -5,6 +5,7 @@ import { Search, Filter, Calendar, Clock, User, ChevronRight, Heart, MessageCirc
 import { siteIdentity } from '../config/site';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { themeColors, colorCombos, themeClasses } from '../../config/theme';
 
 interface BlogPost {
   _id: string;
@@ -220,18 +221,20 @@ function BlogsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8F9F9]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#922B21] via-[#7A2318] to-[#1A1A1B] text-white py-16 px-6">
+      <section className="bg-gradient-to-br from-[#1E40AF] via-[#1E3A8A] to-[#1A1A1B] text-white py-16 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-[#F97316] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316] mb-4">
+              <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
+              BLOG
+            </div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-              Educational Blog & Resources
+              Educational Insights & Resources
             </h1>
             <p className="text-xl text-white/90 max-w-3xl mx-auto">
-              Expert insights, exam preparation guides, career advice, and latest updates
-              to help you make informed educational decisions.
+              Expert guidance, exam tips, and career advice to help you succeed in your academic journey
             </p>
           </div>
-
 
           <div className="max-w-2xl mx-auto">
             <div className="relative">
@@ -241,7 +244,7 @@ function BlogsPageContent() {
                 placeholder="Search articles, topics, or authors..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl text-[#1A1A1B] placeholder-gray-400 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-[#D4AC0D]"
+                className="w-full pl-12 pr-4 py-4 rounded-xl text-[#1A1A1B] placeholder-gray-400 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F97316]"
               />
             </div>
           </div>
@@ -269,18 +272,18 @@ function BlogsPageContent() {
             {regularPosts.map((post) => (
               <div
                 key={post._id}
-                className="bg-white rounded-xl shadow-sm border border-[#922B21]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group"
+                className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group"
               >
                 {/* Image */}
                 <div className="relative h-40 overflow-hidden">
                   <img
-                    src={post.image}
+                    src={post.image || "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"}
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {post.trending && (
                     <div className="absolute top-3 right-3">
-                      <span className="px-2 py-1 bg-[#922B21] text-white text-xs font-bold rounded-full flex items-center gap-1">
+                      <span className="px-2 py-1 bg-[#1E40AF] text-white text-xs font-bold rounded-full flex items-center gap-1">
                         <TrendingUp size={10} />
                         Trending
                       </span>
@@ -291,16 +294,12 @@ function BlogsPageContent() {
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2 py-1 bg-[#F8F9F9] text-[#922B21] text-xs font-bold rounded-md">
+                    <span className="px-2 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-bold rounded-md">
                       {post.category}
                     </span>
-                    {/* <div className="flex items-center gap-1 text-[#2C3E50] text-xs">
-                      <Clock size={10} />
-                      {post.readTime}
-                    </div> */}
                   </div>
 
-                  <Link href={`/blogs/${post.slug}`} className="text-lg font-bold text-[#1A1A1B] mb-2 line-clamp-2 group-hover:text-[#922B21] transition-colors">
+                  <Link href={`/blogs/${post.slug}`} className="text-lg font-bold text-[#1A1A1B] mb-2 line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
                     {post.title}
                   </Link>
 
@@ -310,20 +309,18 @@ function BlogsPageContent() {
 
                   {/* Tags */}
                   <div className="flex flex-wrap gap-1 mb-3">
-                    {Array.isArray(post.tags) &&
-                      post.tags.slice(0, 2).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-[#F8F9F9] text-[#2C3E50] text-xs rounded-md"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
+                    {post.tags && post.tags.slice(0, 2).map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-[#F8F9F9] text-[#2C3E50] text-xs rounded-md"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
                   </div>
 
-
                   {/* Author & Actions */}
-                  <div className="flex items-center justify-between pt-3 border-t border-[#922B21]/10">
+                  <div className="flex items-center justify-between pt-3 border-t border-[#1E40AF]/10">
                     {/* <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full overflow-hidden">
                         <img
@@ -357,7 +354,7 @@ function BlogsPageContent() {
           {filteredPosts.length === 0 && (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-[#F8F9F9] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search size={32} className="text-[#922B21]" />
+                <Search size={32} className="text-[#1E40AF]" />
               </div>
               <h3 className="text-xl font-bold text-[#1A1A1B] mb-2">No Articles Found</h3>
               <p className="text-[#2C3E50] mb-4">Try adjusting your search or filters to find what you're looking for.</p>
@@ -367,7 +364,7 @@ function BlogsPageContent() {
                   setSelectedCategory("All");
                   setSortBy("Latest");
                 }}
-                className="px-6 py-2 bg-[#D4AC0D] hover:bg-[#B8940F] text-white font-bold rounded-lg transition-colors"
+                className="px-6 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-lg transition-colors"
               >
                 Clear All Filters
               </button>
@@ -377,7 +374,7 @@ function BlogsPageContent() {
           {/* Load More */}
           {regularPosts.length > 0 && (
             <div className="text-center mt-12">
-              <button className="px-8 py-3 bg-[#922B21] hover:bg-[#7A2318] text-white font-bold rounded-xl transition-colors flex items-center gap-2 mx-auto">
+              <button className="px-8 py-3 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold rounded-xl transition-colors flex items-center gap-2 mx-auto">
                 Load More Articles
                 <ChevronRight size={18} />
               </button>
@@ -393,7 +390,7 @@ const BlogsPage = () => {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#F8F9F9] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#922B21]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E40AF]"></div>
       </div>
     }>
       <BlogsPageContent />

@@ -3,6 +3,7 @@ import React from 'react';
 import CourseCard from '../../Components/CourseCard';
 import { getAllCourses, getCoursesByDegree, Course } from '../../config/courses';
 import { Search, Filter } from 'lucide-react';
+import { themeColors, colorCombos, themeClasses } from '../../config/theme';
 
 const CoursesPage = () => {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -24,13 +25,13 @@ const CoursesPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 space-y-6">
-          <div className="inline-flex items-center gap-2 bg-white text-[#922B21] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#D4AC0D]">
-            <span className="w-2 h-2 bg-[#D4AC0D] rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-white text-[#1E40AF] px-6 py-3 rounded-full text-sm font-bold tracking-wider border border-[#F97316]">
+            <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
             ALL COURSES
           </div>
           
           <h1 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1B] leading-tight">
-            Explore <span className="text-[#922B21]">Management Courses</span>
+            Explore <span className="text-[#1E40AF]">Management Courses</span>
           </h1>
           
           <p className="text-[#2C3E50] text-xl max-w-3xl mx-auto leading-relaxed">
@@ -40,7 +41,7 @@ const CoursesPage = () => {
         </div>
 
         {/* Search and Filter */}
-        <div className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-[#1E40AF]/10 p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -49,16 +50,16 @@ const CoursesPage = () => {
                 placeholder="Search courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#922B21]/50 focus:border-[#922B21]"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E40AF]/50 focus:border-[#1E40AF]"
               />
             </div>
             
             <div className="flex items-center gap-2">
-              <Filter className="text-[#922B21]" size={20} />
+              <Filter className="text-[#1E40AF]" size={20} />
               <select
                 value={selectedDegree}
                 onChange={(e) => setSelectedDegree(e.target.value)}
-                className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#922B21]/50 focus:border-[#922B21] bg-white"
+                className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E40AF]/50 focus:border-[#1E40AF] bg-white"
               >
                 {degrees.map((degree) => (
                   <option key={degree} value={degree}>
@@ -73,7 +74,7 @@ const CoursesPage = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            Found <span className="font-bold text-[#922B21]">{filteredCourses.length}</span> courses
+            Found <span className="font-bold text-[#1E40AF]">{filteredCourses.length}</span> courses
           </p>
         </div>
 
@@ -85,7 +86,7 @@ const CoursesPage = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-2xl border border-[#922B21]/10">
+          <div className="text-center py-20 bg-white rounded-2xl border border-[#1E40AF]/10">
             <div className="w-20 h-20 bg-[#F8F9F9] rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="text-gray-400" size={32} />
             </div>
@@ -98,7 +99,7 @@ const CoursesPage = () => {
                 setSearchTerm('');
                 setSelectedDegree('all');
               }}
-              className="px-6 py-2 bg-[#922B21] text-white rounded-lg hover:bg-[#7A2318] transition-colors"
+              className="px-6 py-2 bg-[#F97316] text-white rounded-lg hover:bg-[#EA580C] transition-colors"
             >
               Clear Filters
             </button>

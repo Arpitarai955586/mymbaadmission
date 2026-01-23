@@ -194,14 +194,12 @@ const Modal: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full font-semibold py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-70"
+                className="w-full cursor-pointer font-semibold py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-70"
                 style={{
                   backgroundColor: colors.primary,
                   color: 'white'
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#7A2318';
-                }}
+                
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.backgroundColor = colors.primary;
                 }}

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useModal } from '../../../Context/ModalContext';
+import { themeColors, colorCombos, themeClasses } from '../../../config/theme';
 import { getCollegeBySlug, College } from '../../../config/colleges';
 
 export default function CollegeDynamicPage() {
@@ -47,7 +48,7 @@ export default function CollegeDynamicPage() {
     return (
       <div className="min-h-screen bg-[#F8F9F9] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#922B21] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E40AF] mx-auto mb-4"></div>
           <p className="text-gray-500">Loading college details...</p>
         </div>
       </div>
@@ -63,7 +64,7 @@ export default function CollegeDynamicPage() {
           <p className="text-gray-600 mb-4">The college you're looking for doesn't exist or has been removed.</p>
           <button 
             onClick={() => window.history.back()}
-            className="px-6 py-2 bg-[#922B21] text-white rounded-lg hover:bg-[#7A231A] transition-colors"
+            className="px-6 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
           >
             Go Back
           </button>
@@ -75,7 +76,7 @@ export default function CollegeDynamicPage() {
   return (
     <div className="min-h-screen bg-[#F8F9F9]">
       {/* Hero Section with Background */}
-      <div className="bg-gradient-to-br from-[#922B21] via-[#7A2318] to-[#1A1A1B] text-white relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1E40AF] via-[#1E3A8A] to-[#1A1A1B] text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 py-16">
           {/* Breadcrumb */}
@@ -92,7 +93,7 @@ export default function CollegeDynamicPage() {
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2">
               <div className="flex flex-wrap gap-3 mb-4">
-                <span className="px-4 py-2 bg-[#D4AC0D] text-white rounded-full text-sm font-bold">
+                <span className="px-4 py-2 bg-[#F97316] text-white rounded-full text-sm font-bold">
                   {college.tags.includes('private') ? 'Private' : 'Government'}
                 </span>
                 <span className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-bold">
@@ -121,13 +122,13 @@ export default function CollegeDynamicPage() {
             {/* Quick Info Card */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Target className="text-[#D4AC0D]" />
+                <Target className="text-[#F97316]" />
                 Quick Info
               </h3>
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <MapPin className="text-[#D4AC0D]" size={20} />
+                  <MapPin className="text-[#F97316]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Location</p>
                     <p className="font-semibold">{college.location.city}, {college.location.state}</p>
@@ -135,7 +136,7 @@ export default function CollegeDynamicPage() {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <Award className="text-[#D4AC0D]" size={20} />
+                  <Award className="text-[#F97316]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Type</p>
                     <p className="font-semibold">{college.tags.includes('private') ? 'Private' : 'Government'}</p>
@@ -143,7 +144,7 @@ export default function CollegeDynamicPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Target className="text-[#D4AC0D]" size={20} />
+                  <Target className="text-[#F97316]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Ranking</p>
                     <p className="font-semibold">Top Ranked</p>
@@ -151,7 +152,7 @@ export default function CollegeDynamicPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Clock className="text-[#D4AC0D]" size={20} />
+                  <Clock className="text-[#F97316]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Established</p>
                     <p className="font-semibold">2020</p>
@@ -162,7 +163,7 @@ export default function CollegeDynamicPage() {
 
               <button 
                 onClick={openModal}
-                className="w-full mt-6 px-6 py-3 bg-[#D4AC0D] text-white font-bold rounded-lg hover:bg-[#B8940F] transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-6 px-6 py-3 bg-[#F97316] text-white font-bold rounded-lg hover:bg-[#EA580C] transition-colors flex items-center justify-center gap-2"
               >
                 <Target size={18} />
                 Apply Now
@@ -189,9 +190,9 @@ export default function CollegeDynamicPage() {
           {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-8">
             {/* Overview */}
-            <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
+            <section className="bg-white rounded-2xl shadow-sm border border-[#1E40AF]/10 p-8">
               <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
-                <BookOpen className="text-[#922B21]" size={28} />
+                <BookOpen className="text-[#1E40AF]" size={28} />
                 About College
               </h2>
               <div className="prose max-w-none">
@@ -202,15 +203,15 @@ export default function CollegeDynamicPage() {
             </section>
 
             {/* Courses Offered */}
-            <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
+            <section className="bg-white rounded-2xl shadow-sm border border-[#1E40AF]/10 p-8">
               <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
-                <BookOpen className="text-[#922B21]" size={28} />
+                <BookOpen className="text-[#1E40AF]" size={28} />
                 Courses Offered
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {college.courses_offered.map((course, index) => (
-                  <div key={index} className="flex items-center gap-3 p-4 bg-[#F8F9F9] rounded-lg border border-[#D4AC0D]/20">
-                    <CheckCircle className="text-[#922B21]" size={20} />
+                  <div key={index} className="flex items-center gap-3 p-4 bg-[#F8F9F9] rounded-lg border border-[#F97316]/20">
+                    <CheckCircle className="text-[#1E40AF]" size={20} />
                     <span className="font-semibold text-[#1A1A1B]">{course.toUpperCase()}</span>
                   </div>
                 ))}
@@ -218,9 +219,9 @@ export default function CollegeDynamicPage() {
             </section>
 
             {/* Admission Process */}
-            <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
+            <section className="bg-white rounded-2xl shadow-sm border border-[#1E40AF]/10 p-8">
               <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
-                <Target className="text-[#922B21]" size={28} />
+                <Target className="text-[#1E40AF]" size={28} />
                 Admission Process
               </h2>
               <div className="prose max-w-none">
@@ -229,11 +230,11 @@ export default function CollegeDynamicPage() {
                 </p>
               </div>
               
-              <div className="mt-6 p-4 bg-[#F8F9F9] rounded-lg border border-[#D4AC0D]/20">
+              <div className="mt-6 p-4 bg-[#F8F9F9] rounded-lg border border-[#1E40AF]/20">
                 <h3 className="font-bold text-[#1A1A1B] mb-3">Accepted Entrance Exams:</h3>
                 <div className="flex flex-wrap gap-2">
                   {college.exams_accepted.map((exam, index) => (
-                    <span key={index} className="px-4 py-2 bg-[#922B21] text-white rounded-full text-sm font-bold">
+                    <span key={index} className="px-4 py-2 bg-[#1E40AF] text-white rounded-full text-sm font-bold">
                       {exam.toUpperCase()}
                     </span>
                   ))}
@@ -246,7 +247,7 @@ export default function CollegeDynamicPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="bg-gradient-to-br from-[#D4AC0D] to-[#B8940F] rounded-2xl p-6 text-white">
+            <div className="bg-gradient-to-br from-[#F97316] to-[#EA580C] rounded-2xl p-6 text-white">
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <Target size={24} />
                 Quick Actions
@@ -254,7 +255,7 @@ export default function CollegeDynamicPage() {
               <div className="space-y-3">
                 <button 
                   onClick={openModal}
-                  className="w-full bg-white text-[#922B21] px-4 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
+                  className="w-full bg-white text-[#1E40AF] px-4 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
                 >
                   Apply Now
                 </button>
@@ -265,14 +266,14 @@ export default function CollegeDynamicPage() {
            
 
             {/* Need Help? */}
-            <div className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-[#1E40AF]/10 p-6">
               <h3 className="text-xl font-bold text-[#1A1A1B] mb-4">Need Help?</h3>
               <p className="text-gray-600 text-sm mb-4">
                 Our admission counselors are here to help you with the application process.
               </p>
               <button 
                 onClick={openModal}
-                className="w-full bg-[#922B21] text-white px-4 py-3 rounded-lg font-bold hover:bg-[#7A231A] transition-colors"
+                className="w-full bg-[#1E40AF] text-white px-4 py-3 rounded-lg font-bold hover:bg-[#1E3A8A] transition-colors"
               >
                 Get Counselor Support
               </button>
