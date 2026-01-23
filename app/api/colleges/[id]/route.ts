@@ -7,10 +7,11 @@ import College from "@/models/College"
 /* ================= PATCH : UPDATE COLLEGE ================= */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -26,9 +27,9 @@ export async function PATCH(
     const body = await req.json()
 
     const college = await College.findByIdAndUpdate(
-      params.id,
-      { $set: body },
-      { new: true }
+      id,
+      body,
+      { new: true, runValidators: true }
     )
 
     if (!college) {
@@ -54,10 +55,11 @@ export async function PATCH(
 /* ================= DELETE : SOFT DELETE COLLEGE ================= */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -72,7 +74,7 @@ export async function DELETE(
 
     // 🔒 SOFT DELETE (recommended)
     const college = await College.findByIdAndUpdate(
-      params.id,
+      id,
       { is_active: false },
       { new: true }
     )

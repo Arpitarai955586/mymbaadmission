@@ -7,10 +7,11 @@ import Exam from "@/models/Exam"
 /* ================= UPDATE EXAM ================= */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -26,7 +27,7 @@ export async function PATCH(
     const body = await req.json()
 
     const exam = await Exam.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: body },
       { new: true }
     )
@@ -53,10 +54,11 @@ export async function PATCH(
 /* ================= DELETE (SOFT) EXAM ================= */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -70,7 +72,7 @@ export async function DELETE(
     if (roleCheck) return roleCheck
 
     const exam = await Exam.findByIdAndUpdate(
-      params.id,
+      id,
       { status: "inactive" },
       { new: true }
     )

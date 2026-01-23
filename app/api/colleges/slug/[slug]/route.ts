@@ -8,13 +8,14 @@ import Gallery from "@/models/Gallery"
 
 export async function GET(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectDB()
+    const { slug } = await params
 
     const college = await College.findOne({
-      slug: params.slug,
+      slug,
       is_active: true,
     })
 

@@ -5,12 +5,13 @@ import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
-    const course = await Course.findById(params.id)
+    const course = await Course.findById(id)
 
     if (!course) {
       return NextResponse.json(
@@ -32,10 +33,11 @@ export async function GET(
 /* ---------- PATCH : UPDATE COURSE ---------- */
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -51,7 +53,7 @@ export async function PATCH(
     const body = await req.json()
 
     const course = await Course.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: body },
       { new: true }
     )
@@ -75,10 +77,11 @@ export async function PATCH(
 /* ---------- DELETE : COURSE ---------- */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
+    const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -91,7 +94,7 @@ export async function DELETE(
     const roleCheck = roleGuard(auth.user.role, ["ADMIN"])
     if (roleCheck) return roleCheck
 
-    const course = await Course.findByIdAndDelete(params.id)
+    const course = await Course.findByIdAndDelete(id)
 
     if (!course) {
       return NextResponse.json(

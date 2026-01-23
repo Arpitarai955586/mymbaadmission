@@ -4,13 +4,14 @@ import Exam from "@/models/Exam"
 
 export async function GET(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectDB()
+    const { slug } = await params
 
     const exam = await Exam.findOne({
-      slug: params.slug,
+      slug,
       status: "active",
     })
 

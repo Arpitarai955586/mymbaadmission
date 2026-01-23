@@ -6,12 +6,12 @@ import College from "@/models/College"
 /* ===================== GET COURSE BY SLUG ===================== */
 export async function GET(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     await connectDB()
 
-    const { slug } = params
+    const { slug } = await params
 
     const course = await Course.findOne({
       slug,
