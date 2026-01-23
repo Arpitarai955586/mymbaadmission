@@ -1,19 +1,78 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose"
 
 const ExamSchema = new Schema(
   {
-    name: String,
-    slug: { type: String, unique: true },
-    exam_type: { type: String, enum: ["National", "State"] },
-    overview: String,
-    eligibility: String,
-    exam_pattern: String,
-    syllabus: String,
-    important_dates: String,
-    is_active: { type: Boolean, default: true },
-    created_by: { type: Types.ObjectId, ref: "User" },
-  },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
-);
+    
+   
 
-export default mongoose.models.Exam || mongoose.model("Exam", ExamSchema);
+    name: {
+      type: String,
+      required: true, // SNAP
+    },
+
+    full_name: {
+      type: String, // Symbiosis National Aptitude Test
+    },
+
+    slug: {
+      type: String,
+      unique: true,
+      index: true,
+    },
+
+    type: {
+      type: String,
+      enum: ["National", "State", "University"],
+      required: true,
+    },
+
+    exam_month: {
+      type: String, // December
+    },
+
+    website: {
+      type: String,
+    },
+
+    overview: {
+      type: String,
+    },
+
+    eligibility: {
+      type: String,
+    },
+
+    exam_pattern: {
+      type: String,
+    },
+
+    syllabus: {
+      type: String,
+    },
+
+    important_dates: {
+      type: String,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
+
+    created_by: {
+      type: Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+    _id: false, 
+  }
+)
+
+export default mongoose.models.Exam ||
+  mongoose.model("Exam", ExamSchema)

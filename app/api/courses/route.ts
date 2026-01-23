@@ -1,55 +1,85 @@
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import { authGuard } from "@/lib/auth";
-import { roleGuard } from "@/lib/roleGuard";
-import "@/models/User";
+import { NextResponse } from "next/server"
+import { connectDB } from "@/lib/db"
+import { authGuard } from "@/lib/auth"
+import { roleGuard } from "@/lib/roleGuard"
+import Course from "@/models/Course"
+import College from "@/models/College"
 
-import Course from "@/models/Course";
-import { success } from "zod";
+/* ---------- POST : ADD COURSE ---------- */
+function slugify(text?: string) {
+  if (!text) return ""
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
 
 export async function POST(req: Request) {
-  await connectDB();
+  await connectDB()
+  const body = await req.json()
 
-  const auth = authGuard(req);
-  if ("error" in auth) {
+  if (!body.course_name || !body.college_id) {
     return NextResponse.json(
-      { message: auth.error },
-      { status: auth.status }
-    );
+      { message: "course_name & college_id required" },
+      { status: 400 }
+    )
   }
 
-  const roleCheck = roleGuard(auth.user.role, ["ADMIN", "PUBLISHER"]);
-  if (roleCheck) return roleCheck;
-
-  const body = await req.json();
-
-  const exists = await Course.findOne({ slug: body.slug });
-  if (exists) {
-    return NextResponse.json(
-      { message: "Course slug already exists" },
-      { status: 409 }
-    );
-  }
+  const slug = slugify(body.course_name)
 
   const course = await Course.create({
     ...body,
-    created_by: auth.user.id,
-  });
+    slug,
+  })
 
   return NextResponse.json(
     { success: true, course },
     { status: 201 }
-  );
+  )
 }
-export async function GET() {
-  await connectDB();
 
-  const courses = await Course.find({ is_active: true })
-    .populate("created_by", "name email")
-    .sort({ created_at: -1 });
 
-  return NextResponse.json({
-    success: true,
-    courses,
-  });
+/* ---------- GET : COURSES BY COLLEGE SLUG ---------- */
+export async function GET(req: Request) {
+  try {
+    await connectDB()
+
+    const { searchParams } = new URL(req.url)
+    const slug = searchParams.get("college_slug")
+
+    if (!slug) {
+      return NextResponse.json(
+        { message: "college_slug is required" },
+        { status: 400 }
+      )
+    }
+
+    const college = await College.findOne({ slug, is_active: true })
+    if (!college) {
+      return NextResponse.json(
+        { message: "College not found" },
+        { status: 404 }
+      )
+    }
+
+    const courses = await Course.find({
+      college_id: college._id,
+    })
+
+    return NextResponse.json({
+      success: true,
+      college: {
+        id: college._id,
+        name: college.basic_info.name,
+        slug: college.slug,
+      },
+      courses,
+    })
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: error.message },
+      { status: 500 }
+    )
+  }
 }

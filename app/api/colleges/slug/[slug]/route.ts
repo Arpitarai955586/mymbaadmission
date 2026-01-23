@@ -1,54 +1,52 @@
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import College from "@/models/College";
-import CollegeCourse from "@/models/CollegeCourse";
+import { NextResponse } from "next/server"
+import { connectDB } from "@/lib/db"
+import College from "@/models/College"
+import Course from "@/models/Course"
+import Fees from "@/models/Fees"
+import Placement from "@/models/Placement"
+import Gallery from "@/models/Gallery"
 
 export async function GET(
   req: Request,
-  context: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ) {
-  await connectDB();
+  try {
+    await connectDB()
 
-  // UNWRAP params (IMPORTANT)
-  const { slug } = await context.params;
-  
-  console.log('🎯 Fetching single college by slug:', slug);
+    const college = await College.findOne({
+      slug: params.slug,
+      is_active: true,
+    })
 
-  const college = await College.findOne({ slug });
+    if (!college) {
+      return NextResponse.json(
+        { message: "College not found" },
+        { status: 404 }
+      )
+    }
 
-  if (!college) {
-    console.log('❌ College not found for slug:', slug);
+    const collegeId = college._id
+
+    const [courses, fees, placement, gallery] = await Promise.all([
+      Course.find({ college_id: collegeId }),
+      Fees.find({ college_id: collegeId }),
+      Placement.findOne({ college_id: collegeId }),
+      Gallery.find({ college_id: collegeId }),
+    ])
+
+    return NextResponse.json({
+      success: true,
+      college,
+      courses,
+      fees,
+      placement,
+      gallery,
+    })
+  } catch (error: any) {
+    console.error("GET college by slug error:", error)
     return NextResponse.json(
-      { success: false, message: "College not found" },
-      { status: 404 }
-    );
+      { message: "Internal Server Error" },
+      { status: 500 }
+    )
   }
-
-  // Get actual course count for this college
-  const courseCount = await CollegeCourse.countDocuments({ college_id: college._id });
-  
-  console.log('📚 Found college with course count:', { 
-    collegeName: college.name, 
-    courseCount,
-    slug: college.slug 
-  });
-
-  // Transform college data to include UI fields
-  const transformedCollege = {
-    ...college.toObject(),
-    // Add UI-specific fields with real data
-    total_courses: courseCount,
-    courseCount: college.courseCount || courseCount, // Use DB courseCount or fallback to calculated count
-    ranking: college.ranking || "Not Ranked", // Use actual ranking from DB
-    medianSalary: `₹${Math.floor(Math.random() * 20) + 5}LPA`, // Placeholder - should come from placement data
-    examAccepted: "JEE, NEET, CET", // Placeholder - should come from exams collection
-    featured: Math.random() > 0.7, // Randomly mark some as featured
-  };
-
-  console.log('📤 Returning college data for:', transformedCollege.name);
-  
-  return NextResponse.json({
-    success: true,
-    college: transformedCollege,
-  });
 }

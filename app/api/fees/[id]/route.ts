@@ -1,35 +1,10 @@
 import { NextResponse } from "next/server"
 import { connectDB } from "@/lib/db"
-import Course from "@/models/Course"
 import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await connectDB()
+import Fees from "@/models/Fees"
 
-    const course = await Course.findById(params.id)
-
-    if (!course) {
-      return NextResponse.json(
-        { message: "Course not found" },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({ success: true, course })
-  } catch (error: any) {
-    return NextResponse.json(
-      { message: "Invalid course id" },
-      { status: 400 }
-    )
-  }
-}
-
-
-/* ---------- PATCH : UPDATE COURSE ---------- */
+/* ================= UPDATE FEES ================= */
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
@@ -50,29 +25,32 @@ export async function PATCH(
 
     const body = await req.json()
 
-    const course = await Course.findByIdAndUpdate(
+    const fees = await Fees.findByIdAndUpdate(
       params.id,
       { $set: body },
       { new: true }
     )
 
-    if (!course) {
+    if (!fees) {
       return NextResponse.json(
-        { message: "Course not found" },
+        { message: "Fees not found" },
         { status: 404 }
       )
     }
 
-    return NextResponse.json({ success: true, course })
+    return NextResponse.json({
+      success: true,
+      fees,
+    })
   } catch (error: any) {
     return NextResponse.json(
-      { message: error.message },
+      { message: "Internal Server Error" },
       { status: 500 }
     )
   }
 }
 
-/* ---------- DELETE : COURSE ---------- */
+/* ================= DELETE FEES ================= */
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
@@ -91,22 +69,22 @@ export async function DELETE(
     const roleCheck = roleGuard(auth.user.role, ["ADMIN"])
     if (roleCheck) return roleCheck
 
-    const course = await Course.findByIdAndDelete(params.id)
+    const fees = await Fees.findByIdAndDelete(params.id)
 
-    if (!course) {
+    if (!fees) {
       return NextResponse.json(
-        { message: "Course not found" },
+        { message: "Fees not found" },
         { status: 404 }
       )
     }
 
     return NextResponse.json({
       success: true,
-      message: "Course deleted successfully",
+      message: "Fees deleted successfully",
     })
   } catch (error: any) {
     return NextResponse.json(
-      { message: error.message },
+      { message: "Internal Server Error" },
       { status: 500 }
     )
   }

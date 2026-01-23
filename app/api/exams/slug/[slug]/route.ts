@@ -1,40 +1,34 @@
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import Exam from "@/models/Exam";
+import { NextResponse } from "next/server"
+import { connectDB } from "@/lib/db"
+import Exam from "@/models/Exam"
+
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ) {
   try {
-    await connectDB();
-
-   
-    const { slug } = await params;
-
-    const decodedSlug = decodeURIComponent(slug);
+    await connectDB()
 
     const exam = await Exam.findOne({
-      slug: decodedSlug,
-    }).select(
-      "name slug exam_type overview eligibility exam_pattern syllabus important_dates"
-    );
+      slug: params.slug,
+      status: "active",
+    })
 
     if (!exam) {
       return NextResponse.json(
-        { success: false, message: "Exam not found" },
+        { message: "Exam not found" },
         { status: 404 }
-      );
+      )
     }
 
     return NextResponse.json({
       success: true,
       exam,
-    });
-  } catch (error) {
-    console.error("EXAM SLUG API ERROR:", error);
+    })
+  } catch (error: any) {
     return NextResponse.json(
-      { success: false, message: "Server error" },
+      { message: "Internal Server Error" },
       { status: 500 }
-    );
+    )
   }
 }

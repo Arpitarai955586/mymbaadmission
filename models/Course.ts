@@ -1,61 +1,61 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose"
 
 const CourseSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-    description: {
-      type: String,
+    college_id: {
+      type: Schema.Types.ObjectId,
+      ref: "College",
       required: true,
     },
-    duration: {
+
+       slug: {
+      type: String,
+      required: true,
+      index: true,
+    },
+
+    course_name: {
       type: String,
       required: true,
     },
 
-    // ✅ NEW FIELDS (FROM UI)
-    level: {
+    degree: {
       type: String,
-      enum: ["Undergraduate", "Graduate", "Postgraduate", "Diploma"],
-      required: true,
-    },
-    fees: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
+      enum: ["MBA", "BBA", "BTech", "MTech", "PGDM"],
       required: true,
     },
 
-    // future use (career scope)
-    career_scope: {
+    duration_years: Number,
+
+    mode: {
       type: String,
+      enum: ["Full-time", "Part-time", "Online", "Distance"],
     },
 
-    is_active: {
-      type: Boolean,
-      default: true,
+    specializations: [String],
+
+    eligibility: {
+      qualification: String,
+      minimum_marks: {
+        general: String,
+        reserved: String,
+      },
+      work_experience_required: Boolean,
+      final_year_allowed: Boolean,
     },
-    created_by: {
-      type: Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+
+    entrance_exams: [
+      {
+        exam_name: String,
+        mandatory: Boolean,
+        cutoff: String,
+      },
+    ],
+
+    intake: String,
   },
-  {
-    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
-  }
-);
+  { timestamps: true }
+)
 
 export default mongoose.models.Course ||
-  mongoose.model("Course", CourseSchema);
+  mongoose.model("Course", CourseSchema)

@@ -1,96 +1,98 @@
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import College from "@/models/College";
-import { roleGuard } from "@/lib/roleGuard";
-import { authGuard } from "@/lib/auth";
-export async function GET(
+import { NextResponse } from "next/server"
+import { connectDB } from "@/lib/db"
+import { authGuard } from "@/lib/auth"
+import { roleGuard } from "@/lib/roleGuard"
+import College from "@/models/College"
+
+/* ================= PATCH : UPDATE COLLEGE ================= */
+export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  await connectDB();
-  const { id } = await params;
+  try {
+    await connectDB()
 
-  const college = await College.findById(id).populate(
-    "created_by",
-    "name email"
-  );
+    const auth = await authGuard(req)
+    if ("error" in auth) {
+      return NextResponse.json(
+        { message: auth.error },
+        { status: auth.status }
+      )
+    }
 
-  if (!college || !college.is_active) {
+    const roleCheck = roleGuard(auth.user.role, ["ADMIN", "PUBLISHER"])
+    if (roleCheck) return roleCheck
+
+    const body = await req.json()
+
+    const college = await College.findByIdAndUpdate(
+      params.id,
+      { $set: body },
+      { new: true }
+    )
+
+    if (!college) {
+      return NextResponse.json(
+        { message: "College not found" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      college,
+    })
+  } catch (error: any) {
+    console.error("PATCH college error:", error)
     return NextResponse.json(
-      { message: "College not found" },
-      { status: 404 }
-    );
+      { message: "Internal Server Error" },
+      { status: 500 }
+    )
   }
-
-  return NextResponse.json({ success: true, college });
 }
 
-
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  await connectDB();
-
-  const auth = authGuard(req);
-  if ("error" in auth) {
-    return NextResponse.json(
-      { message: auth.error },
-      { status: auth.status }
-    );
-  }
-
-  const roleCheck = roleGuard(auth.user.role, ["ADMIN", "PUBLISHER"]);
-  if (roleCheck) return roleCheck;
-
-  const { id } = await params;
-  const body = await req.json();
-
-  const college = await College.findByIdAndUpdate(
-    id,
-    body,
-    { new: true }
-  );
-
-  if (!college) {
-    return NextResponse.json(
-      { message: "College not found" },
-      { status: 404 }
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    college,
-  });
-}
-
-
+/* ================= DELETE : SOFT DELETE COLLEGE ================= */
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  await connectDB();
+  try {
+    await connectDB()
 
-  const auth = authGuard(req);
-  if ("error" in auth) {
+    const auth = await authGuard(req)
+    if ("error" in auth) {
+      return NextResponse.json(
+        { message: auth.error },
+        { status: auth.status }
+      )
+    }
+
+    const roleCheck = roleGuard(auth.user.role, ["ADMIN"] )
+    if (roleCheck) return roleCheck
+
+    // 🔒 SOFT DELETE (recommended)
+    const college = await College.findByIdAndUpdate(
+      params.id,
+      { is_active: false },
+      { new: true }
+    )
+
+    if (!college) {
+      return NextResponse.json(
+        { message: "College not found" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "College deleted successfully",
+    })
+  } catch (error: any) {
+    console.error("DELETE college error:", error)
     return NextResponse.json(
-      { message: auth.error },
-      { status: auth.status }
-    );
+      { message: "Internal Server Error" },
+      { status: 500 }
+    )
   }
-
-  const roleCheck = roleGuard(auth.user.role, ["ADMIN"]);
-  if (roleCheck) return roleCheck;
-
-  const { id } = await params;
-
-  await College.findByIdAndUpdate(id, {
-    is_active: false,
-  });
-
-  return NextResponse.json({
-    success: true,
-    message: "College deactivated",
-  });
 }
