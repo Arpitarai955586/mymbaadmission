@@ -10,6 +10,8 @@ import CollegeMatchCard from '../Components/CollegeMatchCard';
 import TestimonialsSection from '../Components/Testimonials';
 import EducationLinks from '../Components/EducationLinks';
 import BlogSection from '../Components/BlogSection';
+import WhyChooseUs from '../Components/WhyChooseUs';
+import FAQSection from '../Components/FAQSection';
 
 
 const page = () => {
@@ -20,11 +22,13 @@ const page = () => {
       <DreamCollegeCTA/>
       <TopUniversities/>
       <ExploreByCity/>
+      <WhyChooseUs/>
       <BlogSection/>
       {/* <CourseSection/> */}
       <Achievements/>
       <CollegeMatchCard/>
       <TestimonialsSection/>
+      <FAQSection/>
       {/* <EducationLinks/> */}
     </div>
   )
