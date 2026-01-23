@@ -4,8 +4,11 @@ import { CheckCircle, Star, ArrowRight } from 'lucide-react';
 import { siteIdentity } from '../config/site';
 import { whyChooseUsFeatures, benefits, stats, colors } from '../config/data';
 import { DynamicIcon } from '../config/icons';
+import { useModal } from '../Context/ModalContext';
 
 const WhyChooseUs = () => {
+
+  const { openModal } = useModal();
 
   return (
     <section className="relative bg-white py-24 px-6 overflow-hidden">
@@ -121,7 +124,7 @@ const WhyChooseUs = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-[#F8F9F9] rounded-3xl p-12 border-2 border-[#D4AC0D]">
+        <div className="text-center bg-[#F8F9F9] rounded-3xl p-12">
           <h3 className="text-3xl font-extrabold text-[#1A1A1B] mb-4">
             Ready to Start Your Admission Journey?
           </h3>
@@ -129,7 +132,7 @@ const WhyChooseUs = () => {
             Join thousands of successful students who got into their dream colleges with our expert guidance.
           </p>
           
-          <button className="bg-[#922B21] hover:bg-[#7A2318] text-white px-8 py-4 rounded-xl text-lg font-bold flex items-center gap-3 mx-auto transition-transform active:scale-95 shadow-lg shadow-[#922B21]/20">
+          <button onClick={openModal} className="bg-[#922B21] hover:bg-[#7A2318] text-white px-8 py-4 rounded-xl text-lg font-bold flex items-center gap-3 mx-auto transition-transform active:scale-95 shadow-lg shadow-[#922B21]/20">
             Get Started Now
             <ArrowRight size={20} />
           </button>

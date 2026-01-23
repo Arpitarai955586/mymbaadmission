@@ -67,7 +67,7 @@ const HeroSection: React.FC = () => {
             {/* Main Image */}
             <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden">
               <Image 
-                src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                src="/hero/hero-image.png"
                 alt="Happy University Students"
                 fill
                 className="object-cover"

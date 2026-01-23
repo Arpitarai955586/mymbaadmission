@@ -146,7 +146,7 @@ const Page: React.FC = () => {
             <div className="relative">
               <div className="bg-white p-6 rounded-3xl shadow-2xl">
                 <img 
-                  src="https://images.pexels.com/photos/8197534/pexels-photo-8197534.jpeg"
+                  src="/hero/about-image.png"
                   alt="Our Team"
                   className="w-full h-96 object-cover rounded-2xl"
                 />

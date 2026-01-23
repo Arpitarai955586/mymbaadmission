@@ -18,28 +18,7 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useModal } from '../../../Context/ModalContext';
-
-interface College {
-  _id: string;
-  name: string;
-  slug: string;
-  location: string;
-  type: string;
-  overview: string;
-  fees: string;
-  admission_process: string;
-  is_active: boolean;
-  image: string;
-  image_url: string;
-  images: string[];
-  tags: string[];
-  status: string;
-  created_by: string;
-  createdAt: string;
-  updatedAt: string;
-  ranking?: string;
-  establishment_year?: string;
-}
+import { getCollegeBySlug, College } from '../../../config/colleges';
 
 export default function CollegeDynamicPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -48,17 +27,11 @@ export default function CollegeDynamicPage() {
   const { openModal } = useModal();
 
   useEffect(() => {
-    const fetchCollege = async () => {
+    // Use dummy data instead of API call
+    const fetchCollege = () => {
       try {
-        const res = await fetch("/api/colleges");
-        const data = await res.json();
-
-        if (Array.isArray(data.colleges)) {
-          const found = data.colleges.find(
-            (c: College) => c.slug === slug
-          );
-          setCollege(found || null);
-        }
+        const found = getCollegeBySlug(slug || '');
+        setCollege(found || null);
       } catch (err) {
         console.error("Failed to fetch college", err);
       } finally {
@@ -120,24 +93,20 @@ export default function CollegeDynamicPage() {
             <div className="lg:col-span-2">
               <div className="flex flex-wrap gap-3 mb-4">
                 <span className="px-4 py-2 bg-[#D4AC0D] text-white rounded-full text-sm font-bold">
-                  {college.type}
+                  {college.tags.includes('private') ? 'Private' : 'Government'}
                 </span>
                 <span className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-bold">
-                  {college.location}
+                  {college.location.city}, {college.location.state}
                 </span>
                 <span className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold">
-                  {college.status}
+                  Active
                 </span>
-                {college.ranking && (
-                  <span className="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-bold">
-                    Rank: {college.ranking}
-                  </span>
-                )}
-                {college.establishment_year && (
-                  <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
-                    Est: {college.establishment_year}
-                  </span>
-                )}
+                <span className="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-bold">
+                  Top Ranked
+                </span>
+                <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
+                  Est: 2020
+                </span>
               </div>
 
               <h1 className="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
@@ -145,7 +114,7 @@ export default function CollegeDynamicPage() {
               </h1>
 
               <p className="text-xl text-white/90 mb-6 leading-relaxed">
-                {college.overview}
+                {college.content.overview}
               </p>
             </div>
 
@@ -161,7 +130,7 @@ export default function CollegeDynamicPage() {
                   <MapPin className="text-[#D4AC0D]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Location</p>
-                    <p className="font-semibold">{college.location}</p>
+                    <p className="font-semibold">{college.location.city}, {college.location.state}</p>
                   </div>
                 </div>
                 
@@ -169,29 +138,25 @@ export default function CollegeDynamicPage() {
                   <Award className="text-[#D4AC0D]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Type</p>
-                    <p className="font-semibold">{college.type}</p>
+                    <p className="font-semibold">{college.tags.includes('private') ? 'Private' : 'Government'}</p>
                   </div>
                 </div>
 
-                {college.ranking && (
-                  <div className="flex items-center gap-3">
-                    <Target className="text-[#D4AC0D]" size={20} />
-                    <div>
-                      <p className="text-sm text-white/70">Ranking</p>
-                      <p className="font-semibold">{college.ranking}</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <Target className="text-[#D4AC0D]" size={20} />
+                  <div>
+                    <p className="text-sm text-white/70">Ranking</p>
+                    <p className="font-semibold">Top Ranked</p>
                   </div>
-                )}
+                </div>
 
-                {college.establishment_year && (
-                  <div className="flex items-center gap-3">
-                    <Clock className="text-[#D4AC0D]" size={20} />
-                    <div>
-                      <p className="text-sm text-white/70">Established</p>
-                      <p className="font-semibold">{college.establishment_year}</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <Clock className="text-[#D4AC0D]" size={20} />
+                  <div>
+                    <p className="text-sm text-white/70">Established</p>
+                    <p className="font-semibold">2020</p>
                   </div>
-                )}
+                </div>
 
               </div>
 
@@ -211,7 +176,7 @@ export default function CollegeDynamicPage() {
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
         <div className="rounded-2xl overflow-hidden shadow-2xl">
           <img
-            src={college.image_url}
+            src={college.media.cover}
             alt={college.name}
             className="w-full h-64 object-cover"
           />
@@ -231,8 +196,48 @@ export default function CollegeDynamicPage() {
               </h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                  {college.overview}
+                  {college.content.overview}
                 </p>
+              </div>
+            </section>
+
+            {/* Courses Offered */}
+            <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
+              <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
+                <BookOpen className="text-[#922B21]" size={28} />
+                Courses Offered
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {college.courses_offered.map((course, index) => (
+                  <div key={index} className="flex items-center gap-3 p-4 bg-[#F8F9F9] rounded-lg border border-[#D4AC0D]/20">
+                    <CheckCircle className="text-[#922B21]" size={20} />
+                    <span className="font-semibold text-[#1A1A1B]">{course.toUpperCase()}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Admission Process */}
+            <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
+              <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
+                <Target className="text-[#922B21]" size={28} />
+                Admission Process
+              </h2>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  {college.content.admission}
+                </p>
+              </div>
+              
+              <div className="mt-6 p-4 bg-[#F8F9F9] rounded-lg border border-[#D4AC0D]/20">
+                <h3 className="font-bold text-[#1A1A1B] mb-3">Accepted Entrance Exams:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {college.exams_accepted.map((exam, index) => (
+                    <span key={index} className="px-4 py-2 bg-[#922B21] text-white rounded-full text-sm font-bold">
+                      {exam.toUpperCase()}
+                    </span>
+                  ))}
+                </div>
               </div>
             </section>
 

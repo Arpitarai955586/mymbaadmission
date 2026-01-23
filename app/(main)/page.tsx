@@ -12,6 +12,8 @@ import EducationLinks from '../Components/EducationLinks';
 import BlogSection from '../Components/BlogSection';
 import WhyChooseUs from '../Components/WhyChooseUs';
 import FAQSection from '../Components/FAQSection';
+import FeaturedColleges from '../Components/FeaturedColleges';
+import FeaturedCourses from '../Components/FeaturedCourses';
 
 
 const page = () => {
@@ -19,7 +21,9 @@ const page = () => {
     <div>
       <HeroSection/>
       <TopExams/>
+      <FeaturedCourses/>
       <DreamCollegeCTA/>
+      <FeaturedColleges/>
       <TopUniversities/>
       <ExploreByCity/>
       <WhyChooseUs/>

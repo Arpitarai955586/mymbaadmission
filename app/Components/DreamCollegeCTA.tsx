@@ -64,7 +64,7 @@ const DreamCollegeCTA: React.FC = () => {
   <div className="bg-white/10 p-5 rounded-[1.5rem] backdrop-blur-md border border-white/20 shadow-inner">
     <div className="bg-white rounded-[1.5rem] shadow-2xl border border-[#922B21]/10 relative h-[300px] w-[260px] md:h-[450px] md:w-[380px] overflow-hidden">
       <Image 
-        src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=800" 
+        src="/hero/dream-image.png" 
         alt="Graduate Student"
         fill
         className="object-cover object-center" // Changed to cover for a better look with stock photos

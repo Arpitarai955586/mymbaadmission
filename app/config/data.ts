@@ -1,7 +1,8 @@
 import { siteIdentity } from './site';
+import { themeColors } from './theme';
 
 // Helper function to get brand colors
-export const colors = siteIdentity.colors;
+export const colors = themeColors;
 
 // Company and Team Data
 export const companyData = {

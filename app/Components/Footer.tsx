@@ -1,8 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, Phone, Mail } from 'lucide-react'; // Added Phone and Mail icons
+import { MapPin, Phone, Mail } from 'lucide-react';
 import { siteIdentity } from '../config/site';
+import { themeColors } from '../config/theme';
 
 const Footer: React.FC = () => {
   return (
@@ -34,9 +35,9 @@ const Footer: React.FC = () => {
         <div>
           <h3 className="font-bold text-lg mb-6 tracking-wide uppercase">Quick Links</h3>
           <ul className="space-y-4 text-gray-300 text-sm">
-            <li><Link href="/about" className="hover:text-[#D4AC0D] transition-colors">About Us</Link></li>
-            <li><Link href="/blogs" className="hover:text-[#D4AC0D] transition-colors">Blogs</Link></li>
-            <li><Link href="/exams" className="hover:text-[#D4AC0D] transition-colors">Exams</Link></li>
+            <li><Link href="/about" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">About Us</Link></li>
+            <li><Link href="/blogs" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Blogs</Link></li>
+            <li><Link href="/exams" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Exams</Link></li>
           </ul>
         </div>
 
@@ -44,9 +45,9 @@ const Footer: React.FC = () => {
         <div>
           <h3 className="font-bold text-lg mb-6 tracking-wide uppercase">Explore</h3>
           <ul className="space-y-4 text-gray-300 text-sm">
-            <li><Link href="/terms" className="hover:text-[#D4AC0D] transition-colors">Terms Conditions</Link></li>
-            <li><Link href="/privacy" className="hover:text-[#D4AC0D] transition-colors">Privacy Policy</Link></li>
-            <li><Link href="/contact" className="hover:text-[#D4AC0D] transition-colors">Contact us</Link></li>
+            <li><Link href="/terms" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Terms & Conditions</Link></li>
+            <li><Link href="/privacy" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Privacy Policy</Link></li>
+            <li><Link href="/contact" className="text-gray-300 hover:text-[#D4AC0D] transition-colors">Contact Us</Link></li>
           </ul>
         </div>
 
