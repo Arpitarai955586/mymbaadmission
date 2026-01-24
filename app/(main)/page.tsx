@@ -26,7 +26,7 @@ const page = () => {
       <FeaturedColleges/>
       <ExploreByCity/>
       <WhyChooseUs/>
-      <BlogSection/>
+      {/* <BlogSection/> */}
       {/* <CourseSection/> */}
       <Achievements/>
       <CollegeMatchCard/>

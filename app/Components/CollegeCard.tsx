@@ -17,7 +17,7 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
         {/* College Cover Image */}
         <div className="relative h-48 overflow-hidden">
           <Image
-            src={college.media.cover}
+            src={college.media?.cover || '/colleges/default-cover.jpg'}
             alt={college.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -26,24 +26,27 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
           
           {/* College Logo Overlay */}
           <div className="absolute bottom-4 left-4">
-            <div className="bg-white/95 backdrop-blur-sm p-2 rounded-lg">
+            {/* <div className="bg-white/95 backdrop-blur-sm p-2 rounded-lg">
               <Image
-                src={college.media.logo}
+                src={college.media?.logo || '/colleges/default-logo.png'}
                 alt={college.name}
                 width={40}
                 height={40}
                 className="object-contain"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* College Information */}
         <div className="p-6 space-y-4">
-          {/* College Name */}
-          <h3 className="text-xl font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
-            {college.name}
-          </h3>
+          {/* College Name and Type */}
+          <div>
+            <h3 className="text-xl font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#1E40AF] transition-colors mb-2">
+              {college.name}
+            </h3>
+            <p className="text-sm text-[#F97316] font-medium">{college.short_name}</p>
+          </div>
 
           {/* Location */}
           <div className="flex items-center gap-2 text-gray-600">
@@ -51,28 +54,45 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
             <span className="text-sm">{college.location.city}, {college.location.state}</span>
           </div>
 
-          {/* Tags */}
+          {/* Highlights */}
           <div className="flex flex-wrap gap-2">
-            {college.tags.slice(0, 2).map((tag, index) => (
+            {college.highlights.slice(0, 2).map((highlight, index: number) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-medium rounded-full border border-[#F97316]/20"
               >
-                {tag}
+                {highlight}
               </span>
             ))}
           </div>
 
           {/* Quick Info */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <BookOpen size={14} className="text-[#1E40AF]" />
               <span>{college.courses_offered.length} Courses</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Award size={14} className="text-[#F97316]" />
-              <span>{college.exams_accepted.join(', ').toUpperCase()}</span>
+              <span>{college.approved_by.length} Approved</span>
             </div>
+          </div>
+
+          {/* Exams Accepted */}
+          <div className="flex flex-wrap gap-1">
+            {college.exams_accepted.slice(0, 3).map((exam, index: number) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-[#1E40AF]/10 text-[#1E40AF] text-xs font-medium rounded"
+              >
+                {exam}
+              </span>
+            ))}
+            {college.exams_accepted.length > 3 && (
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
+                +{college.exams_accepted.length - 3}
+              </span>
+            )}
           </div>
         </div>
       </div>

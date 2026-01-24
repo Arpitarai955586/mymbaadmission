@@ -94,20 +94,19 @@ export default function CollegeDynamicPage() {
             <div className="lg:col-span-2">
               <div className="flex flex-wrap gap-3 mb-4">
                 <span className="px-4 py-2 bg-[#F97316] text-white rounded-full text-sm font-bold">
-                  {college.tags.includes('private') ? 'Private' : 'Government'}
+                  {college.type}
                 </span>
                 <span className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-bold">
                   {college.location.city}, {college.location.state}
                 </span>
                 <span className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold">
-                  Active
+                  {college.status}
                 </span>
-                <span className="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-bold">
-                  Top Ranked
-                </span>
-                <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
-                  Est: 2020
-                </span>
+                {college.approved_by.map((approval, index) => (
+                  <span key={index} className="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-bold">
+                    {approval}
+                  </span>
+                ))}
               </div>
 
               <h1 className="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
@@ -115,7 +114,7 @@ export default function CollegeDynamicPage() {
               </h1>
 
               <p className="text-xl text-white/90 mb-6 leading-relaxed">
-                {college.content.overview}
+                {college.content?.overview || 'A premier management institution offering world-class education and excellent career opportunities.'}
               </p>
             </div>
 
@@ -139,7 +138,7 @@ export default function CollegeDynamicPage() {
                   <Award className="text-[#F97316]" size={20} />
                   <div>
                     <p className="text-sm text-white/70">Type</p>
-                    <p className="font-semibold">{college.tags.includes('private') ? 'Private' : 'Government'}</p>
+                    <p className="font-semibold">{college.type}</p>
                   </div>
                 </div>
 
@@ -177,7 +176,7 @@ export default function CollegeDynamicPage() {
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
         <div className="rounded-2xl overflow-hidden shadow-2xl">
           <img
-            src={college.media.cover}
+            src={college.media?.cover || '/colleges/default-cover.jpg'}
             alt={college.name}
             className="w-full h-64 object-cover"
           />
@@ -197,7 +196,7 @@ export default function CollegeDynamicPage() {
               </h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                  {college.content.overview}
+                  {college.content?.overview || 'A premier management institution offering world-class education and excellent career opportunities.'}
                 </p>
               </div>
             </section>
@@ -226,7 +225,7 @@ export default function CollegeDynamicPage() {
               </h2>
               <div className="prose max-w-none">
                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                  {college.content.admission}
+                  {college.content?.admission || 'Admission based on entrance exam scores and personal interview.'}
                 </p>
               </div>
               

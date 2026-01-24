@@ -105,7 +105,7 @@ const TopExams = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {examData.map((exam) => (
-            <ExamCard key={exam._id} exam={exam} openModal={openModal} />
+            <ExamCard key={exam.exam_id} exam={exam} openModal={openModal} />
           ))}
         </div>
 

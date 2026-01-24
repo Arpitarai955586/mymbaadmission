@@ -6,217 +6,50 @@ import { siteIdentity } from '../config/site';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { themeColors, colorCombos, themeClasses } from '../../config/theme';
+import { BlogPost, getPublishedBlogs, getTrendingBlogs, getBlogsByCategory, getUniqueCategories } from '../../config/blogs';
 
-interface BlogPost {
-  _id: string;
-  title: string;
-  slug: string;
-  body: string;
-  type: string;
-  created_by: string;
-  is_published: boolean;
-  created_at: string;
-  updated_at: string;
-  image?: string;
-  // Legacy fields for UI compatibility
-  excerpt?: string;
-  author?: {
-    name: string;
-    avatar: string;
-    role: string;
-  };
-  category?: string;
-  tags?: string[];
-  readTime?: string;
-  date?: string;
-  likes?: number;
-  comments?: number;
-  featured?: boolean;
-  trending?: boolean;
-}
-
-// const blogPosts: BlogPost[] = [
-//   {
-//     id: 1,
-//     title: "Complete Guide to JEE Main 2026: Eligibility, Pattern & Preparation Tips",
-//     slug: "complete-guide-to-jee-main-2026-eligibility-pattern-preparation-tips",
-//     excerpt: "Everything you need to know about JEE Main 2026 examination including eligibility criteria, exam pattern, syllabus, and expert preparation strategies to secure your seat in top engineering colleges.",
-//     author: {
-//       name: "Dr. Rajesh Kumar",
-//       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh",
-//       role: "Education Expert"
-//     },
-//     category: "Engineering",
-//     tags: ["JEE Main", "Engineering", "Preparation"],
-//     readTime: "8 min read",
-//     date: "Jan 15, 2026",
-//     likes: 245,
-//     comments: 32,
-//     featured: true,
-//     trending: true,
-//     image: "https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg"
-//   },
-//   {
-//     id: 2,
-//     title: "NEET UG 2026: Latest Updates and Preparation Strategy",
-//     slug: "neet-ug-2026-latest-updates-and-preparation-strategy",
-//     excerpt: "Stay updated with the latest changes in NEET UG 2026 examination pattern, important dates, and proven preparation strategies recommended by toppers and medical education experts.",
-//     author: {
-//       name: "Dr. Priya Sharma",
-//       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
-//       role: "Medical Counselor"
-//     },
-//     category: "Medical",
-//     tags: ["NEET", "Medical", "Strategy"],
-//     readTime: "6 min read",
-//     date: "Jan 14, 2026",
-//     likes: 189,
-//     comments: 28,
-//     featured: true,
-//     trending: false,
-//     image: "https://images.pexels.com/photos/3938022/pexels-photo-3938022.jpeg"
-//   },
-//   {
-//     id: 3,
-//     title: "CAT 2025: Section-wise Preparation Tips for 99+ Percentile",
-//     slug: "cat-2025-section-wise-preparation-tips-for-99-percentile",
-//     excerpt: "Expert strategies to crack CAT 2025 with detailed section-wise preparation tips, time management techniques, and recommended study resources for MBA aspirants.",
-//     author: {
-//       name: "Prof. Amit Verma",
-//       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
-//       role: "MBA Expert"
-//     },
-//     category: "Management",
-//     tags: ["CAT", "MBA", "Preparation"],
-//     readTime: "10 min read",
-//     date: "Jan 13, 2026",
-//     likes: 156,
-//     comments: 19,
-//     featured: false,
-//     trending: true,
-//     image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg"
-//   },
-//   {
-//     id: 4,
-//     title: "Top Engineering Colleges in India 2026: NIRF Rankings",
-//     slug: "top-engineering-colleges-in-india-2026-nirf-rankings",
-//     excerpt: "Complete list of top engineering colleges in India based on NIRF 2026 rankings, with detailed information about placement records, cutoffs, and admission process.",
-//     author: {
-//       name: "Anjali Nair",
-//       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anjali",
-//       role: "Education Writer"
-//     },
-//     category: "College",
-//     tags: ["Colleges", "Rankings", "Engineering"],
-//     readTime: "12 min read",
-//     date: "Jan 12, 2026",
-//     likes: 203,
-//     comments: 41,
-//     featured: false,
-//     trending: false,
-//     image: "https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg"
-//   },
-//   {
-//     id: 5,
-//     title: "GATE 2026: Complete Syllabus and Study Plan",
-//     slug: "gate-2026-complete-syllabus-and-study-plan",
-//     excerpt: "Comprehensive guide to GATE 2026 syllabus for all branches, recommended study materials, and month-wise preparation plan for high scores.",
-//     author: {
-//       name: "Dr. Suresh Reddy",
-//       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Suresh",
-//       role: "Technical Expert"
-//     },
-//     category: "Engineering",
-//     tags: ["GATE", "Syllabus", "Study Plan"],
-//     readTime: "15 min read",
-//     date: "Jan 11, 2026",
-//     likes: 134,
-//     comments: 22,
-//     featured: false,
-//     trending: false,
-//     image: "https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg"
-//   },
-//   {
-//     id: 6,
-//     title: "Career Options After 12th: Science, Commerce & Arts",
-//     slug: "career-options-after-12th-science-commerce-and-arts",
-//     excerpt: "Explore various career options available after 12th standard in Science, Commerce, and Arts streams with detailed information about courses, colleges, and future prospects.",
-//     author: {
-//       name: "Rohit Gupta",
-//       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohit",
-//       role: "Career Counselor"
-//     },
-//     category: "Career",
-//     tags: ["Career", "12th", "Guidance"],
-//     readTime: "7 min read",
-//     date: "Jan 10, 2026",
-//     likes: 298,
-//     comments: 56,
-//     featured: false,
-//     trending: true,
-//     image: "https://images.pexels.com/photos/3184365/pexels-photo-3184365.jpeg"
-//   }
-// ];
-
-const categories = ["All", "Engineering", "Medical", "Management", "College", "Career"];
-const sortOptions = ["Latest", "Popular", "Trending", "Most Liked"];
-
-function BlogsPageContent() {
+const BlogsPageContent = () => {
   const searchParams = useSearchParams();
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("Latest");
-  const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams?.get('category') || 'all');
+  const [filteredBlogs, setFilteredBlogs] = useState<BlogPost[]>([]);
+  const [trendingBlogs, setTrendingBlogs] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
 
-  // Update search term when URL params change
   useEffect(() => {
-    const searchFromUrl = searchParams.get('search');
-    if (searchFromUrl !== null) {
-      setSearchTerm(searchFromUrl);
-    }
-  }, [searchParams]);
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const res = await fetch("/api/blogs") // 👈 also fixed (see Issue 2)
-        const data = await res.json()
+    // Get all published blogs
+    const published = getPublishedBlogs();
+    const trending = getTrendingBlogs(3);
+    const cats = ['all', ...getUniqueCategories()];
 
-        if (data.success && Array.isArray(data.blogs)) {
-          setBlogPosts(data.blogs)
-        } else {
-          setBlogPosts([])
-        }
-      } catch (err) {
-        console.error("Failed to fetch blogs", err)
-        setBlogPosts([])
-      }
+    // Filter blogs based on search and category
+    let filtered = published;
+    
+    if (selectedCategory && selectedCategory !== 'all') {
+      filtered = getBlogsByCategory(selectedCategory);
+    }
+    
+    if (searchTerm) {
+      filtered = filtered.filter(blog =>
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
 
-    fetchBlogs()
-  }, [])
-  const filteredPosts = blogPosts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (post.body || post.excerpt || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (post.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
+    setFilteredBlogs(filtered);
+    setTrendingBlogs(trending);
+    setCategories(cats);
+  }, [searchTerm, selectedCategory]);
 
-    return matchesSearch && matchesCategory;
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case "Popular":
-        return ((b.likes || 0) + (b.comments || 0)) - ((a.likes || 0) + (a.comments || 0));
-      case "Trending":
-        return (b.trending ? 1 : 0) - (a.trending ? 1 : 0);
-      case "Most Liked":
-        return (b.likes || 0) - (a.likes || 0);
-      default: // Latest
-        return new Date(b.created_at || b.date || "").getTime() - new Date(a.created_at || a.date || "").getTime();
-    }
-  });
-
-  const featuredPosts = filteredPosts.filter(post => post.featured);
-  const regularPosts = filteredPosts.filter(post => !post.featured);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#F8F9F9]">
@@ -251,132 +84,158 @@ function BlogsPageContent() {
         </div>
       </section>
 
-      {/* {/* Filters Section */}
-
-
-      {/* Regular Posts Grid */}
+      {/* Search and Filter Section */}
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Results Header */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-[#1A1A1B] mb-2">
-              {regularPosts.length} Articles Found
-            </h2>
-            <p className="text-[#2C3E50]">
-              Expert insights and educational resources for your academic journey
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            {/* Search Bar */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search blogs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-[#1E40AF]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="md:w-64">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 border border-[#1E40AF]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-transparent"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Results Count */}
+          <div className="mb-6">
+            <p className="text-gray-600">
+              Found <span className="font-bold text-[#1E40AF]">{filteredBlogs.length}</span> blogs
             </p>
           </div>
+        </div>
+      </section>
 
-          {/* Posts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {regularPosts.map((post) => (
-              <div
-                key={post._id}
-                className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group"
-              >
-                {/* Image */}
-                <div className="relative h-40 overflow-hidden">
-                  <img
-                    src={post.image || "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {post.trending && (
-                    <div className="absolute top-3 right-3">
-                      <span className="px-2 py-1 bg-[#1E40AF] text-white text-xs font-bold rounded-full flex items-center gap-1">
-                        <TrendingUp size={10} />
-                        Trending
+      {/* Trending Blogs */}
+      {trendingBlogs.length > 0 && (
+        <section className="py-12 px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center gap-2 mb-8">
+              <TrendingUp className="text-[#F97316]" size={24} />
+              <h2 className="text-2xl font-bold text-[#1A1A1B]">Trending Blogs</h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {trendingBlogs.map((blog) => (
+                <Link key={blog.blog_id} href={`/blogs/${blog.slug}`}>
+                  <div className="bg-white border border-[#1E40AF]/10 rounded-xl p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
+                        TRENDING
+                      </span>
+                      <span className="px-3 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-medium rounded-full">
+                        {blog.category}
                       </span>
                     </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-bold rounded-md">
-                      {post.category}
-                    </span>
-                  </div>
-
-                  <Link href={`/blogs/${post.slug}`} className="text-lg font-bold text-[#1A1A1B] mb-2 line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
-                    {post.title}
-                  </Link>
-
-                  <p className="text-[#2C3E50] text-sm leading-relaxed mb-3 line-clamp-2">
-                    {post.body || post.excerpt}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {post.tags && post.tags.slice(0, 2).map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-[#F8F9F9] text-[#2C3E50] text-xs rounded-md"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Author & Actions */}
-                  <div className="flex items-center justify-between pt-3 border-t border-[#1E40AF]/10">
-                    {/* <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full overflow-hidden">
-                        <img
-                          src={post.author.avatar}
-                          alt={post.author.name}
-                          className="w-full h-full object-cover"
-                        />
+                    <h3 className="text-lg font-bold text-[#1A1A1B] mb-2 line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {blog.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} />
+                        <span>{blog.readTime}</span>
                       </div>
-                      <div>
-                        <p className="text-xs font-bold text-[#1A1A1B]">{post.author.name}</p>
-                        <p className="text-xs text-[#2C3E50]">{post.date}</p>
-                      </div>
-                    </div> */}
-
-                    {/* <div className="flex items-center gap-2">
-                      <button className="flex items-center gap-1 text-[#2C3E50] hover:text-[#D4AC0D] transition-colors">
-                        <Heart size={14} />
-                        <span className="text-xs">{post.likes || 0}</span>
-                      </button>
-                      <button className="text-[#2C3E50] hover:text-[#D4AC0D] transition-colors">
-                        <Bookmark size={14} />
-                      </button>
-                    </div> */}
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
+        </section>
+      )}
 
-          {/* No Results */}
-          {filteredPosts.length === 0 && (
-            <div className="text-center py-16">
+      {/* All Blogs */}
+      <section className="py-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold text-[#1A1A1B] mb-8">All Blogs</h2>
+          
+          {filteredBlogs.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredBlogs.map((blog) => (
+                <Link key={blog.blog_id} href={`/blogs/${blog.slug}`}>
+                  <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer group">
+                    {/* Blog Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={blog.featured_image || '/blogs/default-blog.jpg'}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 bg-[#1E40AF] text-white text-xs font-bold rounded-full">
+                          {blog.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Blog Content */}
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-xl font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
+                        {blog.title}
+                      </h3>
+                      
+                      <p className="text-gray-600 text-sm line-clamp-3">
+                        {blog.excerpt}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2">
+                        {blog.tags.slice(0, 3).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-medium rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-2xl border border-[#1E40AF]/10">
               <div className="w-20 h-20 bg-[#F8F9F9] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search size={32} className="text-[#1E40AF]" />
+                <Search className="text-gray-400" size={32} />
               </div>
-              <h3 className="text-xl font-bold text-[#1A1A1B] mb-2">No Articles Found</h3>
-              <p className="text-[#2C3E50] mb-4">Try adjusting your search or filters to find what you're looking for.</p>
+              <h3 className="text-xl font-bold text-[#1A1A1B] mb-2">No blogs found</h3>
+              <p className="text-gray-600 mb-4">
+                Try adjusting your search terms or filters
+              </p>
               <button
                 onClick={() => {
-                  setSearchTerm("");
-                  setSelectedCategory("All");
-                  setSortBy("Latest");
+                  setSearchTerm('');
+                  setSelectedCategory('all');
                 }}
-                className="px-6 py-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-lg transition-colors"
+                className="px-6 py-2 bg-[#1E40AF] text-white rounded-lg hover:bg-[#1E3A8A] transition-colors"
               >
-                Clear All Filters
-              </button>
-            </div>
-          )}
-
-          {/* Load More */}
-          {regularPosts.length > 0 && (
-            <div className="text-center mt-12">
-              <button className="px-8 py-3 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold rounded-xl transition-colors flex items-center gap-2 mx-auto">
-                Load More Articles
-                <ChevronRight size={18} />
+                Clear Filters
               </button>
             </div>
           )}
@@ -384,13 +243,16 @@ function BlogsPageContent() {
       </section>
     </div>
   );
-}
+};
 
 const BlogsPage = () => {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#F8F9F9] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E40AF]"></div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: themeColors.background }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderBottomColor: themeColors.primary }}></div>
+          <p className="text-gray-500">Loading blogs...</p>
+        </div>
       </div>
     }>
       <BlogsPageContent />

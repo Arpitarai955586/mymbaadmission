@@ -12,11 +12,11 @@ const CollegesPage = () => {
     const filteredColleges = collegesData.filter(college => {
         const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             college.location.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            college.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+            college.type.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesFilter = selectedFilter === 'all' ||
-            (selectedFilter === 'private' && college.tags.includes('private')) ||
-            (selectedFilter === 'government' && !college.tags.includes('private'));
+            (selectedFilter === 'private' && college.type.toLowerCase().includes('private')) ||
+            (selectedFilter === 'government' && college.type.toLowerCase().includes('government'));
 
         return matchesSearch && matchesFilter;
     });
@@ -81,7 +81,7 @@ const CollegesPage = () => {
                 {filteredColleges.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {filteredColleges.map((college) => (
-                            <CollegeCard key={college._id} college={college} />
+                            <CollegeCard key={college.college_id} college={college} />
                         ))}
                     </div>
                 ) : (
