@@ -34,7 +34,7 @@ const Achievements = () => {
   const stats = [
     {
       icon: <Users size={32} />,
-      count: "25000+",
+      count: "875+",
       label: "Students Guided"
     },
     {
@@ -44,7 +44,7 @@ const Achievements = () => {
     },
     {
       icon: <GraduationCap size={32} />,
-      count: "12000+",
+      count: "800+",
       label: "Admissions Completed"
     }
   ];
