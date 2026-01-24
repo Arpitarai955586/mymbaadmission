@@ -151,7 +151,7 @@ export default function BlogPostPage() {
                                 <div className="space-y-4">
                                     {trendingBlogs.map((blog) => (
                                         <Link key={blog.blog_id} href={`/blogs/${blog.slug}`}>
-                                            <div className="group cursor-pointer">
+                                            <div className="group py-[20px] cursor-pointer">
                                                 <div className="flex gap-3">
                                                     <img
                                                         src={blog.featured_image || "/blogs/default-blog.jpg"}
