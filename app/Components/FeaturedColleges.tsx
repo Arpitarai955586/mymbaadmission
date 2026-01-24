@@ -32,7 +32,7 @@ const FeaturedColleges: React.FC = () => {
         {/* Colleges Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {featuredColleges.map((college) => (
-            <CollegeCard key={college._id} college={college} />
+            <CollegeCard key={college.college_id} college={college} />
           ))}
         </div>
 

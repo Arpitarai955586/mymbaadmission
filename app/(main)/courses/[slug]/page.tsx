@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useModal } from '../../../Context/ModalContext';
 import { getCourseById, Course, formatFees } from '../../../config/courses';
 import { getExamNames } from '../../../config/exams';
+import { themeColors, colorCombos } from '../../../config/theme';
 import { 
   Clock, 
   DollarSign, 
@@ -41,9 +42,9 @@ export default function CourseDynamicPage() {
   /* Loading State */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F9F9] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: themeColors.background }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#922B21] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderBottomColor: themeColors.primary }}></div>
           <p className="text-gray-500">Loading course details...</p>
         </div>
       </div>
@@ -53,14 +54,17 @@ export default function CourseDynamicPage() {
   /* Error State */
   if (!course) {
     return (
-      <div className="min-h-screen bg-[#F8F9F9] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: themeColors.background }}>
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Course Not Found</h1>
           <p className="text-gray-600 mb-4">The course you're looking for doesn't exist or has been removed.</p>
           <button 
             onClick={() => window.history.back()}
-            className="px-6 py-2 bg-[#922B21] text-white rounded-lg hover:bg-[#7A231A] transition-colors"
+            className="px-6 py-2 text-white rounded-lg transition-colors"
+            style={{ backgroundColor: themeColors.primary }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colorCombos.primaryHover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = themeColors.primary}
           >
             Go Back
           </button>
@@ -70,9 +74,10 @@ export default function CourseDynamicPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9F9]">
+    <div className="min-h-screen" style={{ backgroundColor: themeColors.background }}>
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-[#922B21] via-[#7A2318] to-[#1A1A1B] text-white relative overflow-hidden">
+      <div className="bg-gradient-to-br text-white relative overflow-hidden" 
+           style={{ background: `linear-gradient(to bottom right, ${themeColors.primary}, ${colorCombos.primaryHover}, ${themeColors.dark})` }}>
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 py-16">
           {/* Breadcrumb */}
@@ -89,7 +94,8 @@ export default function CourseDynamicPage() {
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2">
               <div className="flex flex-wrap gap-3 mb-4">
-                <span className="px-4 py-2 bg-[#D4AC0D] text-white rounded-full text-sm font-bold">
+                <span className="px-4 py-2 text-white rounded-full text-sm font-bold"
+                      style={{ backgroundColor: themeColors.accent }}>
                   {course.degree}
                 </span>
                 <span className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-bold">
@@ -109,13 +115,13 @@ export default function CourseDynamicPage() {
             {/* Quick Info Card */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <GraduationCap className="text-[#D4AC0D]" />
+                <GraduationCap style={{ color: themeColors.accent }} />
                 Course Info
               </h3>
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Clock className="text-[#D4AC0D]" size={20} />
+                  <Clock style={{ color: themeColors.accent }} size={20} />
                   <div>
                     <p className="text-sm text-white/70">Duration</p>
                     <p className="font-semibold">{course.duration_years} Years</p>
@@ -123,7 +129,7 @@ export default function CourseDynamicPage() {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <DollarSign className="text-[#D4AC0D]" size={20} />
+                  <DollarSign style={{ color: themeColors.accent }} size={20} />
                   <div>
                     <p className="text-sm text-white/70">Average Fees</p>
                     <p className="font-semibold">{formatFees(course.default_fees)}</p>
@@ -131,7 +137,7 @@ export default function CourseDynamicPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Award className="text-[#D4AC0D]" size={20} />
+                  <Award style={{ color: themeColors.accent }} size={20} />
                   <div>
                     <p className="text-sm text-white/70">Degree</p>
                     <p className="font-semibold">{course.degree}</p>
@@ -141,7 +147,10 @@ export default function CourseDynamicPage() {
 
               <button 
                 onClick={openModal}
-                className="w-full mt-6 px-6 py-3 bg-[#D4AC0D] text-white font-bold rounded-lg hover:bg-[#B8940F] transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-6 px-6 py-3 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                style={{ backgroundColor: themeColors.accent }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colorCombos.accentHover}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = themeColors.accent}
               >
                 <BookOpen size={18} />
                 Apply Now
@@ -157,13 +166,15 @@ export default function CourseDynamicPage() {
           {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-8">
             {/* Course Overview */}
-            <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
-              <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
-                <BookOpen className="text-[#922B21]" size={28} />
+            <section className="rounded-2xl shadow-sm p-8" 
+                     style={{ backgroundColor: themeColors.white, borderColor: colorCombos.borderPrimary }}>
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3"
+                  style={{ color: themeColors.text }}>
+                <BookOpen style={{ color: themeColors.primary }} size={28} />
                 About {course.name}
               </h2>
               <div className="prose max-w-none">
-                <p className="text-gray-700 leading-relaxed">
+                <p className="leading-relaxed" style={{ color: themeColors.text }}>
                   The {course.name} program is a comprehensive {course.degree.toLowerCase()} course 
                   designed to provide students with strong foundational knowledge and practical skills 
                   in management and business administration. This {course.duration_years}-year program 
@@ -181,22 +192,28 @@ export default function CourseDynamicPage() {
 
             {/* Entrance Exams */}
             {course.entrance_exams.length > 0 && (
-              <section className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-8">
-                <h2 className="text-2xl font-bold text-[#1A1A1B] mb-6 flex items-center gap-3">
-                  <Award className="text-[#922B21]" size={28} />
+              <section className="rounded-2xl shadow-sm p-8" 
+                     style={{ backgroundColor: themeColors.white, borderColor: colorCombos.borderPrimary }}>
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-3"
+                  style={{ color: themeColors.text }}>
+                  <Award style={{ color: themeColors.primary }} size={28} />
                   Accepted Entrance Exams
                 </h2>
                 <div className="flex flex-wrap gap-3">
                   {course.entrance_exams.map((examId, index) => (
                     <span 
                       key={index}
-                      className="px-4 py-2 bg-[#F8F9F9] text-[#922B21] font-bold rounded-lg border border-[#D4AC0D]/20"
-                    >
+                      className="px-4 py-2 font-bold rounded-lg border"
+                      style={{ 
+                        backgroundColor: themeColors.background, 
+                        color: themeColors.primary,
+                        borderColor: colorCombos.borderAccent 
+                      }}>
                       {examId.toUpperCase()}
                     </span>
                   ))}
                 </div>
-                <p className="text-gray-600 mt-4">
+                <p className="mt-4" style={{ color: colorCombos.textLight }}>
                   Admission to this program is based on performance in the mentioned entrance exams. 
                   Candidates must qualify in at least one of these exams to be eligible for admission.
                 </p>
@@ -207,7 +224,8 @@ export default function CourseDynamicPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="bg-gradient-to-br from-[#D4AC0D] to-[#B8940F] rounded-2xl p-6 text-white">
+            <div className="rounded-2xl p-6 text-white" 
+                 style={{ background: `linear-gradient(to bottom right, ${themeColors.accent}, ${colorCombos.accentHover})` }}>
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <BookOpen size={24} />
                 Quick Actions
@@ -215,8 +233,14 @@ export default function CourseDynamicPage() {
               <div className="space-y-3">
                 <button 
                   onClick={openModal}
-                  className="w-full bg-white text-[#922B21] px-4 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
-                >
+                  className="w-full px-4 py-3 rounded-lg font-bold transition-colors"
+                  style={{ backgroundColor: themeColors.white, color: themeColors.primary }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F3F4F6';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = themeColors.white;
+                  }}>
                   Apply Now
                 </button>
                 <Link 
@@ -229,27 +253,28 @@ export default function CourseDynamicPage() {
             </div>
 
             {/* Course Stats */}
-            <div className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-6">
-              <h3 className="text-xl font-bold text-[#1A1A1B] mb-4">Program Highlights</h3>
+            <div className="rounded-2xl shadow-sm p-6" 
+                 style={{ backgroundColor: themeColors.white, borderColor: colorCombos.borderPrimary }}>
+              <h3 className="text-xl font-bold mb-4" style={{ color: themeColors.text }}>Program Highlights</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <Users className="text-[#922B21]" size={20} />
+                  <Users style={{ color: themeColors.primary }} size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Duration</p>
+                    <p className="text-sm" style={{ color: colorCombos.textLight }}>Duration</p>
                     <p className="font-semibold">{course.duration_years} Years</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <DollarSign className="text-[#D4AC0D]" size={20} />
+                  <DollarSign style={{ color: themeColors.accent }} size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Total Fees</p>
+                    <p className="text-sm" style={{ color: colorCombos.textLight }}>Total Fees</p>
                     <p className="font-semibold">{formatFees(course.default_fees)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <GraduationCap className="text-[#922B21]" size={20} />
+                  <GraduationCap style={{ color: themeColors.primary }} size={20} />
                   <div>
-                    <p className="text-sm text-gray-500">Degree Level</p>
+                    <p className="text-sm" style={{ color: colorCombos.textLight }}>Degree Level</p>
                     <p className="font-semibold">{course.degree}</p>
                   </div>
                 </div>
@@ -257,14 +282,18 @@ export default function CourseDynamicPage() {
             </div>
 
             {/* Need Help? */}
-            <div className="bg-white rounded-2xl shadow-sm border border-[#922B21]/10 p-6">
-              <h3 className="text-xl font-bold text-[#1A1A1B] mb-4">Need Help?</h3>
-              <p className="text-gray-600 text-sm mb-4">
+            <div className="rounded-2xl shadow-sm p-6" 
+                 style={{ backgroundColor: themeColors.white, borderColor: colorCombos.borderPrimary }}>
+              <h3 className="text-xl font-bold mb-4" style={{ color: themeColors.text }}>Need Help?</h3>
+              <p className="text-sm mb-4" style={{ color: colorCombos.textLight }}>
                 Our admission counselors are here to help you with the application process and course selection.
               </p>
               <button 
                 onClick={openModal}
-                className="w-full bg-[#922B21] text-white px-4 py-3 rounded-lg font-bold hover:bg-[#7A231A] transition-colors"
+                className="w-full px-4 py-3 rounded-lg font-bold transition-colors"
+                style={{ backgroundColor: themeColors.primary, color: themeColors.white }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colorCombos.primaryHover}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = themeColors.primary}
               >
                 Get Counselor Support
               </button>

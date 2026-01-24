@@ -172,7 +172,7 @@ function ExamsPageContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayedExams.map((exam, index) => (
             <div
-              key={`${exam._id}-${index}`}
+              key={`${exam.exam_id}-${index}`}
               className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1"
             >
               {/* Card Header */}

@@ -155,6 +155,11 @@ const Page: React.FC = () => {
             </div>
             
             <div className="relative">
+              <img
+                src="/hero/about-image.png"
+                alt="Our Story - 15+ Years of Excellence"
+                className="rounded-2xl shadow-lg w-full h-auto object-cover"
+              />
               <div className="absolute -bottom-6 -right-6 bg-[#F97316] text-white px-6 py-3 rounded-full font-bold shadow-lg">
                 {companyData.yearsExperience} Years of Excellence
               </div>
