@@ -1,61 +1,60 @@
-import mongoose, { Schema } from "mongoose"
+import mongoose, { Schema, Types } from "mongoose";
 
 const CourseSchema = new Schema(
   {
-    college_id: {
-      type: Schema.Types.ObjectId,
-      ref: "College",
-      required: true,
-    },
-
-       slug: {
+    // Custom readable ID (not Mongo _id)
+    id: {
       type: String,
       required: true,
-      index: true,
+      unique: true,
+      trim: true,
     },
 
-    course_name: {
+    name: {
       type: String,
       required: true,
+      trim: true,
+    },
+    slug: {
+  type: String,
+  required: true
+},
+
+
+    duration_years: {
+      type: Number,
+      required: true,
+      min: 1,
     },
 
     degree: {
       type: String,
-      enum: ["MBA", "BBA", "BTech", "MTech", "PGDM"],
       required: true,
+      trim: true,
     },
 
-    duration_years: Number,
-
-    mode: {
-      type: String,
-      enum: ["Full-time", "Part-time", "Online", "Distance"],
-    },
-
-    specializations: [String],
-
-    eligibility: {
-      qualification: String,
-      minimum_marks: {
-        general: String,
-        reserved: String,
+    default_fees: {
+      currency: {
+        type: String,
+        default: "INR",
       },
-      work_experience_required: Boolean,
-      final_year_allowed: Boolean,
+      total_fee: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
     },
 
     entrance_exams: [
       {
-        exam_name: String,
-        mandatory: Boolean,
-        cutoff: String,
+        type: String, // agar exam ka slug store karna ho
       },
     ],
-
-    intake: String,
   },
-  { timestamps: true }
-)
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.models.Course ||
-  mongoose.model("Course", CourseSchema)
+  mongoose.model("Course", CourseSchema);

@@ -14,6 +14,11 @@ function slugify(text?: string) {
     .replace(/(^-|-$)/g, "")
 }
 
+/* ---------- EXAM ID ---------- */
+function generateExamId() {
+  return `EXAM-${Date.now()}`
+}
+
 /* ================= CREATE EXAM ================= */
 export async function POST(req: Request) {
   try {
@@ -32,14 +37,24 @@ export async function POST(req: Request) {
 
     const body = await req.json()
 
-    if (!body.name || !body.type) {
+    const {
+      name,
+      category,
+      date,
+      duration,
+      status,
+      description,
+      eligibility,
+    } = body
+
+    if (!name || !category || !date || !duration) {
       return NextResponse.json(
-        { message: "name & type are required" },
+        { message: "All required fields missing" },
         { status: 400 }
       )
     }
 
-    const slug = slugify(body.name)
+    const slug = slugify(name)
 
     const exists = await Exam.findOne({ slug })
     if (exists) {
@@ -49,10 +64,18 @@ export async function POST(req: Request) {
       )
     }
 
+    /* 🔥 FIXED CREATE BLOCK */
     const exam = await Exam.create({
-      ...body,
+      exam_id: generateExamId(),
+      name,
       slug,
-      created_by: auth.user.id,
+      category,
+      date: new Date(date),   // ✅ convert string to Date
+      duration,
+      status: status || "Upcoming",
+      description,
+      eligibility,
+      is_active: true,
     })
 
     return NextResponse.json(
@@ -66,25 +89,31 @@ export async function POST(req: Request) {
     )
   }
 }
-
-/* ================= GET ALL EXAMS ================= */
-export async function GET() {
+/* ================= GET EXAMS ================= */
+export async function GET(req: Request) {
   try {
     await connectDB()
 
-    const exams = await Exam.find({ status: "active" }).sort({
-      created_at: -1,
-    })
+    const { searchParams } = new URL(req.url)
+    const page = Number(searchParams.get("page")) || 1
+    const limit = Number(searchParams.get("limit")) || 10
+
+    const skip = (page - 1) * limit
+
+    const exams = await Exam.find({ is_active: true })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
 
     return NextResponse.json({
       success: true,
-      count: exams.length,
       exams,
     })
   } catch (error: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: error.message || "Internal Server Error" },
       { status: 500 }
     )
   }
 }
+

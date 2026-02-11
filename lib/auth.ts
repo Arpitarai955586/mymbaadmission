@@ -1,36 +1,26 @@
-import { Role } from "./roles";
-import jwt from "jsonwebtoken";
-import { verifyToken } from "./jwt";
-type AuthSuccess = {
-  user: {
-    id: string;
-    role: Role;
-  };
-};
+import { Role } from "./roles"
+import { verifyToken } from "./jwt"
 
-type AuthError = {
-  error: string;
-  status: number;
-};
+export function authGuard(req: Request) {
+  const authHeader = req.headers.get("authorization")
 
-export function authGuard(req: Request): AuthSuccess | AuthError {
-  const token = req.headers.get("authorization");
-
-  if (!token) {
-    return { error: "Unauthorized", status: 401 };
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return { error: "Unauthorized", status: 401 }
   }
 
-  
-  const decoded: any = verifyToken(token.replace("Bearer ", ""));
+  const token = authHeader.split(" ")[1]
 
-  if (!decoded) {
-    return { error: "Invalid token", status: 403 };
+  try {
+    const decoded = verifyToken(token) as any
+
+    return {
+      user: {
+        id: decoded.id,
+        role: decoded.role as Role,
+      },
+    }
+  } catch (err) {
+    console.error("JWT ERROR:", err)
+    return { error: "Invalid or expired token", status: 401 }
   }
-
-  return {
-    user: {
-      id: decoded.id,
-      role: decoded.role as Role, 
-    },
-  };
-} 
+}

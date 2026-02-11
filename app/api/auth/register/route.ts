@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     // 🔐 Resolve STUDENT role on server
-    const role = await Role.findOne({ name: "STUDENT" });
+    const role = await Role.findOne({ name: "ADMIN" });
     if (!role) {
       return NextResponse.json(
         { message: "Default role not found" },

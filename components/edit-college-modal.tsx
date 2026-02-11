@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   Select,
@@ -20,15 +19,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 
 export interface CollegeData {
   id: number
   name: string
   type: string
-  location: string
+  location: {
+    city: string
+    state: string
+  }
   ranking: string
-  establishedYear: string
+  establishedYear: number
   website: string
   description: string
 }
@@ -40,17 +41,23 @@ interface EditCollegeModalProps {
   college: CollegeData | null
 }
 
-export function EditCollegeModal({ isOpen, onClose, onEditCollege, college }: EditCollegeModalProps) {
+export function EditCollegeModal({
+  isOpen,
+  onClose,
+  onEditCollege,
+  college,
+}: EditCollegeModalProps) {
   const [formData, setFormData] = useState<CollegeData>({
-    id: 0,
-    name: "",
-    type: "",
-    location: "",
-    description: "",
-    ranking: "",
-    establishedYear: "",
-    website: "",
-  })
+  id: "", // ✅ NOT 0
+  name: "",
+  type: "",
+  location: { city: "", state: "" },
+  ranking: "",
+  establishedYear: 0,
+  website: "",
+  description: "",
+})
+
 
   useEffect(() => {
     if (college) {
@@ -58,17 +65,50 @@ export function EditCollegeModal({ isOpen, onClose, onEditCollege, college }: Ed
     }
   }, [college])
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (formData.name && formData.type && formData.location) {
-      onEditCollege(formData)
-      onClose()
-    }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+
+  const token = localStorage.getItem("token")
+  if (!token) {
+    alert("You are not logged in")
+    return
   }
 
-  const handleInputChange = (field: keyof CollegeData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+  const payload = {
+    name: formData.name,
+    type: formData.type,
+    location: {
+      city: formData.location.city,
+      state: formData.location.state,
+    },
+    ranking: formData.ranking,
+    established_year: Number(formData.establishedYear),
+    website: formData.website,
+    content: {
+      overview: formData.description,
+    },
   }
+
+  const res = await fetch(`/api/colleges/${formData.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  // ❌ DO NOT CALL res.json() if backend returns nothing
+  if (!res.ok) {
+    const text = await res.text()
+    alert(text || "Failed to update college")
+    return
+  }
+
+  // ✅ Update UI manually
+  onEditCollege(formData)
+  onClose()
+}
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -79,83 +119,92 @@ export function EditCollegeModal({ isOpen, onClose, onEditCollege, college }: Ed
             Update the college information.
           </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">College Name</Label>
+              <Label>College Name</Label>
               <Input
-                id="name"
-                placeholder="Enter college name"
                 value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                required
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
               />
             </div>
-            
+
             <div className="grid gap-2">
-              <Label htmlFor="type">College Type</Label>
+              <Label>College Type</Label>
               <Select
                 value={formData.type}
-                onValueChange={(value) => handleInputChange("type", value)}
-                required
+                onValueChange={(value) =>
+                  setFormData({ ...formData, type: value })
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select college type" />
+                  <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Government">Government</SelectItem>
                   <SelectItem value="Private">Private</SelectItem>
                   <SelectItem value="Autonomous">Autonomous</SelectItem>
-                  <SelectItem value="Deemed">Deemed University</SelectItem>
+                  <SelectItem value="Deemed">Deemed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="location">Location</Label>
+              <Label>Location (City, State)</Label>
               <Input
-                id="location"
-                placeholder="Enter college location"
-                value={formData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
-                required
+                value={`${formData.location.city}, ${formData.location.state}`}
+                onChange={(e) => {
+                  const parts = e.target.value.split(",")
+                  setFormData({
+                    ...formData,
+                    location: {
+                      city: parts[0]?.trim() || "",
+                      state: parts[1]?.trim() || "",
+                    },
+                  })
+                }}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="ranking">Ranking</Label>
+                <Label>Ranking</Label>
                 <Input
-                  id="ranking"
-                  placeholder="e.g., #1 in India"
                   value={formData.ranking}
-                  onChange={(e) => handleInputChange("ranking", e.target.value)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, ranking: e.target.value })
+                  }
                 />
               </div>
-              
+
               <div className="grid gap-2">
-                <Label htmlFor="establishedYear">Established Year</Label>
+                <Label>Established Year</Label>
                 <Input
-                  id="establishedYear"
-                  placeholder="e.g., 1960"
                   value={formData.establishedYear}
-                  onChange={(e) => handleInputChange("establishedYear", e.target.value)}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      establishedYear: Number(e.target.value),
+                    })
+                  }
                 />
               </div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="website">Website</Label>
+              <Label>Website</Label>
               <Input
-                id="website"
-                type="url"
-                placeholder="https://college-website.com"
                 value={formData.website}
-                onChange={(e) => handleInputChange("website", e.target.value)}
+                onChange={(e) =>
+                  setFormData({ ...formData, website: e.target.value })
+                }
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel

@@ -1,28 +1,27 @@
-import { NextResponse } from "next/server"
+import { NextResponse ,NextRequest} from "next/server"
 import { connectDB } from "@/lib/db"
 import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
 import College from "@/models/College"
 
-/* ================= PATCH : UPDATE COLLEGE ================= */
+/* ================= PATCH ================= */
 export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> } // ✅ IMPORTANT
 ) {
   try {
     await connectDB()
+
+    // ✅ FIX: await params
     const { id } = await params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
       return NextResponse.json(
         { message: auth.error },
-        { status: auth.status }
+        { status: 401 }
       )
     }
-
-    const roleCheck = roleGuard(auth.user.role, ["ADMIN", "PUBLISHER"])
-    if (roleCheck) return roleCheck
 
     const body = await req.json()
 
@@ -39,27 +38,29 @@ export async function PATCH(
       )
     }
 
-    return NextResponse.json({
-      success: true,
-      college,
-    })
-  } catch (error: any) {
-    console.error("PATCH college error:", error)
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { college },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error("PATCH COLLEGE ERROR:", error)
+    return NextResponse.json(
+      { message: "Server error" },
       { status: 500 }
     )
   }
 }
 
-/* ================= DELETE : SOFT DELETE COLLEGE ================= */
+
+/* ================= DELETE ================= */
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
-    const { id } = await params
+
+    const { id } = await params // ✅ FIXED
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -69,13 +70,12 @@ export async function DELETE(
       )
     }
 
-    const roleCheck = roleGuard(auth.user.role, ["ADMIN"] )
+    const roleCheck = roleGuard(auth.user.role, ["ADMIN"])
     if (roleCheck) return roleCheck
 
-    // 🔒 SOFT DELETE (recommended)
     const college = await College.findByIdAndUpdate(
       id,
-      { is_active: false },
+      { status: "inactive" },
       { new: true }
     )
 

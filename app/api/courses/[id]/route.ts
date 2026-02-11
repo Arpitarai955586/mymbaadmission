@@ -3,13 +3,16 @@ import { connectDB } from "@/lib/db"
 import Course from "@/models/Course"
 import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
+
+/* ---------- GET : SINGLE COURSE ---------- */
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
-    const { id } = await params
+
+    const { id } = await context.params
 
     const course = await Course.findById(id)
 
@@ -21,7 +24,7 @@ export async function GET(
     }
 
     return NextResponse.json({ success: true, course })
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
       { message: "Invalid course id" },
       { status: 400 }
@@ -29,15 +32,15 @@ export async function GET(
   }
 }
 
-
 /* ---------- PATCH : UPDATE COURSE ---------- */
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
-    const { id } = await params
+
+    const { id } = await context.params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -55,7 +58,7 @@ export async function PATCH(
     const course = await Course.findByIdAndUpdate(
       id,
       { $set: body },
-      { new: true }
+      { new: true, runValidators: true }
     )
 
     if (!course) {
@@ -68,7 +71,7 @@ export async function PATCH(
     return NextResponse.json({ success: true, course })
   } catch (error: any) {
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message || "Server error" },
       { status: 500 }
     )
   }
@@ -77,11 +80,12 @@ export async function PATCH(
 /* ---------- DELETE : COURSE ---------- */
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
-    const { id } = await params
+
+    const { id } = await context.params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -109,7 +113,7 @@ export async function DELETE(
     })
   } catch (error: any) {
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message || "Server error" },
       { status: 500 }
     )
   }

@@ -64,71 +64,62 @@ const handleSubmit = async (e: React.FormEvent) => {
     return
   }
 
-  try {
-    // ✅ split location safely
-    const parts = formData.location.split(",")
-    const city = parts[0]?.trim() || ""
-    const state = parts[1]?.trim() || ""
+  const parts = formData.location.split(",")
 
-    // ✅ BACKEND-MATCHING PAYLOAD
-    const payload = {
-      name: formData.name,
-      slug: formData.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, ""),
+  if (parts.length < 2) {
+    alert("Please enter location as: City, State")
+    return
+  }
+
+  const city = parts[0].trim()
+  const state = parts[1].trim()
+
+  if (!city || !state) {
+    alert("Both city and state are required")
+    return
+  }
+
+  const payload = {
+    college_id: `COL-${Date.now()}`,
+    name: formData.name,
+    type: formData.type,
+    location: {
       city,
       state,
-      type: formData.type === "Government" ? "Govt" : "Private",
+    },
+    ranking: formData.ranking,
+    established_year: Number(formData.establishedYear),
+    content: {
       overview: formData.description,
-      fees: "TBD",
-      admission_process: "TBD",
-      is_active: true,
-    }
-
-    const res = await fetch("/api/colleges", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    // ✅ SAFE RESPONSE HANDLING
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to create college")
-    }
-
-    // ✅ update UI instantly
-    onAddCollege(data.college ?? data)
-
-    // ✅ reset form
-    setFormData({
-      name: "",
-      type: "",
-      location: "",
-      description: "",
-      ranking: "",
-      establishedYear: "",
-      website: "",
-    })
-
-    onClose()
-  } catch (err: any) {
-    console.error("❌ Failed to add college:", err)
-    alert(err.message)
+    },
+    status: "active",
   }
+
+  const res = await fetch("/api/colleges", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to create college")
+  }
+
+  onAddCollege(data.college)
+  onClose()
 }
 
-
-
-  const handleInputChange = (field: keyof CollegeData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+const handleInputChange = (key: string, value: string) => {
+  setFormData((prev) => ({
+    ...prev,
+    [key]: value,
+  }))
+}
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -194,15 +185,16 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="ranking">Ranking</Label>
-                <Input
-                  id="ranking"
-                  placeholder="e.g., #1 in India"
-                  value={formData.ranking}
-                  onChange={(e) => handleInputChange("ranking", e.target.value)}
-                />
-              </div>
+             <div className="grid gap-2">
+  <Label htmlFor="ranking">Ranking</Label>
+  <Input
+    id="ranking"
+    placeholder="e.g., #1 in India"
+    value={formData.ranking}
+    onChange={(e) => handleInputChange("ranking", e.target.value)}
+  />
+</div>
+
               
               <div className="grid gap-2">
                 <Label htmlFor="establishedYear">Established Year</Label>

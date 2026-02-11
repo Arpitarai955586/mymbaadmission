@@ -3,12 +3,10 @@ import { connectDB } from "@/lib/db"
 import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
 import College from "@/models/College"
-import CollegeCourse from "@/models/CollegeCourse"
 
 /* ---------- SAFE SLUGIFY ---------- */
 function slugify(text?: string) {
   if (!text) return ""
-
   return text
     .toLowerCase()
     .trim()
@@ -16,7 +14,9 @@ function slugify(text?: string) {
     .replace(/(^-|-$)/g, "")
 }
 
-/* ---------- POST : CREATE COLLEGE ---------- */
+/* =====================================================
+   POST : CREATE COLLEGE (MODEL BASED)
+===================================================== */
 export async function POST(req: Request) {
   try {
     await connectDB()
@@ -34,30 +34,27 @@ export async function POST(req: Request) {
 
     const body = await req.json()
 
-    /* ✅ VALIDATION */
-    if (!body.basic_info || !body.basic_info.name) {
+    /* ---------- REQUIRED VALIDATION ---------- */
+    if (!body.college_id || !body.name) {
       return NextResponse.json(
-        { message: "College name is required" },
+        { message: "college_id and name are required" },
         { status: 400 }
       )
     }
 
-    if (!body.college_id) {
+    if (!body.location?.city || !body.location?.state) {
       return NextResponse.json(
-        { message: "College ID is required" },
+        { message: "location.city and location.state are required" },
         { status: 400 }
       )
     }
 
-    /* ✅ SLUG FROM BASIC_INFO.NAME */
-    const slug = slugify(body.basic_info.name)
+    /* ---------- SLUG ---------- */
+    const slug = slugify(body.name)
 
-    /* ✅ DUPLICATE CHECK */
+    /* ---------- DUPLICATE CHECK ---------- */
     const exists = await College.findOne({
-      $or: [
-        { college_id: body.college_id },
-        { college_slug: slug },
-      ],
+      $or: [{ college_id: body.college_id }, { slug }],
     })
 
     if (exists) {
@@ -67,11 +64,40 @@ export async function POST(req: Request) {
       )
     }
 
-    /* ✅ CREATE COLLEGE */
+    /* ---------- CREATE ---------- */
     const college = await College.create({
-      ...body,
-      college_slug: slug,
-      created_by: auth.user.id,
+      college_id: body.college_id,
+      slug,
+      name: body.name,
+      short_name: body.short_name,
+      type: body.type,
+      established_year: body.established_year,
+      ranking: body.ranking,
+
+      location: {
+        city: body.location.city,
+        state: body.location.state,
+        street_address: body.location.street_address,
+        pincode: body.location.pincode,
+        google_map_link: body.location.google_map_link,
+      },
+      
+
+      approved_by: body.approved_by || [],
+      exams_accepted: body.exams_accepted || [],
+      courses_offered: body.courses_offered || [],
+      highlights: body.highlights || [],
+
+      media: {
+        cover: body.media?.cover,
+      },
+
+      content: {
+        overview: body.content?.overview,
+        admission: body.content?.admission,
+      },
+
+      status: body.status || "active",
     })
 
     return NextResponse.json(
@@ -79,7 +105,7 @@ export async function POST(req: Request) {
       { status: 201 }
     )
   } catch (error: any) {
-    console.error("POST /colleges ERROR:", error)
+    console.error("POST /api/colleges ERROR:", error)
     return NextResponse.json(
       { message: error.message || "Internal Server Error" },
       { status: 500 }
@@ -87,7 +113,9 @@ export async function POST(req: Request) {
   }
 }
 
-/* ---------- GET : ALL / BY SLUG ---------- */
+/* =====================================================
+   GET : ALL COLLEGES / BY SLUG
+===================================================== */
 export async function GET(req: Request) {
   try {
     await connectDB()
@@ -95,37 +123,18 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const slug = searchParams.get("slug")
 
-    let colleges
+    const query: any = { status: "active" }
+    if (slug) query.slug = slug
 
-    if (slug) {
-      colleges = await College.find({
-        college_slug: slug,
-        is_active: true,
-      })
-    } else {
-      colleges = await College.find({ is_active: true })
-    }
-
-    const transformed = await Promise.all(
-      colleges.map(async (college) => {
-        const courseCount = await CollegeCourse.countDocuments({
-          college_id: college._id,
-        })
-
-        return {
-          ...college.toObject(),
-          total_courses: courseCount,
-        }
-      })
-    )
+    const colleges = await College.find(query).sort({ createdAt: -1 })
 
     return NextResponse.json({
       success: true,
-      colleges: transformed,
-      count: transformed.length,
+      count: colleges.length,
+      colleges,
     })
   } catch (error: any) {
-    console.error("GET /colleges ERROR:", error)
+    console.error("GET /api/colleges ERROR:", error)
     return NextResponse.json(
       { message: error.message || "Internal Server Error" },
       { status: 500 }

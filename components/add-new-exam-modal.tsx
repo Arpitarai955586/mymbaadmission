@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   Select,
@@ -23,7 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 
 export interface ExamData {
-  id: number
+  _id?: string
   name: string
   category: string
   date: string
@@ -31,6 +30,7 @@ export interface ExamData {
   status: string
   description: string
   eligibility: string
+  is_active?: boolean
 }
 
 interface AddNewExamModalProps {
@@ -39,9 +39,12 @@ interface AddNewExamModalProps {
   onAddExam: (exam: ExamData) => void
 }
 
-export function AddNewExamModal({ isOpen, onClose, onAddExam }: AddNewExamModalProps) {
+export function AddNewExamModal({
+  isOpen,
+  onClose,
+  onAddExam,
+}: AddNewExamModalProps) {
   const [formData, setFormData] = useState<ExamData>({
-    id: 0,
     name: "",
     category: "",
     date: "",
@@ -50,72 +53,63 @@ export function AddNewExamModal({ isOpen, onClose, onAddExam }: AddNewExamModalP
     description: "",
     eligibility: "",
   })
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
 
-  const token = localStorage.getItem("token")
-  if (!token) {
-    alert("You are not logged in")
-    return
-  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
-  if (!formData.name || !formData.category || !formData.date) {
-    alert("Name, category and date are required")
-    return
-  }
-
-  try {
-    const payload = {
-      name: formData.name,
-      category: formData.category,
-      date: formData.date,
-      duration: formData.duration,
-      status: formData.status,
-      description: formData.description,
-      eligibility: formData.eligibility,
-      is_active: true,
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("You are not logged in")
+      return
     }
 
-    const res = await fetch("/api/exams", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to create exam")
+    if (!formData.name || !formData.category || !formData.date) {
+      alert("Name, category and date are required")
+      return
     }
 
-    // ✅ update UI
-    onAddExam(data.exam)
+    try {
+      const res = await fetch("/api/exams", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...formData,
+          is_active: true,
+        }),
+      })
 
-    // ✅ reset form
-    setFormData({
-      id: 0,
-      name: "",
-      category: "",
-      date: "",
-      duration: "",
-      status: "Upcoming",
-      description: "",
-      eligibility: "",
-    })
+      const data = await res.json()
 
-    onClose()
-  } catch (err: any) {
-    console.error("❌ Failed to add exam:", err)
-    alert(err.message)
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to create exam")
+      }
+
+      // Update UI
+      onAddExam(data.exam)
+
+      // Reset form
+      setFormData({
+        name: "",
+        category: "",
+        date: "",
+        duration: "",
+        status: "Upcoming",
+        description: "",
+        eligibility: "",
+      })
+
+      onClose()
+    } catch (error: any) {
+      console.error("❌ Error:", error)
+      alert(error.message)
+    }
   }
-}
 
   const handleInputChange = (field: keyof ExamData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   return (
@@ -127,6 +121,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             Create a new exam with all the necessary details.
           </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -135,17 +130,20 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 id="name"
                 placeholder="Enter exam name"
                 value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("name", e.target.value)
+                }
                 required
               />
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => handleInputChange("category", value)}
-                required
+                onValueChange={(value) =>
+                  handleInputChange("category", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select exam category" />
@@ -155,7 +153,9 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   <SelectItem value="Engineering">Engineering</SelectItem>
                   <SelectItem value="Medical">Medical</SelectItem>
                   <SelectItem value="Management">Management</SelectItem>
-                  <SelectItem value="International MBA">International MBA</SelectItem>
+                  <SelectItem value="International MBA">
+                    International MBA
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -167,18 +167,22 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   id="date"
                   type="date"
                   value={formData.date}
-                  onChange={(e) => handleInputChange("date", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("date", e.target.value)
+                  }
                   required
                 />
               </div>
-              
+
               <div className="grid gap-2">
                 <Label htmlFor="duration">Duration</Label>
                 <Input
                   id="duration"
                   placeholder="e.g., 3 hours"
                   value={formData.duration}
-                  onChange={(e) => handleInputChange("duration", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("duration", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -187,7 +191,9 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) => handleInputChange("status", value)}
+                onValueChange={(value) =>
+                  handleInputChange("status", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
@@ -207,7 +213,9 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 id="description"
                 placeholder="Enter exam description..."
                 value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 rows={3}
               />
             </div>
@@ -218,12 +226,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 id="eligibility"
                 placeholder="Enter eligibility criteria..."
                 value={formData.eligibility}
-                onChange={(e) => handleInputChange("eligibility", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("eligibility", e.target.value)
+                }
                 rows={2}
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel

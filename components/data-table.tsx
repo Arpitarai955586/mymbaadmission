@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   closestCenter,
   DndContext,
@@ -11,15 +11,15 @@ import {
   useSensors,
   type DragEndEvent,
   type UniqueIdentifier,
-} from "@dnd-kit/core"
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -33,7 +33,7 @@ import {
   IconLoader,
   IconPlus,
   IconTrendingUp,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   flexRender,
   getCoreRowModel,
@@ -48,21 +48,21 @@ import {
   type Row,
   type SortingState,
   type VisibilityState,
-} from "@tanstack/react-table"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-import { toast } from "sonner"
-import { z } from "zod"
+} from "@tanstack/react-table";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { toast } from "sonner";
+import { z } from "zod";
 
-import { useIsMobile } from "@/hooks/use-mobile"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/chart";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Drawer,
   DrawerClose,
@@ -72,7 +72,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -80,17 +80,17 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -98,30 +98,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AddNewBlogModal } from "@/components/add-new-blog-modal"
-import { AddNewCollegeModal } from "@/components/add-new-college-modal"
-import { AddNewExamModal } from "@/components/add-new-exam-modal"
-import { EditBlogModal } from "@/components/edit-blog-modal"
-import { EditCollegeModal } from "@/components/edit-college-modal"
-import { EditExamModal } from "@/components/edit-exam-modal"
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AddNewBlogModal } from "@/components/add-new-blog-modal";
+import { AddNewCollegeModal } from "@/components/add-new-college-modal";
+import { AddNewExamModal } from "@/components/add-new-exam-modal";
+import { EditBlogModal } from "@/components/edit-blog-modal";
+import { EditCollegeModal } from "@/components/edit-college-modal";
+import { EditExamModal } from "@/components/edit-exam-modal";
 
 export const schema = z.object({
-  id: z.number(),
+  id: z.string(),
   header: z.string(),
   type: z.string(),
   status: z.string(),
   target: z.string(),
   limit: z.string(),
   reviewer: z.string(),
-})
+});
 
 // Create a separate component for the drag handle
-function DragHandle({ id }: { id: number }) {
+function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({
     id,
-  })
+  });
 
   return (
     <Button
@@ -134,7 +134,7 @@ function DragHandle({ id }: { id: number }) {
       <IconGripVertical className="text-muted-foreground size-3" />
       <span className="sr-only">Drag to reorder</span>
     </Button>
-  )
+  );
 }
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
@@ -173,7 +173,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "header",
     header: "Header",
     cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />
+      return <TableCellViewer item={row.original} />;
     },
     enableHiding: false,
   },
@@ -208,12 +208,12 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
-          e.preventDefault()
+          e.preventDefault();
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
             loading: `Saving ${row.original.header}`,
             success: "Done",
             error: "Error",
-          })
+          });
         }}
       >
         <Label htmlFor={`${row.original.id}-target`} className="sr-only">
@@ -233,12 +233,12 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
-          e.preventDefault()
+          e.preventDefault();
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
             loading: `Saving ${row.original.header}`,
             success: "Done",
             error: "Error",
-          })
+          });
         }}
       >
         <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
@@ -256,10 +256,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "reviewer",
     header: "Reviewer",
     cell: ({ row }) => {
-      const isAssigned = row.original.reviewer !== "Assign reviewer"
+      const isAssigned = row.original.reviewer !== "Assign reviewer";
 
       if (isAssigned) {
-        return row.original.reviewer
+        return row.original.reviewer;
       }
 
       return (
@@ -283,7 +283,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
             </SelectContent>
           </Select>
         </>
-      )
+      );
     },
   },
   {
@@ -310,12 +310,12 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       </DropdownMenu>
     ),
   },
-]
+];
 
 function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
-  })
+  });
 
   return (
     <TableRow
@@ -334,7 +334,7 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
         </TableCell>
       ))}
     </TableRow>
-  )
+  );
 }
 
 // // Sample data for Blogs tab
@@ -423,7 +423,7 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 //   {
 //     id: 2,
 //     name: "IIM Bangalore",
-//     type: "Government", 
+//     type: "Government",
 //     location: "Bangalore, Karnataka",
 //     ranking: "#2 in India",
 //     establishedYear: "1973",
@@ -434,7 +434,7 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 //     id: 3,
 //     name: "XLRI Xavier School of Management",
 //     type: "Private",
-//     location: "Jamshedpur, Jharkhand", 
+//     location: "Jamshedpur, Jharkhand",
 //     ranking: "#3 in India",
 //     establishedYear: "1949",
 //     website: "https://www.xlri.ac.in/",
@@ -444,145 +444,158 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 
 // Define the data structures that match our tables
 interface BlogData {
-  id: number
-  title: string
-  category: string
-  author: string
-  status: string
-  publishedDate: string
-  imageUrl: string
-  description: string
-  readTime: string
+  id: number;
+  title: string;
+  category: string;
+  author: string;
+  status: string;
+  publishedDate: string;
+  imageUrl: string;
+  description: string;
+  readTime: string;
 }
 
 interface CollegeData {
-  id: number
-  name: string
-  type: string
-  location: string
-  ranking: string
-  establishedYear: string
-  website: string
-  description: string
+  id: string;
+  name: string;
+  type: string;
+  location: {
+    city: string;
+    state: string;
+  };
+  ranking: string;
+  establishedYear: number;
+  website: string;
+  description: string;
 }
 
 interface ExamData {
-  id: number
-  name: string
-  category: string
-  date: string
-  duration: string
-  status: string
-  description: string
-  eligibility: string
+  id: number;
+  name: string;
+  category: string;
+  date: string;
+  duration: string;
+  status: string;
+  description: string;
+  eligibility: string;
 }
 
 export function DataTable({
   data: initialData,
 }: {
-  data: z.infer<typeof schema>[]
+  data: z.infer<typeof schema>[];
 }) {
-  const [data, setData] = React.useState(() => initialData)
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = React.useState(() => initialData);
+  const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+    React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [initialBlogsData , setInitialBlogsData] = React.useState<BlogData[]>([])
-  const [initialCollegesData, setInitialCollegesData] = React.useState<CollegeData[]>([])
+    [],
+  );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [initialBlogsData, setInitialBlogsData] = React.useState<BlogData[]>(
+    [],
+  );
+  const [initialCollegesData, setInitialCollegesData] = React.useState<
+    CollegeData[]
+  >([]);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
-  })
-  const [activeTab, setActiveTab] = React.useState("outline")
-  const [blogsData, setBlogsData] = React.useState(initialBlogsData)
-  const [collegesData, setCollegesData] = React.useState(initialCollegesData)
-   const [initialExamsData , setInitialExamsData] = React.useState<ExamData[]>([])
-  const [examsData, setExamsData] = React.useState(initialExamsData)
-  const [isBlogModalOpen, setIsBlogModalOpen] = React.useState(false)
-  const [isCollegeModalOpen, setIsCollegeModalOpen] = React.useState(false)
-  const [isExamModalOpen, setIsExamModalOpen] = React.useState(false)
-  const [isEditBlogModalOpen, setIsEditBlogModalOpen] = React.useState(false)
-  const [isEditCollegeModalOpen, setIsEditCollegeModalOpen] = React.useState(false)
-  const [isEditExamModalOpen, setIsEditExamModalOpen] = React.useState(false)
-  const [selectedBlog, setSelectedBlog] = React.useState<BlogData | null>(null)
-  const [selectedCollege, setSelectedCollege] = React.useState<CollegeData | null>(null)
-  const [selectedExam, setSelectedExam] = React.useState<ExamData | null>(null)
-  const sortableId = React.useId()
+  });
+  const [activeTab, setActiveTab] = React.useState("outline");
+  const [blogsData, setBlogsData] = React.useState(initialBlogsData);
+  const [collegesData, setCollegesData] = React.useState(initialCollegesData);
+  const [initialExamsData, setInitialExamsData] = React.useState<ExamData[]>(
+    [],
+  );
+  const [examsData, setExamsData] = React.useState(initialExamsData);
+  const [isBlogModalOpen, setIsBlogModalOpen] = React.useState(false);
+  const [isCollegeModalOpen, setIsCollegeModalOpen] = React.useState(false);
+  const [isExamModalOpen, setIsExamModalOpen] = React.useState(false);
+  const [isEditBlogModalOpen, setIsEditBlogModalOpen] = React.useState(false);
+  const [isEditCollegeModalOpen, setIsEditCollegeModalOpen] =
+    React.useState(false);
+  const [isEditExamModalOpen, setIsEditExamModalOpen] = React.useState(false);
+  const [selectedBlog, setSelectedBlog] = React.useState<BlogData | null>(null);
+  const [selectedCollege, setSelectedCollege] =
+    React.useState<CollegeData | null>(null);
+  const [selectedExam, setSelectedExam] = React.useState<ExamData | null>(null);
+  const sortableId = React.useId();
 
-React.useEffect(() => {
-  const fetchBlogs = async () => {
-    try {
-      const res = await fetch("/api/blogs?page=1&limit=100")
-      const data = await res.json()
+  React.useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs?page=1&limit=100");
+        const data = await res.json();
 
-      if (data.success) {
-        const blogs = data.blogs.map((blog: any) => ({
-          id: blog._id, // ✅ real DB id
-          title: blog.title,
-          category: blog.category || "General",
-          author: blog.author || "Admin",
-          status: blog.is_published ? "Published" : "Draft",
-          publishedDate: blog.created_at,
-          imageUrl: blog.image,
-          description: blog.body,
-          readTime: blog.read_time || "5 min",
-        }))
+        if (data.success) {
+          const blogs = data.blogs.map((blog: any) => ({
+            id: blog._id, // ✅ real DB id
+            title: blog.title,
+            category: blog.category || "General",
+            author: blog.author || "Admin",
+            status: blog.is_published ? "Published" : "Draft",
+            publishedDate: blog.created_at,
+            imageUrl: blog.image,
+            description: blog.body,
+            readTime: blog.read_time || "5 min",
+          }));
 
-        setBlogsData(blogs)
+          setBlogsData(blogs);
+        }
+      } catch (error) {
+        console.error("Failed to fetch blogs:", error);
       }
-    } catch (error) {
-      console.error("Failed to fetch blogs:", error)
-    }
-  }
+    };
 
-  fetchBlogs()
-}, []) // ❌ remove initialBlogsData dependency
+    fetchBlogs();
+  }, []); // ❌ remove initialBlogsData dependency
 
-  
-const handleAddBlog = (blog: any) => {
-  const newBlog = {
-    id: blog._id,
-    title: blog.title,
-    category: blog.category || "General",
-    author: "Admin",
-    status: blog.is_published ? "Published" : "Draft",
-    publishedDate: blog.created_at,
-    imageUrl: blog.image,
-    description: blog.body,
-    readTime: "5 min",
-  }
+  const handleAddBlog = (blog: any) => {
+    const newBlog = {
+      id: blog._id,
+      title: blog.title,
+      category: blog.category || "General",
+      author: "Admin",
+      status: blog.is_published ? "Published" : "Draft",
+      publishedDate: blog.created_at,
+      imageUrl: blog.image,
+      description: blog.body,
+      readTime: "5 min",
+    };
 
-  setBlogsData(prev => [newBlog, ...prev])
-}
-
+    setBlogsData((prev) => [newBlog, ...prev]);
+  };
 
   React.useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const res = await fetch("/api/colleges?page=1&limit=100")
-        const data = await res.json()
+        const res = await fetch("/api/colleges?page=1&limit=100");
+        const data = await res.json();
         if (data.success) {
           const colleges = data.colleges.map((college: any) => ({
             id: college._id, // ✅ real DB id
             name: college.name,
             type: college.type,
-            location: college.city + ", " + college.state,
+            location: {
+              city: college.location?.city,
+              state: college.location?.state,
+            },
+
             ranking: college.ranking || "TBD",
-            establishedYear: college.established_year || "TBD",
+            establishedYear: college.established_year || 0,
             website: college.website || "TBD",
-            description: college.overview || "TBD"
-          }))
-          setCollegesData(colleges)
+            description: college.overview || "TBD",
+          }));
+          setCollegesData(colleges);
         }
       } catch (error) {
-        console.error("Failed to fetch colleges:", error)
+        console.error("Failed to fetch colleges:", error);
       }
-    }
-    fetchColleges()
-  }, []) // ❌ remove initialCollegesData dependency
+    };
+    fetchColleges();
+  }, []); // ❌ remove initialCollegesData dependency
   const handleAddCollege = (collegeData: any) => {
     const newCollege: CollegeData = {
       id: collegeData.id || collegesData.length + 1,
@@ -592,35 +605,45 @@ const handleAddBlog = (blog: any) => {
       ranking: collegeData.ranking,
       establishedYear: collegeData.establishedYear,
       website: collegeData.website,
-      description: collegeData.description
-    }
-    setCollegesData(prev => [...prev, newCollege])
-  }
+      description: collegeData.description,
+    };
+    setCollegesData((prev) => [...prev, newCollege]);
+  };
+React.useEffect(() => {
+  const fetchExams = async () => {
+    try {
+      const res = await fetch("/api/exams?page=1&limit=100");
 
-  React.useEffect(() => {
-    const fetchExams = async () => {
-      try {
-        const res = await fetch("/api/exams?page=1&limit=100")
-        const data = await res.json()
-        if (data.success) {
-          const exams = data.exams.map((exam: any) => ({
-            id: exam._id, // ✅ real DB id
-            name: exam.name,
-            category: exam.category,
-            date: exam.date,
-            duration: exam.duration,
-            status: exam.status,
-            description: exam.description,
-            eligibility: exam.eligibility
-          }))
-          setExamsData(exams)
-        }
-      } catch (error) {
-        console.error("Failed to fetch exams:", error)
+      if (!res.ok) {
+        throw new Error("Failed to fetch exams");
       }
+
+      const data = await res.json();
+
+      if (data.success) {
+        const exams = data.exams.map((exam: any) => ({
+          id: exam._id,
+          name: exam.name,
+          category: exam.category,
+          date: exam.date,
+          duration: exam.duration,
+          status: exam.status,
+          description: exam.description,
+          eligibility: exam.eligibility,
+        }));
+
+        setExamsData(exams);
+      }
+    } catch (error) {
+      console.error("ERROR FETCHING EXAMS:", error);
     }
-    fetchExams()
-  }, []) // ❌ remove initialExamsData dependency
+  };
+
+  fetchExams();
+}, []);
+
+
+
   const handleAddExam = (examData: ExamData) => {
     const newExam = {
       id: examsData.length + 1,
@@ -630,72 +653,76 @@ const handleAddBlog = (blog: any) => {
       duration: examData.duration,
       status: examData.status,
       description: examData.description,
-      eligibility: examData.eligibility
-    }
-    setExamsData(prev => [...prev, newExam])
-  }
+      eligibility: examData.eligibility,
+    };
+    setExamsData((prev) => [...prev, newExam]);
+  };
 
-  const handleEditBlog = async (blog: BlogData) => {
-  const token = localStorage.getItem("token")
+ const handleEditBlog = async (blog: BlogData) => {
+  const token = localStorage.getItem("token");
   if (!token) {
-    alert("You are not logged in")
-    return
+    alert("You are not logged in");
+    return;
   }
 
   try {
     const payload = {
       title: blog.title,
-      slug: blog.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, ""),
-      body: blog.description,
-      image: blog.imageUrl,
-    }
+      slug: blog.slug || blog.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+      body: blog.body || blog.description,
+      category: blog.category || "General",
+      image: blog.imageUrl || null,
+      is_published: blog.status === "Published",
+    };
 
     const res = await fetch(`/api/blogs/${blog.id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
+    const text = await res.text();
+    let data: any = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch (e) {
+      console.warn("Response is not valid JSON:", text);
+    }
 
     if (!res.ok) {
-      throw new Error(data?.message || "Failed to update blog")
+      throw new Error(data?.message || "Failed to update blog");
     }
 
-    const updatedBlog = {
+    const updatedBlog: BlogData = {
       id: data.blog._id,
       title: data.blog.title,
-      category: blog.category || "General",
-      author: "Admin",
+      category: data.blog.category || "General",
+      author: data.blog.author || "Admin",
       status: data.blog.is_published ? "Published" : "Draft",
       publishedDate: data.blog.updated_at ?? data.blog.created_at,
-      imageUrl: data.blog.image,
-      description: data.blog.body,
-      readTime: blog.readTime || "5 min",
-    }
+      imageUrl: data.blog.image || "",
+      description: data.blog.body || "",
+      readTime: data.blog.read_time || blog.readTime || "5 min",
+    };
 
-    setBlogsData(prev =>
-      prev.map(b => (b.id === updatedBlog.id ? updatedBlog : b))
-    )
+    setBlogsData(prev => prev.map(b => (b.id === updatedBlog.id ? updatedBlog : b)));
   } catch (err: any) {
-    console.error("❌ Failed to edit blog:", err)
-    alert(err.message)
+    console.error("❌ Failed to edit blog:", err);
+    alert(err.message);
   }
-}
+};
 
 
-const handleEditCollege = async (college: CollegeData) => {
-  const token = localStorage.getItem("token")
+
+
+  const handleEditCollege = async (college: CollegeData) => {
+  const token = localStorage.getItem("token");
   if (!token) {
-    alert("You are not logged in")
-    return
+    alert("You are not logged in");
+    return;
   }
 
   try {
@@ -703,199 +730,209 @@ const handleEditCollege = async (college: CollegeData) => {
       name: college.name,
       type: college.type,
       location: college.location,
-      description: college.description,
       ranking: college.ranking,
-      establishedYear: college.establishedYear,
+      established_year: Number(college.establishedYear),
       website: college.website,
-    }
+      content: {
+        overview: college.description,
+      },
+    };
 
     const res = await fetch(`/api/colleges/${college.id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to update college")
-    }
-
-    const updatedCollege = data.college
-
-    // ✅ update UI with backend response
-    setCollegesData(prev =>
-      prev.map(c => (c.id === updatedCollege._id ? updatedCollege : c))
-    )
-  } catch (err: any) {
-    console.error("❌ Failed to edit college:", err)
-    alert(err.message)
-  }
-}
-
-
-const handleEditExam = async (exam: ExamData) => {
-  const token = localStorage.getItem("token")
-  if (!token) {
-    alert("You are not logged in")
-    return
-  }
-
-  try {
-    const payload = {
-      name: exam.name,
-      category: exam.category,
-      date: exam.date,
-      duration: exam.duration,
-      status: exam.status,
-      description: exam.description,
-      eligibility: exam.eligibility,
-    }
-
-    const res = await fetch(`/api/exams/${exam.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
+    const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data?.message || "Failed to update exam")
+      throw new Error(data?.message || "Failed to update college");
     }
 
-    const updatedExam = data.exam
+    const updatedCollege: CollegeData = {
+      id: data.college._id,
+      name: data.college.name,
+      type: data.college.type,
+      location: data.college.location,
+      ranking: data.college.ranking,
+      establishedYear: data.college.established_year,
+      website: data.college.website,
+      description: data.college.content?.overview || "",
+    };
 
-    // ✅ UI sync with DB response
-    setExamsData(prev =>
-      prev.map(e => (e.id === updatedExam._id ? updatedExam : e))
-    )
+    setCollegesData((prev) =>
+      prev.map((c) => (c.id === updatedCollege.id ? updatedCollege : c))
+    );
   } catch (err: any) {
-    console.error("❌ Failed to edit exam:", err)
-    alert(err.message)
+    console.error("❌ Failed to edit college:", err);
+    alert(err.message);
   }
-}
+};
 
 
- const handleDeleteBlog = async (id: number) => {
-  const token = localStorage.getItem("token")
-  if (!token) {
-    alert("You are not logged in")
-    return
-  }
-
-  const confirmDelete = confirm("Are you sure you want to delete this blog?")
-  if (!confirmDelete) return
-
-  try {
-    const res = await fetch(`/api/blogs/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to delete blog")
+  const handleEditExam = async (exam: ExamData) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
     }
 
-    // ✅ remove from UI after backend success
-    setBlogsData(prev => prev.filter(b => b.id !== id))
-  } catch (err: any) {
-    console.error("❌ Failed to delete blog:", err)
-    alert(err.message)
-  }
-}
+    try {
+      const payload = {
+        name: exam.name,
+        category: exam.category,
+        date: exam.date,
+        duration: exam.duration,
+        status: exam.status,
+        description: exam.description,
+        eligibility: exam.eligibility,
+      };
 
+      const res = await fetch(`/api/exams/${exam.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-const handleDeleteCollege = async (id: number) => {
-  const token = localStorage.getItem("token")
-  if (!token) {
-    alert("You are not logged in")
-    return
-  }
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
 
-  const confirmDelete = confirm("Are you sure you want to deactivate this college?")
-  if (!confirmDelete) return
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to update exam");
+      }
 
-  try {
-    const res = await fetch(`/api/colleges/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+      const updatedExam = data.exam;
 
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
+      // ✅ UI sync with DB response
+      setExamsData((prev) =>
+        prev.map((e) => (e.id === updatedExam._id ? updatedExam : e)),
+      );
+    } catch (err: any) {
+      console.error("❌ Failed to edit exam:", err);
+      alert(err.message);
+    }
+  };
 
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to delete college")
+  const handleDeleteBlog = async (id: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
     }
 
-    // ✅ remove from UI after backend success
-    setCollegesData(prev => prev.filter(c => c.id !== id))
-  } catch (err: any) {
-    console.error("❌ Failed to delete college:", err)
-    alert(err.message)
-  }
-}
+    const confirmDelete = confirm("Are you sure you want to delete this blog?");
+    if (!confirmDelete) return;
 
+    try {
+      const res = await fetch(`/api/blogs/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
- const handleDeleteExam = async (id: Number) => {
-  const token = localStorage.getItem("token")
-  if (!token) {
-    alert("You are not logged in")
-    return
-  }
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
 
-  const confirmDelete = confirm("Are you sure you want to deactivate this exam?")
-  if (!confirmDelete) return
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to delete blog");
+      }
 
-  try {
-    const res = await fetch(`/api/exams/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+      // ✅ remove from UI after backend success
+      setBlogsData((prev) => prev.filter((b) => b.id !== id));
+    } catch (err: any) {
+      console.error("❌ Failed to delete blog:", err);
+      alert(err.message);
+    }
+  };
 
-    const text = await res.text()
-    const data = text ? JSON.parse(text) : null
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to delete exam")
+  const handleDeleteCollege = async (id: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
     }
 
-    // ✅ remove from UI after backend success
-    setExamsData(prev => prev.filter(e => e.id !== id))
-  } catch (err: any) {
-    console.error("❌ Failed to delete exam:", err)
-    alert(err.message)
-  }
-}
+    const confirmDelete = confirm(
+      "Are you sure you want to deactivate this college?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/colleges/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to delete college");
+      }
+
+      // ✅ remove from UI after backend success
+      setCollegesData((prev) => prev.filter((c) => c.id !== id));
+    } catch (err: any) {
+      console.error("❌ Failed to delete college:", err);
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteExam = async (id: Number) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
+    }
+
+    const confirmDelete = confirm(
+      "Are you sure you want to deactivate this exam?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/exams/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to delete exam");
+      }
+
+      // ✅ remove from UI after backend success
+      setExamsData((prev) => prev.filter((e) => e.id !== id));
+    } catch (err: any) {
+      console.error("❌ Failed to delete exam:", err);
+      alert(err.message);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
-  )
+    useSensor(KeyboardSensor, {}),
+  );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ id }) => id) || [],
-    [data]
-  )
+    [data],
+  );
 
   const table = useReactTable({
     data,
@@ -920,16 +957,16 @@ const handleDeleteCollege = async (id: number) => {
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-  })
+  });
 
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
+    const { active, over } = event;
     if (active && over && active.id !== over.id) {
       setData((data) => {
-        const oldIndex = dataIds.indexOf(active.id)
-        const newIndex = dataIds.indexOf(over.id)
-        return arrayMove(data, oldIndex, newIndex)
-      })
+        const oldIndex = dataIds.indexOf(active.id);
+        const newIndex = dataIds.indexOf(over.id);
+        return arrayMove(data, oldIndex, newIndex);
+      });
     }
   }
 
@@ -960,12 +997,8 @@ const handleDeleteCollege = async (id: number) => {
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="outline">College</TabsTrigger>
-          <TabsTrigger value="past-performance">
-            Blogs 
-          </TabsTrigger>
-          <TabsTrigger value="key-personnel">
-            Exams 
-          </TabsTrigger>
+          <TabsTrigger value="past-performance">Blogs</TabsTrigger>
+          <TabsTrigger value="key-personnel">Exams</TabsTrigger>
           {/* <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger> */}
         </TabsList>
         <div className="flex items-center gap-2">
@@ -984,7 +1017,7 @@ const handleDeleteCollege = async (id: number) => {
                 .filter(
                   (column) =>
                     typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
+                    column.getCanHide(),
                 )
                 .map((column) => {
                   return (
@@ -998,17 +1031,17 @@ const handleDeleteCollege = async (id: number) => {
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
-                  )
+                  );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={() => {
-              if (activeTab === "past-performance") setIsBlogModalOpen(true)
-              if (activeTab === "outline") setIsCollegeModalOpen(true)
-              if (activeTab === "key-personnel") setIsExamModalOpen(true)
+              if (activeTab === "past-performance") setIsBlogModalOpen(true);
+              if (activeTab === "outline") setIsCollegeModalOpen(true);
+              if (activeTab === "key-personnel") setIsExamModalOpen(true);
             }}
           >
             <IconPlus />
@@ -1041,25 +1074,31 @@ const handleDeleteCollege = async (id: number) => {
               {collegesData.length > 0 ? (
                 collegesData.map((college) => (
                   <TableRow key={college.id}>
-                    <TableCell className="font-medium">{college.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {college.name}
+                    </TableCell>
                     <TableCell>{college.type}</TableCell>
-                    <TableCell>{college.location}</TableCell>
+                    <TableCell>
+                      {college.location?.city}, {college.location?.state}
+                    </TableCell>
+
                     <TableCell>{college.ranking}</TableCell>
                     <TableCell>{college.establishedYear}</TableCell>
+
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => {
-                            setSelectedCollege(college)
-                            setIsEditCollegeModalOpen(true)
+                            setSelectedCollege(college);
+                            setIsEditCollegeModalOpen(true);
                           }}
                         >
                           Edit
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDeleteCollege(college.id)}
                         >
@@ -1072,7 +1111,8 @@ const handleDeleteCollege = async (id: number) => {
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
-                    No colleges found. Click "Add College" to create a new college.
+                    No colleges found. Click "Add College" to create a new
+                    college.
                   </TableCell>
                 </TableRow>
               )}
@@ -1104,29 +1144,31 @@ const handleDeleteCollege = async (id: number) => {
                     <TableCell>{blog.category}</TableCell>
                     <TableCell>{blog.author}</TableCell>
                     <TableCell>
-                      <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                        blog.status === 'Published' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                          blog.status === "Published"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         {blog.status}
                       </span>
                     </TableCell>
                     <TableCell>{blog.publishedDate}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => {
-                            setSelectedBlog(blog)
-                            setIsEditBlogModalOpen(true)
+                            setSelectedBlog(blog);
+                            setIsEditBlogModalOpen(true);
                           }}
                         >
                           Edit
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDeleteBlog(blog.id)}
                         >
@@ -1147,8 +1189,8 @@ const handleDeleteCollege = async (id: number) => {
           </Table>
         </div>
       </TabsContent>
-      <TabsContent 
-        value="key-personnel" 
+      <TabsContent
+        value="key-personnel"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="overflow-hidden rounded-lg border">
@@ -1172,30 +1214,32 @@ const handleDeleteCollege = async (id: number) => {
                     <TableCell>{exam.date}</TableCell>
                     <TableCell>{exam.duration}</TableCell>
                     <TableCell>
-                      <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                        exam.status === 'Active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : exam.status === 'Upcoming'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                          exam.status === "Active"
+                            ? "bg-green-100 text-green-800"
+                            : exam.status === "Upcoming"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
                         {exam.status}
                       </span>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => {
-                            setSelectedExam(exam)
-                            setIsEditExamModalOpen(true)
+                            setSelectedExam(exam);
+                            setIsEditExamModalOpen(true);
                           }}
                         >
                           Edit
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDeleteExam(exam.id)}
                         >
@@ -1256,7 +1300,7 @@ const handleDeleteCollege = async (id: number) => {
         exam={selectedExam}
       />
     </Tabs>
-  )
+  );
 }
 
 const chartData = [
@@ -1266,7 +1310,7 @@ const chartData = [
   { month: "April", desktop: 73, mobile: 190 },
   { month: "May", desktop: 209, mobile: 130 },
   { month: "June", desktop: 214, mobile: 140 },
-]
+];
 
 const chartConfig = {
   desktop: {
@@ -1277,10 +1321,10 @@ const chartConfig = {
     label: "Mobile",
     color: "var(--primary)",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
@@ -1435,5 +1479,5 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

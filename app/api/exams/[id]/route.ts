@@ -4,14 +4,25 @@ import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
 import Exam from "@/models/Exam"
 
+/* ---------- SLUGIFY ---------- */
+function slugify(text?: string) {
+  if (!text) return ""
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
+
 /* ================= UPDATE EXAM ================= */
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
-    const { id } = await params
+
+    const { id } = await context.params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -26,10 +37,18 @@ export async function PATCH(
 
     const body = await req.json()
 
+    /* ---- auto update slug if name changes ---- */
+    if (body.name) {
+      body.slug = slugify(body.name)
+    }
+
     const exam = await Exam.findByIdAndUpdate(
       id,
       { $set: body },
-      { new: true }
+      {
+        new: true,
+        runValidators: true,
+      }
     )
 
     if (!exam) {
@@ -45,7 +64,7 @@ export async function PATCH(
     })
   } catch (error: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: error.message || "Internal Server Error" },
       { status: 500 }
     )
   }
@@ -54,11 +73,12 @@ export async function PATCH(
 /* ================= DELETE (SOFT) EXAM ================= */
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB()
-    const { id } = await params
+
+    const { id } = await context.params
 
     const auth = await authGuard(req)
     if ("error" in auth) {
@@ -90,7 +110,7 @@ export async function DELETE(
     })
   } catch (error: any) {
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: error.message || "Internal Server Error" },
       { status: 500 }
     )
   }

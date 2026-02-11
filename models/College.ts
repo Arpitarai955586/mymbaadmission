@@ -1,72 +1,116 @@
-import mongoose, { Schema, Types } from "mongoose"
+import mongoose from "mongoose";
 
-const CollegeSchema = new Schema(
+const locationSchema = new mongoose.Schema({
+  city: {
+    type: String,
+    required: true,
+  },
+  state: {
+    type: String,
+    required: true,
+  },
+  street_address: {
+    type: String,
+  },
+  pincode: {
+    type: String,
+  },
+  google_map_link: {
+    type: String,
+  },
+});
+
+const mediaSchema = new mongoose.Schema({
+  cover: {
+    type: String,
+  },
+});
+
+const contentSchema = new mongoose.Schema({
+  overview: {
+    type: String,
+  },
+  admission: {
+    type: String,
+  },
+});
+
+const collegeSchema = new mongoose.Schema(
   {
+    college_id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     slug: {
       type: String,
       required: true,
       unique: true,
-      index: true,
     },
 
-    basic_info: {
-      name: { type: String, required: true },
-      short_name: String,
-      type: {
+    name: {
+      type: String,
+      required: true,
+    },
+
+    short_name: {
+      type: String,
+    },
+
+    type: {
+      type: String,
+      enum: ["Government", "Private", "Autonomous"],
+    },
+
+    // ✅ NEW FIELD: Established Year
+    established_year: {
+      type: Number, // example: 1960
+    },
+
+    // ✅ NEW FIELD: Ranking
+    ranking: {
+      type: String, // example: "#1 in India", "NIRF 12"
+    },
+
+    location: locationSchema,
+
+    approved_by: [
+      {
         type: String,
-        enum: ["Government", "Private", "Deemed", "Autonomous"],
-        required: true,
       },
-      category: {
+    ],
+
+    exams_accepted: [
+      {
         type: String,
-        enum: ["University", "College", "Institute"],
-        required: true,
       },
-      established_year: Number,
-      affiliated_university: String,
-      approved_by: [String],
-      official_website: String,
-      logo_url: String,
+    ],
+
+    courses_offered: [
+      {
+        type: String,
+      },
+    ],
+
+    highlights: [
+      {
+        type: String,
+      },
+    ],
+
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
     },
 
-    location: {
-      city: String,
-      state: String,
-      country: { type: String, default: "India" },
-      address: String,
-      pincode: String,
-    },
+    media: mediaSchema,
 
-    overview: {
-      short_description: String,
-      detailed_description: String,
-      why_choose: [String],
-    },
-
-    contact: {
-      phone: String,
-      email: String,
-      admission_email: String,
-    },
-
-    seo: {
-      meta_title: String,
-      meta_description: String,
-      keywords: [String],
-    },
-
-    is_active: {
-      type: Boolean,
-      default: true,
-    },
-
-    created_by: {
-      type: Types.ObjectId,
-      ref: "User",
-    },
+    content: contentSchema,
   },
   { timestamps: true }
-)
+);
 
 export default mongoose.models.College ||
-  mongoose.model("College", CollegeSchema)
+  mongoose.model("College", collegeSchema);

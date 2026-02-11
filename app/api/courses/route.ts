@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
 import { connectDB } from "@/lib/db"
-import { authGuard } from "@/lib/auth"
-import { roleGuard } from "@/lib/roleGuard"
 import Course from "@/models/Course"
 import College from "@/models/College"
+import mongoose from "mongoose"
 
-/* ---------- POST : ADD COURSE ---------- */
+/* ---------- SLUGIFY ---------- */
 function slugify(text?: string) {
   if (!text) return ""
   return text
@@ -15,47 +14,86 @@ function slugify(text?: string) {
     .replace(/(^-|-$)/g, "")
 }
 
+/* =========================================================
+   POST : ADD COURSE
+========================================================= */
 export async function POST(req: Request) {
-  await connectDB()
-  const body = await req.json()
+  try {
+    await connectDB()
+    const body = await req.json()
 
-  if (!body.course_name || !body.college_id) {
+    if (!body.name || !body.college_id) {
+      return NextResponse.json(
+        { message: "name & college_id required" },
+        { status: 400 }
+      )
+    }
+
+    // ✅ validate college exists
+    if (!mongoose.Types.ObjectId.isValid(body.college_id)) {
+      return NextResponse.json(
+        { message: "Invalid college_id" },
+        { status: 400 }
+      )
+    }
+
+    const college = await College.findById(body.college_id)
+    if (!college) {
+      return NextResponse.json(
+        { message: "College not found" },
+        { status: 404 }
+      )
+    }
+
+    const slug = slugify(body.name)
+
+    const course = await Course.create({
+      college_id: body.college_id,
+      id: body.id,
+      name: body.name,
+      duration_years: body.duration_years,
+      degree: body.degree,
+      default_fees: body.default_fees,
+      entrance_exams: body.entrance_exams || [],
+      slug,
+    })
+
     return NextResponse.json(
-      { message: "course_name & college_id required" },
-      { status: 400 }
+      { success: true, course },
+      { status: 201 }
+    )
+
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: error.message },
+      { status: 500 }
     )
   }
-
-  const slug = slugify(body.course_name)
-
-  const course = await Course.create({
-    ...body,
-    slug,
-  })
-
-  return NextResponse.json(
-    { success: true, course },
-    { status: 201 }
-  )
 }
 
 
-/* ---------- GET : COURSES BY COLLEGE SLUG ---------- */
+/* =========================================================
+   GET : COURSES BY COLLEGE SLUG
+========================================================= */
 export async function GET(req: Request) {
   try {
     await connectDB()
 
     const { searchParams } = new URL(req.url)
-    const slug = searchParams.get("college_slug")
+    const college_slug = searchParams.get("college_slug")
 
-    if (!slug) {
+    if (!college_slug) {
       return NextResponse.json(
         { message: "college_slug is required" },
         { status: 400 }
       )
     }
 
-    const college = await College.findOne({ slug, is_active: true })
+    const college = await College.findOne({
+      slug: college_slug,
+      status: "active",
+    })
+
     if (!college) {
       return NextResponse.json(
         { message: "College not found" },
@@ -71,11 +109,12 @@ export async function GET(req: Request) {
       success: true,
       college: {
         id: college._id,
-        name: college.basic_info.name,
+        name: college.name,
         slug: college.slug,
       },
       courses,
     })
+
   } catch (error: any) {
     return NextResponse.json(
       { message: error.message },
