@@ -75,43 +75,25 @@ export async function DELETE(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  try {
-    await connectDB()
+  await connectDB()
 
-    const { id } = await context.params
+  const { id } = await context.params   // ✅ unwrap params
 
-    const auth = await authGuard(req)
-    if ("error" in auth) {
-      return NextResponse.json(
-        { message: auth.error },
-        { status: auth.status }
-      )
-    }
+  const exam = await Exam.findById(id)
 
-    const roleCheck = roleGuard(auth.user.role, ["ADMIN"])
-    if (roleCheck) return roleCheck
-
-    const exam = await Exam.findByIdAndUpdate(
-      id,
-      { status: "inactive" },
-      { new: true }
-    )
-
-    if (!exam) {
-      return NextResponse.json(
-        { message: "Exam not found" },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: "Exam deleted successfully",
-    })
-  } catch (error: any) {
+  if (!exam) {
     return NextResponse.json(
-      { message: error.message || "Internal Server Error" },
-      { status: 500 }
+      { success: false, message: "Exam not found" },
+      { status: 404 }
     )
   }
+
+  await Exam.findByIdAndDelete(id)
+
+  return NextResponse.json({
+    success: true,
+    message: "Exam deleted successfully",
+  })
 }
+
+

@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db"
 import { authGuard } from "@/lib/auth"
 import { roleGuard } from "@/lib/roleGuard"
 import College from "@/models/College"
+import { writeFile, mkdir } from "fs/promises"
+import path from "path"
 
 /* ---------- SAFE SLUGIFY ---------- */
 function slugify(text?: string) {
@@ -14,9 +16,6 @@ function slugify(text?: string) {
     .replace(/(^-|-$)/g, "")
 }
 
-/* =====================================================
-   POST : CREATE COLLEGE (MODEL BASED)
-===================================================== */
 export async function POST(req: Request) {
   try {
     await connectDB()
@@ -32,29 +31,84 @@ export async function POST(req: Request) {
     const roleCheck = roleGuard(auth.user.role, ["ADMIN", "PUBLISHER"])
     if (roleCheck) return roleCheck
 
-    const body = await req.json()
+    const contentType = req.headers.get("content-type") || ""
 
-    /* ---------- REQUIRED VALIDATION ---------- */
-    if (!body.college_id || !body.name) {
+    let college_id = ""
+    let name = ""
+    let city = ""
+    let state = ""
+    let fileName = ""
+
+    /* ===============================
+       HANDLE FORM DATA
+    =============================== */
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData()
+
+      college_id = formData.get("college_id") as string
+      name = formData.get("name") as string
+      city = formData.get("city") as string
+      state = formData.get("state") as string
+
+      const file = formData.get("cover") as File
+
+      if (file && file.name) {
+        const bytes = await file.arrayBuffer()
+        const buffer = Buffer.from(bytes)
+
+        fileName = Date.now() + "-" + file.name
+
+        const uploadDir = path.join(process.cwd(), "public/uploads")
+
+        // folder create if not exists
+        await mkdir(uploadDir, { recursive: true })
+
+        const uploadPath = path.join(uploadDir, fileName)
+
+        await writeFile(uploadPath, buffer)
+      }
+    }
+
+    /* ===============================
+       HANDLE JSON (Optional Support)
+    =============================== */
+    else if (contentType.includes("application/json")) {
+      const body = await req.json()
+       college_id = body.college_id
+            name = body.name
+
+city = body.location?.city
+state = body.location?.state
+
+fileName = body.media?.cover || ""
+
+    }
+
+    else {
+      return NextResponse.json(
+        { message: "Unsupported Content-Type" },
+        { status: 400 }
+      )
+    }
+
+    if (!college_id || !name) {
       return NextResponse.json(
         { message: "college_id and name are required" },
         { status: 400 }
       )
     }
 
-    if (!body.location?.city || !body.location?.state) {
+    if (!city || !state) {
       return NextResponse.json(
-        { message: "location.city and location.state are required" },
+        { message: "city and state are required" },
         { status: 400 }
       )
     }
 
-    /* ---------- SLUG ---------- */
-    const slug = slugify(body.name)
+    const slug = slugify(name)
 
-    /* ---------- DUPLICATE CHECK ---------- */
     const exists = await College.findOne({
-      $or: [{ college_id: body.college_id }, { slug }],
+      $or: [{ college_id }, { slug }],
     })
 
     if (exists) {
@@ -64,40 +118,13 @@ export async function POST(req: Request) {
       )
     }
 
-    /* ---------- CREATE ---------- */
     const college = await College.create({
-      college_id: body.college_id,
+      college_id,
       slug,
-      name: body.name,
-      short_name: body.short_name,
-      type: body.type,
-      established_year: body.established_year,
-      ranking: body.ranking,
-
-      location: {
-        city: body.location.city,
-        state: body.location.state,
-        street_address: body.location.street_address,
-        pincode: body.location.pincode,
-        google_map_link: body.location.google_map_link,
-      },
-      
-
-      approved_by: body.approved_by || [],
-      exams_accepted: body.exams_accepted || [],
-      courses_offered: body.courses_offered || [],
-      highlights: body.highlights || [],
-
-      media: {
-        cover: body.media?.cover,
-      },
-
-      content: {
-        overview: body.content?.overview,
-        admission: body.content?.admission,
-      },
-
-      status: body.status || "active",
+      name,
+      location: { city, state },
+      media: { cover: fileName },
+      status: "active",
     })
 
     return NextResponse.json(
@@ -113,9 +140,7 @@ export async function POST(req: Request) {
   }
 }
 
-/* =====================================================
-   GET : ALL COLLEGES / BY SLUG
-===================================================== */
+// get colleges 
 export async function GET(req: Request) {
   try {
     await connectDB()

@@ -1,11 +1,40 @@
 "use client";
 import React from 'react';
+import { useState,useEffect } from 'react';
 import CollegeCard from '../../Components/CollegeCard';
-import { collegesData } from '../../config/colleges';
+
+// import { collegesData } from '../../config/colleges';
 import { Search, Filter } from 'lucide-react';
 import { themeColors, colorCombos, themeClasses } from '../../config/theme';
 
+interface college {
+    college_id: string;
+    name: string;
+    location: {
+        city: string;
+    };
+    type: string;
+    slug: string;
+    short_name: string;
+    approved_by: string;
+    exams_accepted: string[];
+}
+
 const CollegesPage = () => {
+    const[collegesData,setCollegesData]=useState<college[]>([]);
+    useEffect(()=>{
+        try{
+            const fetchColleges = async() =>{
+                const res = await fetch("api/colleges");
+                const data = await res.json();
+                setCollegesData(data.colleges);
+            }
+            fetchColleges();
+        }catch(error){
+            console.error('error fetching colleges data:',error)
+        }
+    },[])
+
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedFilter, setSelectedFilter] = React.useState('all');
 

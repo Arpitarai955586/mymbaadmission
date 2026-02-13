@@ -106,6 +106,9 @@ import { AddNewExamModal } from "@/components/add-new-exam-modal";
 import { EditBlogModal } from "@/components/edit-blog-modal";
 import { EditCollegeModal } from "@/components/edit-college-modal";
 import { EditExamModal } from "@/components/edit-exam-modal";
+import {AddNewCourseModal} from "@/components/add-new-course-modal"
+import {EditCourseModal } from "@/components/edit-course-modal";
+
 
 export const schema = z.object({
   id: z.string(),
@@ -479,6 +482,16 @@ interface ExamData {
   description: string;
   eligibility: string;
 }
+interface CourseData {
+  id: string;
+  name: string;
+  slug: string;
+  duration_years: number;
+  degree: string;
+  total_fee: number;
+  status: string;
+}
+
 
 export function DataTable({
   data: initialData,
@@ -522,6 +535,11 @@ export function DataTable({
     React.useState<CollegeData | null>(null);
   const [selectedExam, setSelectedExam] = React.useState<ExamData | null>(null);
   const sortableId = React.useId();
+const [initialCoursesData, setInitialCoursesData] = React.useState<CourseData[]>([]);
+const [coursesData, setCoursesData] = React.useState(initialCoursesData);
+const [isCourseModalOpen, setIsCourseModalOpen] = React.useState(false);
+const [isEditCourseModalOpen, setIsEditCourseModalOpen] = React.useState(false);
+const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(null);
 
   React.useEffect(() => {
     const fetchBlogs = async () => {
@@ -567,6 +585,23 @@ export function DataTable({
 
     setBlogsData((prev) => [newBlog, ...prev]);
   };
+  const handleAddCourse = (course: any) => {
+  const newCourse: CourseData = {
+    id: course._id,
+    name: course.name,
+    slug: course.slug,
+    duration_years: course.duration_years,
+    degree: course.degree,
+    total_fee: course.default_fees?.total_fee || 0,
+    status: course.status,
+  };
+
+  setCoursesData((prev) => [newCourse, ...prev]);
+};
+
+
+
+
 
   React.useEffect(() => {
     const fetchColleges = async () => {
@@ -609,39 +644,71 @@ export function DataTable({
     };
     setCollegesData((prev) => [...prev, newCollege]);
   };
-React.useEffect(() => {
-  const fetchExams = async () => {
-    try {
-      const res = await fetch("/api/exams?page=1&limit=100");
+  
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch exams");
+  React.useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const res = await fetch("/api/exams?page=1&limit=100");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch exams");
+        }
+
+        const data = await res.json();
+
+        if (data.success) {
+          const exams = data.exams.map((exam: any) => ({
+            id: exam._id,
+            name: exam.name,
+            category: exam.category,
+            date: exam.date,
+            duration: exam.duration,
+            status: exam.status,
+            description: exam.description,
+            eligibility: exam.eligibility,
+          }));
+
+          setExamsData(exams);
+        }
+      } catch (error) {
+        console.error("ERROR FETCHING EXAMS:", error);
       }
+    };
+
+    fetchExams();
+  }, []);
+
+  React.useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      const res = await fetch("/api/courses?page=1&limit=100");
+
+      if (!res.ok) throw new Error("Failed to fetch courses");
 
       const data = await res.json();
 
       if (data.success) {
-        const exams = data.exams.map((exam: any) => ({
-          id: exam._id,
-          name: exam.name,
-          category: exam.category,
-          date: exam.date,
-          duration: exam.duration,
-          status: exam.status,
-          description: exam.description,
-          eligibility: exam.eligibility,
-        }));
+       const courses = data.courses.map((course: any) => ({
+  id: course._id,
+  name: course.name,
+  slug: course.slug,
+  duration_years: course.duration_years,
+  degree: course.degree,
+  total_fee: course.default_fees?.total_fee || 0,
+  status: course.status,
+}));
 
-        setExamsData(exams);
+
+        setCoursesData(courses);
       }
     } catch (error) {
-      console.error("ERROR FETCHING EXAMS:", error);
+      console.error("ERROR FETCHING COURSES:", error);
     }
   };
 
-  fetchExams();
+  fetchCourses();
 }, []);
-
 
 
   const handleAddExam = (examData: ExamData) => {
@@ -658,121 +725,124 @@ React.useEffect(() => {
     setExamsData((prev) => [...prev, newExam]);
   };
 
- const handleEditBlog = async (blog: BlogData) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("You are not logged in");
-    return;
-  }
+  const handleEditBlog = async (blog: BlogData) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
+    }
 
-  try {
-    const payload = {
-      title: blog.title,
-      slug: blog.slug || blog.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
-      body: blog.body || blog.description,
-      category: blog.category || "General",
-      image: blog.imageUrl || null,
-      is_published: blog.status === "Published",
-    };
-
-    const res = await fetch(`/api/blogs/${blog.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const text = await res.text();
-    let data: any = {};
     try {
-      data = text ? JSON.parse(text) : {};
-    } catch (e) {
-      console.warn("Response is not valid JSON:", text);
+      const payload = {
+        title: blog.title,
+        slug:
+          blog.slug ||
+          blog.title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, ""),
+        body: blog.body || blog.description,
+        category: blog.category || "General",
+        image: blog.imageUrl || null,
+        is_published: blog.status === "Published",
+      };
+
+      const res = await fetch(`/api/blogs/${blog.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        console.warn("Response is not valid JSON:", text);
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to update blog");
+      }
+
+      const updatedBlog: BlogData = {
+        id: data.blog._id,
+        title: data.blog.title,
+        category: data.blog.category || "General",
+        author: data.blog.author || "Admin",
+        status: data.blog.is_published ? "Published" : "Draft",
+        publishedDate: data.blog.updated_at ?? data.blog.created_at,
+        imageUrl: data.blog.image || "",
+        description: data.blog.body || "",
+        readTime: data.blog.read_time || blog.readTime || "5 min",
+      };
+
+      setBlogsData((prev) =>
+        prev.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)),
+      );
+    } catch (err: any) {
+      console.error("❌ Failed to edit blog:", err);
+      alert(err.message);
     }
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to update blog");
-    }
-
-    const updatedBlog: BlogData = {
-      id: data.blog._id,
-      title: data.blog.title,
-      category: data.blog.category || "General",
-      author: data.blog.author || "Admin",
-      status: data.blog.is_published ? "Published" : "Draft",
-      publishedDate: data.blog.updated_at ?? data.blog.created_at,
-      imageUrl: data.blog.image || "",
-      description: data.blog.body || "",
-      readTime: data.blog.read_time || blog.readTime || "5 min",
-    };
-
-    setBlogsData(prev => prev.map(b => (b.id === updatedBlog.id ? updatedBlog : b)));
-  } catch (err: any) {
-    console.error("❌ Failed to edit blog:", err);
-    alert(err.message);
-  }
-};
-
-
-
+  };
 
   const handleEditCollege = async (college: CollegeData) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("You are not logged in");
-    return;
-  }
-
-  try {
-    const payload = {
-      name: college.name,
-      type: college.type,
-      location: college.location,
-      ranking: college.ranking,
-      established_year: Number(college.establishedYear),
-      website: college.website,
-      content: {
-        overview: college.description,
-      },
-    };
-
-    const res = await fetch(`/api/colleges/${college.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to update college");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
     }
 
-    const updatedCollege: CollegeData = {
-      id: data.college._id,
-      name: data.college.name,
-      type: data.college.type,
-      location: data.college.location,
-      ranking: data.college.ranking,
-      establishedYear: data.college.established_year,
-      website: data.college.website,
-      description: data.college.content?.overview || "",
-    };
+    try {
+      const payload = {
+        name: college.name,
+        type: college.type,
+        location: college.location,
+        ranking: college.ranking,
+        established_year: Number(college.establishedYear),
+        website: college.website,
+        content: {
+          overview: college.description,
+        },
+      };
 
-    setCollegesData((prev) =>
-      prev.map((c) => (c.id === updatedCollege.id ? updatedCollege : c))
-    );
-  } catch (err: any) {
-    console.error("❌ Failed to edit college:", err);
-    alert(err.message);
-  }
-};
+      const res = await fetch(`/api/colleges/${college.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to update college");
+      }
+
+      const updatedCollege: CollegeData = {
+        id: data.college._id,
+        name: data.college.name,
+        type: data.college.type,
+        location: data.college.location,
+        ranking: data.college.ranking,
+        establishedYear: data.college.established_year,
+        website: data.college.website,
+        description: data.college.content?.overview || "",
+      };
+
+      setCollegesData((prev) =>
+        prev.map((c) => (c.id === updatedCollege.id ? updatedCollege : c)),
+      );
+    } catch (err: any) {
+      console.error("❌ Failed to edit college:", err);
+      alert(err.message);
+    }
+  };
 
   const handleEditExam = async (exam: ExamData) => {
     const token = localStorage.getItem("token");
@@ -888,40 +958,102 @@ React.useEffect(() => {
     }
   };
 
-  const handleDeleteExam = async (id: Number) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You are not logged in");
-      return;
+  const handleDeleteExam = async (id: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("You are not logged in");
+    return;
+  }
+
+  const confirmDelete = confirm(
+    "Are you sure you want to delete this exam?"
+  );
+  if (!confirmDelete) return;
+
+  try {
+    const res = await fetch(`/api/exams/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.message || "Failed to delete exam");
     }
 
-    const confirmDelete = confirm(
-      "Are you sure you want to deactivate this exam?",
+    setExamsData((prev) => prev.filter((e) => e.id !== id));
+  } catch (err: any) {
+    console.error("❌ Failed to delete exam:", err);
+    alert(err.message);
+  }
+};
+
+  const handleEditCourse = async (course: CourseData) => {
+  const token = localStorage.getItem("token");
+  if (!token) return alert("You are not logged in");
+
+  try {
+    const payload = {
+      name: course.name,
+      slug: course.slug,
+      duration_years: course.duration_years,
+      degree: course.degree,
+      default_fees: {
+        currency: "INR",
+        total_fee: course.total_fee,
+      },
+      status: course.status,
+    };
+
+    const res = await fetch(`/api/courses/${course.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.message);
+
+    setCoursesData((prev) =>
+      prev.map((c) => (c.id === course.id ? course : c))
     );
-    if (!confirmDelete) return;
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
 
-    try {
-      const res = await fetch(`/api/exams/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+const handleDeleteCourse = async (id: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("You are not logged in");
+    return;
+  }
 
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : null;
+  if (!confirm("Are you sure you want to delete this course?")) return;
 
-      if (!res.ok) {
-        throw new Error(data?.message || "Failed to delete exam");
-      }
+  try {
+    const res = await fetch(`/api/courses/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      // ✅ remove from UI after backend success
-      setExamsData((prev) => prev.filter((e) => e.id !== id));
-    } catch (err: any) {
-      console.error("❌ Failed to delete exam:", err);
-      alert(err.message);
-    }
-  };
+    if (!res.ok) throw new Error("Failed to delete course");
+
+    setCoursesData((prev) => prev.filter((c) => c.id !== id));
+  } catch (err: any) {
+    console.error("❌ Failed to delete course:", err);
+    alert(err.message);
+  }
+};
+
 
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -994,11 +1126,15 @@ React.useEffect(() => {
             <SelectItem value="key-personnel">Key Personnel</SelectItem>
             <SelectItem value="focus-documents">Focus Documents</SelectItem>
           </SelectContent>
+
+
+
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="outline">College</TabsTrigger>
           <TabsTrigger value="past-performance">Blogs</TabsTrigger>
           <TabsTrigger value="key-personnel">Exams</TabsTrigger>
+          <TabsTrigger value="key-personnel1">Courses</TabsTrigger>
           {/* <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger> */}
         </TabsList>
         <div className="flex items-center gap-2">
@@ -1042,6 +1178,14 @@ React.useEffect(() => {
               if (activeTab === "past-performance") setIsBlogModalOpen(true);
               if (activeTab === "outline") setIsCollegeModalOpen(true);
               if (activeTab === "key-personnel") setIsExamModalOpen(true);
+              if (activeTab === "key-personnel1") {
+  if (!selectedCollege) {
+    alert("Please select a college first");
+    return;
+  }
+  setIsCourseModalOpen(true);
+}
+
             }}
           >
             <IconPlus />
@@ -1049,6 +1193,7 @@ React.useEffect(() => {
               {activeTab === "outline" && "Add College"}
               {activeTab === "past-performance" && "Add Blog"}
               {activeTab === "key-personnel" && "Add Exam"}
+              {activeTab === "key-personnel1" && "Add Courses"}
               {activeTab === "focus-documents" && "Add Document"}
             </span>
           </Button>
@@ -1092,6 +1237,7 @@ React.useEffect(() => {
                           size="sm"
                           onClick={() => {
                             setSelectedCollege(college);
+                           
                             setIsEditCollegeModalOpen(true);
                           }}
                         >
@@ -1104,6 +1250,17 @@ React.useEffect(() => {
                         >
                           Delete
                         </Button>
+                        <Button
+  variant="secondary"
+  size="sm"
+  onClick={() => {
+    setSelectedCollege(college);
+    setActiveTab("key-personnel1"); // switch to courses tab
+  }}
+>
+  View Courses
+</Button>
+
                       </div>
                     </TableCell>
                   </TableRow>
@@ -1266,6 +1423,72 @@ React.useEffect(() => {
       >
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
+ <TabsContent
+  value="key-personnel1"
+  className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+>
+  <div className="overflow-hidden rounded-lg border">
+    <Table>
+      <TableHeader className="bg-muted sticky top-0 z-10">
+        <TableRow>
+          <TableHead>Course Name</TableHead>
+          <TableHead>Level</TableHead>
+          <TableHead>Duration</TableHead>
+          <TableHead>Fees</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+
+      <TableBody>
+        {coursesData.length > 0 ? (
+          coursesData.map((course) => (
+            <TableRow key={course.id}>
+              <TableCell className="font-medium">
+                {course.name}
+              </TableCell>
+              <TableCell>{course.degree}</TableCell>
+              <TableCell>{course.duration_years} Years</TableCell>
+                <TableCell>₹{course.total_fee}</TableCell>
+              <TableCell>{course.status}</TableCell>
+
+              <TableCell>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedCourse(course);
+                      setIsEditCourseModalOpen(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteCourse(course.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={6} className="h-24 text-center">
+              No courses found. Click "Add Course" to create one.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  </div>
+</TabsContent>
+
+
       <AddNewBlogModal
         isOpen={isBlogModalOpen}
         onClose={() => setIsBlogModalOpen(false)}
@@ -1299,6 +1522,21 @@ React.useEffect(() => {
         onEditExam={handleEditExam}
         exam={selectedExam}
       />
+
+      <AddNewCourseModal
+  isOpen={isCourseModalOpen}
+  onClose={() => setIsCourseModalOpen(false)}
+  onAddCourse={handleAddCourse}
+   collegeId={selectedCollege?.id || ""} 
+/>
+
+<EditCourseModal
+  isOpen={isEditCourseModalOpen}
+  onClose={() => setIsEditCourseModalOpen(false)}
+  onEditCourse={handleEditCourse}
+  course={selectedCourse}
+/>
+
     </Tabs>
   );
 }

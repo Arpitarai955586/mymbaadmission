@@ -5,14 +5,33 @@ import { Search, Filter, Calendar, Clock, Users, BookOpen, ChevronRight, Star, G
 import { siteIdentity } from '../config/site';
 import Link from 'next/link';
 import { useModal } from '../../Context/ModalContext';
+import { getActiveExams, Exam } from '../../config/exams';  
 import { useSearchParams } from 'next/navigation';
-import { examsData, Exam } from '../../config/exams';
+// import { examsData, Exam } from '../../config/exams';
 import { themeColors, colorCombos, themeClasses } from '../../config/theme';
 
 const categories = ["All", "National", "State"];
 const difficulties = ["All", "Active"];
 
 function ExamsPageContent() {
+  const [examsData, setExamsData] = useState<Exam[]>([]);
+
+  useEffect(() => {
+    try{
+      const fetchExams = async () => {
+        const response = await fetch('/api/exams');
+        if (!response.ok) {
+          throw new Error('Failed to fetch exams');
+        }
+        const data = await response.json();
+        setExamsData(data.exams);
+      }
+      fetchExams();
+    } catch (error) {
+      console.error("Error fetching exams:", error);
+
+    }
+  }, []);
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -210,7 +229,7 @@ function ExamsPageContent() {
                 </div>
 
                 {/* Website Link */}
-                <a
+                {/* <a
                   href={exam.website}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -218,7 +237,7 @@ function ExamsPageContent() {
                 >
                   {exam.website.replace('https://', '').replace('http://', '')}
                   <BookOpen size={12} />
-                </a>
+                </a> */}
               </div>
 
               {/* Card Footer - Actions */}

@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       name,
       email,
       password_hash,
-      role_id: role._id, // ✅ FIX
+      role_id: role._id, 
       is_active: true,
     });
 

@@ -147,6 +147,21 @@ interface ExamProviderProps {
 }
 
 export const ExamProvider: React.FC<ExamProviderProps> = ({ children }) => {
+  const [sampleExams, setSampleExams] = useState<Exam[]>([]); // This will hold our sample exams data
+  useEffect(() => {
+    // Initialize sample exams data here or fetch from an API
+    const fetchExamsData = async () => {
+      try {
+        const res = await fetch('/api/exams');
+        const data = await res.json();
+        setSampleExams(data.exams);
+        console.log("hullallalal",data.exams)
+      } catch(error) {
+        console.error('Failed to fetch exams:', error);
+      }
+    };
+    fetchExamsData();
+  }, []);
   const [state, setState] = useState<ExamState>({
     exams: [],
     categories: [],
@@ -168,175 +183,175 @@ export const ExamProvider: React.FC<ExamProviderProps> = ({ children }) => {
   });
 
   // Sample data - replace with actual API calls
-  const sampleExams: Exam[] = [
-    {
-      id: '1',
-      slug: 'aiims-msc-courses-answer-key-2026',
-      title: 'AIIMS MSc Courses Answer Key 2026',
-      fullName: 'All India Institute of Medical Sciences Master of Science Courses Entrance Examination',
-      category: 'Medical',
-      subcategory: 'MSc',
-      description: 'AIIMS MSc entrance exam for admission to various postgraduate science courses in AIIMS institutions across India.',
-      conductingBody: 'AIIMS New Delhi',
-      examLevel: 'National',
-      examType: 'Entrance',
-      frequency: 'Once',
-      mode: 'Online',
-      duration: 180,
-      maxMarks: 200,
-      negativeMarking: true,
-      languages: ['English', 'Hindi'],
-      officialWebsite: 'aiimsexams.ac.in',
-      applicationFee: {
-        general: 1500,
-        sc: 1200,
-        st: 1200,
-        pwd: 0,
-      },
-      eligibility: {
-        age: {
-          min: 17,
-        },
-        education: ['BSc in relevant subject', 'MBBS', 'BDS'],
-        nationality: ['Indian', 'NRI', 'Foreign'],
-        minPercentage: 60,
-      },
-      importantDates: {
-        notificationDate: '2026-02-01',
-        applicationStart: '2026-02-15',
-        applicationEnd: '2026-03-31',
-        examDate: '2026-06-13',
-        resultDate: '2026-07-15',
-        counselingStart: '2026-08-01',
-      },
-      syllabus: ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'General Knowledge'],
-      pattern: {
-        sections: [
-          { name: 'Physics', questions: 60, marks: 60, negativeMarking: -1 },
-          { name: 'Chemistry', questions: 60, marks: 60, negativeMarking: -1 },
-          { name: 'Biology', questions: 60, marks: 60, negativeMarking: -1 },
-          { name: 'General Knowledge', questions: 20, marks: 20, negativeMarking: 0 },
-        ],
-        totalQuestions: 200,
-        totalMarks: 200,
-        duration: 180,
-      },
-      preparation: {
-        tips: [
-          'Focus on NCERT textbooks for basics',
-          'Practice previous year question papers',
-          'Time management is crucial',
-          'Regular revision of important topics',
-        ],
-        recommendedBooks: [
-          'NCERT Biology Class 11 & 12',
-          'Physics for Medical Entrance by H.C. Verma',
-          'Organic Chemistry by O.P. Tandon',
-        ],
-        samplePapers: [
-          'AIIMS MSc Previous 5 Years Papers',
-          'Mock Test Series by Various Coaching Centers',
-        ],
-      },
-      colleges: [
-        'AIIMS New Delhi',
-        'AIIMS Bhopal',
-        'AIIMS Bhubaneswar',
-        'AIIMS Jodhpur',
-        'AIIMS Raipur',
-        'AIIMS Rishikesh',
-      ],
-      image: 'https://images.pexels.com/photos/5490006/pexels-photo-5490006.jpeg',
-      featured: true,
-      active: true,
-      viewCount: 2500,
-      bookmarkCount: 120,
-      createdAt: '2025-10-10T10:00:00Z',
-      updatedAt: '2025-10-10T10:00:00Z',
-    },
-    {
-      id: '2',
-      slug: 'cat-2026',
-      title: 'CAT 2026',
-      fullName: 'Common Admission Test 2026',
-      category: 'Management',
-      subcategory: 'MBA',
-      description: 'CAT is the premier national-level management entrance exam for admission to IIMs and other top B-schools in India.',
-      conductingBody: 'IIMs (Rotating)',
-      examLevel: 'National',
-      examType: 'Entrance',
-      frequency: 'Once',
-      mode: 'Online',
-      duration: 120,
-      maxMarks: 198,
-      negativeMarking: true,
-      languages: ['English'],
-      officialWebsite: 'iimcat.ac.in',
-      applicationFee: {
-        general: 2400,
-        sc: 1200,
-        st: 1200,
-        pwd: 1200,
-      },
-      eligibility: {
-        age: {},
-        education: ['Graduate in any discipline'],
-        nationality: ['Indian'],
-        minPercentage: 50,
-      },
-      importantDates: {
-        notificationDate: '2026-07-30',
-        applicationStart: '2026-08-01',
-        applicationEnd: '2026-09-15',
-        examDate: '2026-11-24',
-        resultDate: '2027-01-05',
-      },
-      syllabus: ['Quantitative Aptitude', 'Data Interpretation', 'Logical Reasoning', 'Verbal Ability'],
-      pattern: {
-        sections: [
-          { name: 'Verbal Ability & Reading Comprehension', questions: 24, marks: 72, negativeMarking: -1 },
-          { name: 'Data Interpretation & Logical Reasoning', questions: 20, marks: 60, negativeMarking: -1 },
-          { name: 'Quantitative Ability', questions: 22, marks: 66, negativeMarking: -1 },
-        ],
-        totalQuestions: 66,
-        totalMarks: 198,
-        duration: 120,
-      },
-      preparation: {
-        tips: [
-          'Strengthen your basics in mathematics',
-          'Read extensively to improve vocabulary',
-          'Practice mental calculations',
-          'Take regular mock tests',
-        ],
-        recommendedBooks: [
-          'How to Prepare for Quantitative Aptitude by Arun Sharma',
-          'Word Power Made Easy by Norman Lewis',
-          'Logical Reasoning by R.S. Aggarwal',
-        ],
-        samplePapers: [
-          'CAT Previous Year Papers',
-          'TIME Mock Test Series',
-          'Career Launcher Test Series',
-        ],
-      },
-      colleges: [
-        'IIM Ahmedabad',
-        'IIM Bangalore',
-        'IIM Calcutta',
-        'IIM Lucknow',
-        'IIM Kozhikode',
-      ],
-      image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
-      featured: true,
-      active: true,
-      viewCount: 5000,
-      bookmarkCount: 300,
-      createdAt: '2025-10-10T10:00:00Z',
-      updatedAt: '2025-10-10T10:00:00Z',
-    },
-    // Add more sample exams as needed
-  ];
+  // const sampleExams: Exam[] = [
+  //   {
+  //     id: '1',
+  //     slug: 'aiims-msc-courses-answer-key-2026',
+  //     title: 'AIIMS MSc Courses Answer Key 2026',
+  //     fullName: 'All India Institute of Medical Sciences Master of Science Courses Entrance Examination',
+  //     category: 'Medical',
+  //     subcategory: 'MSc',
+  //     description: 'AIIMS MSc entrance exam for admission to various postgraduate science courses in AIIMS institutions across India.',
+  //     conductingBody: 'AIIMS New Delhi',
+  //     examLevel: 'National',
+  //     examType: 'Entrance',
+  //     frequency: 'Once',
+  //     mode: 'Online',
+  //     duration: 180,
+  //     maxMarks: 200,
+  //     negativeMarking: true,
+  //     languages: ['English', 'Hindi'],
+  //     officialWebsite: 'aiimsexams.ac.in',
+  //     applicationFee: {
+  //       general: 1500,
+  //       sc: 1200,
+  //       st: 1200,
+  //       pwd: 0,
+  //     },
+  //     eligibility: {
+  //       age: {
+  //         min: 17,
+  //       },
+  //       education: ['BSc in relevant subject', 'MBBS', 'BDS'],
+  //       nationality: ['Indian', 'NRI', 'Foreign'],
+  //       minPercentage: 60,
+  //     },
+  //     importantDates: {
+  //       notificationDate: '2026-02-01',
+  //       applicationStart: '2026-02-15',
+  //       applicationEnd: '2026-03-31',
+  //       examDate: '2026-06-13',
+  //       resultDate: '2026-07-15',
+  //       counselingStart: '2026-08-01',
+  //     },
+  //     syllabus: ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'General Knowledge'],
+  //     pattern: {
+  //       sections: [
+  //         { name: 'Physics', questions: 60, marks: 60, negativeMarking: -1 },
+  //         { name: 'Chemistry', questions: 60, marks: 60, negativeMarking: -1 },
+  //         { name: 'Biology', questions: 60, marks: 60, negativeMarking: -1 },
+  //         { name: 'General Knowledge', questions: 20, marks: 20, negativeMarking: 0 },
+  //       ],
+  //       totalQuestions: 200,
+  //       totalMarks: 200,
+  //       duration: 180,
+  //     },
+  //     preparation: {
+  //       tips: [
+  //         'Focus on NCERT textbooks for basics',
+  //         'Practice previous year question papers',
+  //         'Time management is crucial',
+  //         'Regular revision of important topics',
+  //       ],
+  //       recommendedBooks: [
+  //         'NCERT Biology Class 11 & 12',
+  //         'Physics for Medical Entrance by H.C. Verma',
+  //         'Organic Chemistry by O.P. Tandon',
+  //       ],
+  //       samplePapers: [
+  //         'AIIMS MSc Previous 5 Years Papers',
+  //         'Mock Test Series by Various Coaching Centers',
+  //       ],
+  //     },
+  //     colleges: [
+  //       'AIIMS New Delhi',
+  //       'AIIMS Bhopal',
+  //       'AIIMS Bhubaneswar',
+  //       'AIIMS Jodhpur',
+  //       'AIIMS Raipur',
+  //       'AIIMS Rishikesh',
+  //     ],
+  //     image: 'https://images.pexels.com/photos/5490006/pexels-photo-5490006.jpeg',
+  //     featured: true,
+  //     active: true,
+  //     viewCount: 2500,
+  //     bookmarkCount: 120,
+  //     createdAt: '2025-10-10T10:00:00Z',
+  //     updatedAt: '2025-10-10T10:00:00Z',
+  //   },
+  //   {
+  //     id: '2',
+  //     slug: 'cat-2026',
+  //     title: 'CAT 2026',
+  //     fullName: 'Common Admission Test 2026',
+  //     category: 'Management',
+  //     subcategory: 'MBA',
+  //     description: 'CAT is the premier national-level management entrance exam for admission to IIMs and other top B-schools in India.',
+  //     conductingBody: 'IIMs (Rotating)',
+  //     examLevel: 'National',
+  //     examType: 'Entrance',
+  //     frequency: 'Once',
+  //     mode: 'Online',
+  //     duration: 120,
+  //     maxMarks: 198,
+  //     negativeMarking: true,
+  //     languages: ['English'],
+  //     officialWebsite: 'iimcat.ac.in',
+  //     applicationFee: {
+  //       general: 2400,
+  //       sc: 1200,
+  //       st: 1200,
+  //       pwd: 1200,
+  //     },
+  //     eligibility: {
+  //       age: {},
+  //       education: ['Graduate in any discipline'],
+  //       nationality: ['Indian'],
+  //       minPercentage: 50,
+  //     },
+  //     importantDates: {
+  //       notificationDate: '2026-07-30',
+  //       applicationStart: '2026-08-01',
+  //       applicationEnd: '2026-09-15',
+  //       examDate: '2026-11-24',
+  //       resultDate: '2027-01-05',
+  //     },
+  //     syllabus: ['Quantitative Aptitude', 'Data Interpretation', 'Logical Reasoning', 'Verbal Ability'],
+  //     pattern: {
+  //       sections: [
+  //         { name: 'Verbal Ability & Reading Comprehension', questions: 24, marks: 72, negativeMarking: -1 },
+  //         { name: 'Data Interpretation & Logical Reasoning', questions: 20, marks: 60, negativeMarking: -1 },
+  //         { name: 'Quantitative Ability', questions: 22, marks: 66, negativeMarking: -1 },
+  //       ],
+  //       totalQuestions: 66,
+  //       totalMarks: 198,
+  //       duration: 120,
+  //     },
+  //     preparation: {
+  //       tips: [
+  //         'Strengthen your basics in mathematics',
+  //         'Read extensively to improve vocabulary',
+  //         'Practice mental calculations',
+  //         'Take regular mock tests',
+  //       ],
+  //       recommendedBooks: [
+  //         'How to Prepare for Quantitative Aptitude by Arun Sharma',
+  //         'Word Power Made Easy by Norman Lewis',
+  //         'Logical Reasoning by R.S. Aggarwal',
+  //       ],
+  //       samplePapers: [
+  //         'CAT Previous Year Papers',
+  //         'TIME Mock Test Series',
+  //         'Career Launcher Test Series',
+  //       ],
+  //     },
+  //     colleges: [
+  //       'IIM Ahmedabad',
+  //       'IIM Bangalore',
+  //       'IIM Calcutta',
+  //       'IIM Lucknow',
+  //       'IIM Kozhikode',
+  //     ],
+  //     image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
+  //     featured: true,
+  //     active: true,
+  //     viewCount: 5000,
+  //     bookmarkCount: 300,
+  //     createdAt: '2025-10-10T10:00:00Z',
+  //     updatedAt: '2025-10-10T10:00:00Z',
+  //   },
+  //   // Add more sample exams as needed
+  // ];
 
   const sampleCategories: ExamCategory[] = [
     {

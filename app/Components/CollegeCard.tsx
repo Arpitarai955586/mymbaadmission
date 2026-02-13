@@ -16,12 +16,18 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
       <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer group">
         {/* College Cover Image */}
         <div className="relative h-48 overflow-hidden">
-          <Image
-            src={college.media?.cover || '/colleges/default-cover.jpg'}
-            alt={college.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+         <img
+  src={
+    college.media?.cover
+      ? college.media.cover.startsWith("http")
+        ? college.media.cover
+        : `/uploads/${college.media.cover}`
+      : "https://via.placeholder.com/300"
+  }
+  alt={college?.name || "college"}
+  className="object-cover group-hover:scale-105 transition-transform duration-500"
+/>
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           
           {/* College Logo Overlay */}
@@ -35,6 +41,18 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
                 className="object-contain"
               />
             </div> */}
+            {/* <Image
+  src={
+    college.media?.cover
+      ? `/uploads/${college.media.cover}`
+      : "/placeholder.jpg"
+  }
+  alt={college.name}
+  fill
+  className="object-cover"
+/> */}
+
+            
           </div>
         </div>
 

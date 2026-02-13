@@ -6,7 +6,7 @@ import { Search, Filter } from 'lucide-react';
 import { themeColors, colorCombos, themeClasses } from '../../config/theme';
 
 const CoursesPage = () => {
-  const [searchTerm, setSearchTerm] = React.useState('');
+ const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedDegree, setSelectedDegree] = React.useState('all');
 
   const filteredCourses = getAllCourses().filter(course => {
