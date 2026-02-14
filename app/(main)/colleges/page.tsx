@@ -12,12 +12,30 @@ interface college {
     name: string;
     location: {
         city: string;
+        state?: string;
     };
     type: string;
     slug: string;
-    short_name: string;
-    approved_by: string;
+    short_name?: string;
+    approved_by: string[] | string;
     exams_accepted: string[];
+    highlights?: string[];
+    courses_offered?: string[];
+    status: string;
+    content?: {
+        overview?: string;
+        admission?: string;
+    };
+    meta?: {
+        seo_title?: string;
+        last_updated?: string;
+    };
+    established_year?: number;
+    ranking?: string;
+   
+    media?: {
+        cover?: string;
+    };
 }
 
 const CollegesPage = () => {
@@ -25,7 +43,7 @@ const CollegesPage = () => {
     useEffect(()=>{
         try{
             const fetchColleges = async() =>{
-                const res = await fetch("api/colleges");
+                const res = await fetch("/api/colleges");
                 const data = await res.json();
                 setCollegesData(data.colleges);
             }

@@ -470,6 +470,7 @@ interface CollegeData {
   establishedYear: number;
   website: string;
   description: string;
+  media?: { cover?: string };
 }
 
 interface ExamData {
@@ -610,18 +611,18 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         const data = await res.json();
         if (data.success) {
           const colleges = data.colleges.map((college: any) => ({
-            id: college._id, // ✅ real DB id
+            id: college._id,
             name: college.name,
             type: college.type,
             location: {
               city: college.location?.city,
               state: college.location?.state,
             },
-
             ranking: college.ranking || "TBD",
             establishedYear: college.established_year || 0,
             website: college.website || "TBD",
-            description: college.overview || "TBD",
+            description: college.content?.overview || college.overview || "TBD",
+            media: college.media ? { cover: college.media.cover } : undefined,
           }));
           setCollegesData(colleges);
         }
@@ -633,14 +634,15 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
   }, []); // ❌ remove initialCollegesData dependency
   const handleAddCollege = (collegeData: any) => {
     const newCollege: CollegeData = {
-      id: collegeData.id || collegesData.length + 1,
+      id: collegeData._id || collegeData.id || String(collegesData.length + 1),
       name: collegeData.name,
       type: collegeData.type,
       location: collegeData.location,
       ranking: collegeData.ranking,
-      establishedYear: collegeData.establishedYear,
+      establishedYear: collegeData.established_year ?? collegeData.establishedYear,
       website: collegeData.website,
-      description: collegeData.description,
+      description: collegeData.content?.overview ?? collegeData.description,
+      media: collegeData.media ? { cover: collegeData.media.cover } : undefined,
     };
     setCollegesData((prev) => [...prev, newCollege]);
   };
@@ -804,6 +806,7 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         ranking: college.ranking,
         established_year: Number(college.establishedYear),
         website: college.website,
+        media: college.media ? { cover: (college.media.cover || "").trim() || undefined } : undefined,
         content: {
           overview: college.description,
         },
@@ -833,6 +836,7 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         establishedYear: data.college.established_year,
         website: data.college.website,
         description: data.college.content?.overview || "",
+        media: data.college.media ? { cover: data.college.media.cover } : undefined,
       };
 
       setCollegesData((prev) =>

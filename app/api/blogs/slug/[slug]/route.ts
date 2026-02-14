@@ -1,27 +1,31 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import Content from "@/models/Content";
+import BlogPost from "@/models/Blog";
 
 type Params = {
   params: Promise<{ slug: string }>;
 };
 
 export async function GET(req: Request, { params }: Params) {
-  await connectDB();
-  const { slug } = await params;
+  try {
+    await connectDB();
+    const { slug } = await params;
 
-  const blog = await Content.findOne({
-    slug,
-    type: "blog",
-    is_published: true,
-  }).populate("created_by", "name");
+    const blog = await BlogPost.findOne({
+      slug,
+      is_published: true,
+    }).select("-__v");
 
-  if (!blog) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
+    if (!blog) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      blog,
+    });
+  } catch (error) {
+    console.error("GET blog by slug error:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
-
-  return NextResponse.json({
-    success: true,
-    blog,
-  });
 }

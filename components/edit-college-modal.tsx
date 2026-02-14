@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select"
 
 export interface CollegeData {
-  id: number
+  id: number | string
   name: string
   type: string
   location: {
@@ -32,6 +32,7 @@ export interface CollegeData {
   establishedYear: number
   website: string
   description: string
+  media?: { cover?: string }
 }
 
 interface EditCollegeModalProps {
@@ -48,7 +49,7 @@ export function EditCollegeModal({
   college,
 }: EditCollegeModalProps) {
   const [formData, setFormData] = useState<CollegeData>({
-  id: "", // ✅ NOT 0
+  id: "",
   name: "",
   type: "",
   location: { city: "", state: "" },
@@ -56,6 +57,7 @@ export function EditCollegeModal({
   establishedYear: 0,
   website: "",
   description: "",
+  media: { cover: "" },
 })
 
 
@@ -80,6 +82,9 @@ export function EditCollegeModal({
     location: {
       city: formData.location.city,
       state: formData.location.state,
+    },
+    media: {
+      cover: (formData.media?.cover ?? "").trim() || undefined,
     },
     ranking: formData.ranking,
     established_year: Number(formData.establishedYear),
@@ -202,6 +207,22 @@ export function EditCollegeModal({
                   setFormData({ ...formData, website: e.target.value })
                 }
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Cover Image (URL)</Label>
+              <Input
+                type="url"
+                placeholder="https://example.com/college-cover.jpg"
+                value={formData.media?.cover ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    media: { ...formData.media, cover: e.target.value },
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground">Optional. Saves in database and shows on colleges list & detail.</p>
             </div>
           </div>
 

@@ -16,7 +16,7 @@ export async function GET(
 
     const college = await College.findOne({
       slug,
-      is_active: true,
+      status: "active",
     })
 
     if (!college) {

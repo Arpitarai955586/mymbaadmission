@@ -1,16 +1,17 @@
 "use client";
-import React, { useCallback, useEffect, useState } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
-import { Calendar, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { Calendar, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface Blog {
   _id: string;
   title: string;
   slug: string;
   body: string;
-  type: string;
-  created_by: string;
+  type?: string;
+  created_by?: string;
   is_published: boolean;
   created_at: string;
   updated_at: string;
@@ -18,6 +19,9 @@ interface Blog {
   excerpt?: string;
   publishedDate?: string;
   views?: number;
+  featured_image?: string;
+  category?: string;
+  readTime?: string;
 }
 
 // const blogPosts: Blog[] = [
@@ -29,35 +33,41 @@ interface Blog {
 // ];
 
 const LatestBlogs = () => {
-  const [blogPosts ,setBlogPosts] = useState<Blog[]>([]);
+  const [blogPosts, setBlogPosts] = useState<Blog[]>([]);
 
   // 1. Initialize Embla for Blogs
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: 'start', skipSnaps: false },
-    [Autoplay({ delay: 5000, stopOnInteraction: false })]
+    { loop: true, align: "start", skipSnaps: false },
+    [Autoplay({ delay: 5000, stopOnInteraction: false })],
   );
-  
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-useEffect(() => {
-  const fetchBlogs = async () => {
-    try {
-      const res = await fetch("/api/blogs") // 👈 also fixed (see Issue 2)
-      const data = await res.json()
 
-      if (data.success && Array.isArray(data.blogs)) {
-        setBlogPosts(data.blogs)
-      } else {
-        setBlogPosts([])
+  const scrollPrev = useCallback(
+    () => emblaApi && emblaApi.scrollPrev(),
+    [emblaApi],
+  );
+  const scrollNext = useCallback(
+    () => emblaApi && emblaApi.scrollNext(),
+    [emblaApi],
+  );
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs"); // 👈 also fixed (see Issue 2)
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.blogs)) {
+          setBlogPosts(data.blogs);
+        } else {
+          setBlogPosts([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch blogs", err);
+        setBlogPosts([]);
       }
-    } catch (err) {
-      console.error("Failed to fetch blogs", err)
-      setBlogPosts([])
-    }
-  }
+    };
 
-  fetchBlogs()
-}, [])
+    fetchBlogs();
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-12 bg-white">
@@ -68,7 +78,6 @@ useEffect(() => {
           View All
         </button>
       </div>
-
 
       {/* Slider Container */}
       <div className="relative group">
@@ -96,8 +105,16 @@ useEffect(() => {
               >
                 <div className="h-full bg-white rounded-2xl overflow-hidden border border-[#922B21]/10 shadow-sm hover:shadow-md transition-all flex flex-col">
                   {/* Image Header */}
-                  <div className="relative h-44 w-full overflow-hidden">
-                    <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
+                  <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300">
+                    <img
+                      src={
+                        blog.featured_image ||
+                        blog.image ||
+                        "https://via.placeholder.com/400x300?text=No+Image"
+                      }
+                      alt={blog.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
                     <div className="absolute bottom-3 right-3 bg-[#922B21] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md">
                       BLOG
                     </div>
@@ -117,7 +134,9 @@ useEffect(() => {
                       <div className="bg-[#922B21] p-1 rounded">
                         <Calendar className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-[11px] font-semibold">{new Date(blog.created_at).toLocaleDateString()}</span>
+                      <span className="text-[11px] font-semibold">
+                        {new Date(blog.created_at).toLocaleDateString()}
+                      </span>
                     </div>
 
                     {/* Footer Actions */}
@@ -126,9 +145,11 @@ useEffect(() => {
                         <Eye className="w-4 h-4" />
                         <span className="text-xs font-bold">{blog.views}</span>
                       </div> */}
-                      <button className="bg-[#922B21] hover:bg-[#7A2318] text-white text-[10px] font-bold py-2 px-4 rounded-full flex items-center gap-1 transition-colors">
-                        Read More <span>»</span>
-                      </button>
+                      <Link href={`/blogs/${blog.slug}`}>
+                        <button className="bg-[#922B21] hover:bg-[#7A2318] text-white text-[10px] font-bold py-2 px-4 rounded-full flex items-center gap-1 transition-colors">
+                          Read More <span>»</span>
+                        </button>
+                      </Link>
                     </div>
                   </div>
                 </div>

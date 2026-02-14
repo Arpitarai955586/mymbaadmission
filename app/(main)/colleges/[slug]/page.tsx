@@ -20,6 +20,7 @@ import { useParams } from "next/navigation";
 import { useModal } from '../../../Context/ModalContext';
 import { themeColors, colorCombos, themeClasses } from '../../../config/theme';
 import { getCollegeBySlug, College } from '../../../config/colleges';
+import { getCollegeCoverUrl } from '@/lib/utils';
 
 export default function CollegeDynamicPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -28,13 +29,35 @@ export default function CollegeDynamicPage() {
   const { openModal } = useModal();
 
   useEffect(() => {
-    // Use dummy data instead of API call
-    const fetchCollege = () => {
+    const fetchCollege = async () => {
       try {
-        const found = getCollegeBySlug(slug || '');
+        const res = await fetch(`/api/colleges/slug/${slug}`);
+        const data = await res.json();
+        if (data.success && data.college) {
+          const c = data.college;
+          setCollege({
+            college_id: c.college_id,
+            slug: c.slug,
+            name: c.name,
+            short_name: c.short_name || c.name,
+            type: c.type || "Private",
+            location: c.location || { city: "", state: "" },
+            approved_by: Array.isArray(c.approved_by) ? c.approved_by : [],
+            exams_accepted: Array.isArray(c.exams_accepted) ? c.exams_accepted : [],
+            courses_offered: Array.isArray(c.courses_offered) ? c.courses_offered : [],
+            highlights: Array.isArray(c.highlights) ? c.highlights : [],
+            status: c.status || "active",
+            media: c.media ? { cover: c.media.cover } : undefined,
+            content: c.content,
+          });
+          return;
+        }
+        const found = getCollegeBySlug(slug || "");
         setCollege(found || null);
       } catch (err) {
         console.error("Failed to fetch college", err);
+        const found = getCollegeBySlug(slug || "");
+        setCollege(found || null);
       } finally {
         setLoading(false);
       }
@@ -176,7 +199,7 @@ export default function CollegeDynamicPage() {
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
         <div className="rounded-2xl overflow-hidden shadow-2xl">
           <img
-            src={college.media?.cover || '/colleges/default-cover.jpg'}
+            src={college.media?.cover ? getCollegeCoverUrl(college.media.cover) : "/colleges/default-cover.jpg"}
             alt={college.name}
             className="w-full h-64 object-cover"
           />

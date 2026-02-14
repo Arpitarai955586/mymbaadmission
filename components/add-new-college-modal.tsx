@@ -31,6 +31,7 @@ export interface CollegeData {
   ranking: string
   establishedYear: string
   website: string
+  coverImageUrl?: string
 }
 
 interface AddNewCollegeModalProps {
@@ -48,6 +49,7 @@ export function AddNewCollegeModal({ isOpen, onClose, onAddCollege }: AddNewColl
     ranking: "",
     establishedYear: "",
     website: "",
+    coverImageUrl: "",
   })
 
 const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +88,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     location: {
       city,
       state,
+    },
+    media: {
+      cover: (formData.coverImageUrl || "").trim() || undefined,
     },
     ranking: formData.ranking,
     established_year: Number(formData.establishedYear),
@@ -216,6 +221,18 @@ const handleInputChange = (key: string, value: string) => {
                 value={formData.website}
                 onChange={(e) => handleInputChange("website", e.target.value)}
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="coverImageUrl">Cover Image (URL)</Label>
+              <Input
+                id="coverImageUrl"
+                type="url"
+                placeholder="https://example.com/college-cover.jpg"
+                value={formData.coverImageUrl || ""}
+                onChange={(e) => handleInputChange("coverImageUrl", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">Optional. Full image URL so the college image saves in database and shows on site.</p>
             </div>
           </div>
           

@@ -38,6 +38,9 @@ export async function POST(req: Request) {
     let city = ""
     let state = ""
     let fileName = ""
+    let ranking: string | undefined
+    let established_year: number | undefined
+    let contentOverview: string | undefined
 
     /* ===============================
        HANDLE FORM DATA
@@ -74,14 +77,14 @@ export async function POST(req: Request) {
     =============================== */
     else if (contentType.includes("application/json")) {
       const body = await req.json()
-       college_id = body.college_id
-            name = body.name
-
-city = body.location?.city
-state = body.location?.state
-
-fileName = body.media?.cover || ""
-
+      college_id = body.college_id
+      name = body.name
+      city = body.location?.city
+      state = body.location?.state
+      fileName = (typeof body.media?.cover === "string" ? body.media.cover.trim() : "") || ""
+      ranking = body.ranking != null ? String(body.ranking).trim() : undefined
+      established_year = body.established_year != null ? Number(body.established_year) : undefined
+      contentOverview = body.content?.overview != null ? String(body.content.overview).trim() : undefined
     }
 
     else {
@@ -118,14 +121,19 @@ fileName = body.media?.cover || ""
       )
     }
 
-    const college = await College.create({
+    const createPayload: Record<string, unknown> = {
       college_id,
       slug,
       name,
       location: { city, state },
-      media: { cover: fileName },
+      media: { cover: fileName || "" },
       status: "active",
-    })
+    }
+    if (ranking !== undefined && ranking !== "") createPayload.ranking = ranking
+    if (established_year !== undefined && !Number.isNaN(established_year)) createPayload.established_year = established_year
+    if (contentOverview !== undefined && contentOverview !== "") createPayload.content = { overview: contentOverview }
+
+    const college = await College.create(createPayload)
 
     return NextResponse.json(
       { success: true, college },
@@ -153,10 +161,34 @@ export async function GET(req: Request) {
 
     const colleges = await College.find(query).sort({ createdAt: -1 })
 
+    // Import models for counting
+    const Course = require("@/models/Course").default
+    const CollegeCourse = require("@/models/CollegeCourse").default
+    const Exam = require("@/models/Exam").default
+    const CollegeExam = require("@/models/CollegeExam").default
+
+    // Add counts to each college
+    const collegesWithCounts = await Promise.all(
+      colleges.map(async (college: any) => {
+        const coursesCount = await CollegeCourse.countDocuments({
+          college_id: college._id,
+        })
+        const examsCount = await CollegeExam.countDocuments({
+          college_id: college._id,
+        })
+
+        return {
+          ...college.toObject(),
+          coursesCount,
+          examsCount,
+        }
+      })
+    )
+
     return NextResponse.json({
       success: true,
       count: colleges.length,
-      colleges,
+      colleges: collegesWithCounts,
     })
   } catch (error: any) {
     console.error("GET /api/colleges ERROR:", error)

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -11,43 +11,47 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface BlogData {
-  _id?: string
-  title: string
-  slug?: string
-  body: string
-  type: string
-  created_by?: string
-  is_published?: boolean
-  created_at?: string
-  updated_at?: string
-  image?: string
-  category?: string
-  imageUrl?: string
-  description?: string
-  readTime?: string
-  publishedDate?: string
-  author?: string
-  status?: string
+  _id?: string;
+  title: string;
+  slug?: string;
+  body: string;
+  type: string;
+  created_by?: string;
+  is_published?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  image?: string;
+  category?: string;
+  imageUrl?: string;
+  description?: string;
+  readTime?: string;
+  publishedDate?: string;
+  author?: string;
+  status?: string;
 }
 
 interface AddNewBlogModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAddBlog: (blog: BlogData) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onAddBlog: (blog: BlogData) => void;
 }
 
-export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalProps) {
+export function AddNewBlogModal({
+  isOpen,
+  onClose,
+  onAddBlog,
+}: AddNewBlogModalProps) {
   const [formData, setFormData] = useState<BlogData>({
     title: "",
     body: "",
@@ -59,41 +63,45 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
     publishedDate: "",
     author: "",
     status: "",
-  })
+  });
 
   const handleInputChange = (field: keyof BlogData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert("You are not logged in")
-      return
+      alert("You are not logged in");
+      return;
     }
 
     if (!formData.title || !formData.body) {
-      alert("Title and body are required")
-      return
+      alert("Title and body are required");
+      return;
     }
 
     try {
       // Prepare payload
       const payload = {
         title: formData.title,
-        slug: formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+        slug:
+          formData.slug ||
+          formData.title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, ""),
         body: formData.body,
-        type: formData.type || "blog",
+        excerpt: formData.description || formData.body.substring(0, 150),
         category: formData.category || "General",
-        image: formData.imageUrl || null,
-        description: formData.description || "",
-        readTime: formData.readTime || "",
-        publishedDate: formData.publishedDate || new Date().toISOString(),
-        author: formData.author || "Admin",
-        status: formData.status || "draft",
-      }
+        featured_image: formData.imageUrl || null,
+        readTime: formData.readTime || "5 min read",
+        tags: [],
+        is_published: true,
+        is_trending: false,
+      };
 
       const res = await fetch("/api/blogs", {
         method: "POST",
@@ -102,16 +110,16 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.message || "Failed to create blog")
+        throw new Error(data?.message || "Failed to create blog");
       }
 
       // ✅ Update UI with new blog
-      onAddBlog(data.blog)
+      onAddBlog(data.blog);
 
       // ✅ Reset form
       setFormData({
@@ -125,14 +133,14 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
         publishedDate: "",
         author: "",
         status: "",
-      })
+      });
 
-      onClose()
+      onClose();
     } catch (err: any) {
-      console.error("❌ Blog create error:", err)
-      alert(err.message)
+      console.error("❌ Blog create error:", err);
+      alert(err.message);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -151,7 +159,7 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
               id="title"
               placeholder="Enter blog title"
               value={formData.title}
-              onChange={e => handleInputChange("title", e.target.value)}
+              onChange={(e) => handleInputChange("title", e.target.value)}
               required
             />
           </div>
@@ -160,7 +168,7 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
             <Label htmlFor="category">Category</Label>
             <Select
               value={formData.category}
-              onValueChange={value => handleInputChange("category", value)}
+              onValueChange={(value) => handleInputChange("category", value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
@@ -176,14 +184,27 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
+            <Label htmlFor="imageUrl">Featured Image URL</Label>
             <Input
               id="imageUrl"
               type="url"
               placeholder="https://example.com/image.jpg"
               value={formData.imageUrl}
-              onChange={e => handleInputChange("imageUrl", e.target.value)}
+              onChange={(e) => handleInputChange("imageUrl", e.target.value)}
             />
+            {formData.imageUrl && (
+              <div className="mt-2">
+                <img
+                  src={formData.imageUrl}
+                  alt="Preview"
+                  className="h-32 w-32 object-cover rounded-lg"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "https://via.placeholder.com/200?text=Image+Error";
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           <div className="grid gap-2">
@@ -192,7 +213,7 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
               id="description"
               placeholder="Enter blog content..."
               value={formData.body}
-              onChange={e => handleInputChange("body", e.target.value)}
+              onChange={(e) => handleInputChange("body", e.target.value)}
               rows={4}
               required
             />
@@ -205,7 +226,7 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
                 id="readTime"
                 placeholder="e.g., 5 min read"
                 value={formData.readTime}
-                onChange={e => handleInputChange("readTime", e.target.value)}
+                onChange={(e) => handleInputChange("readTime", e.target.value)}
               />
             </div>
 
@@ -215,7 +236,9 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
                 id="publishDate"
                 type="date"
                 value={formData.publishedDate}
-                onChange={e => handleInputChange("publishedDate", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("publishedDate", e.target.value)
+                }
               />
             </div>
           </div>
@@ -229,5 +252,5 @@ export function AddNewBlogModal({ isOpen, onClose, onAddBlog }: AddNewBlogModalP
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
