@@ -12,17 +12,17 @@ export interface College {
     pincode?: string;
     google_map_link?: string;
   };
-  approved_by: string[];
-  exams_accepted: string[];
-  courses_offered: string[];
-  highlights: string[];
+  approved_by?: string[] | string;
+  exams_accepted?: string[];
+  courses_offered?: string[];
+  highlights?: string[];
   status: string;
   media?: {
-    cover: string;
+    cover?: string;
   };
   content?: {
-    overview: string;
-    admission: string;
+    overview?: string;
+    admission?: string;
   };
   fees?: {
     annual_fee?: number;
@@ -30,8 +30,8 @@ export interface College {
     fee_structure?: string;
   };
   meta?: {
-    seo_title: string;
-    last_updated: string;
+    seo_title?: string;
+    last_updated?: string;
   };
 }
 
@@ -514,7 +514,7 @@ export const getUniqueCities = (): string[] => {
 
 // Helper function to get unique states
 export const getUniqueStates = (): string[] => {
-  const states = collegesData.map(college => college.location.state);
+  const states = collegesData.map(college => college.location.state).filter((state): state is string => state !== undefined);
   return Array.from(new Set(states)).sort();
 };
 

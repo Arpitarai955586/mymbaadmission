@@ -106,9 +106,8 @@ import { AddNewExamModal } from "@/components/add-new-exam-modal";
 import { EditBlogModal } from "@/components/edit-blog-modal";
 import { EditCollegeModal } from "@/components/edit-college-modal";
 import { EditExamModal } from "@/components/edit-exam-modal";
-import {AddNewCourseModal} from "@/components/add-new-course-modal"
-import {EditCourseModal } from "@/components/edit-course-modal";
-
+import { AddNewCourseModal } from "@/components/add-new-course-modal";
+import { EditCourseModal } from "@/components/edit-course-modal";
 
 export const schema = z.object({
   id: z.string(),
@@ -456,10 +455,12 @@ interface BlogData {
   imageUrl: string;
   description: string;
   readTime: string;
+  slug?: string;
+  body?: string;
 }
 
 interface CollegeData {
-  id: string;
+  id: number | string;
   name: string;
   type: string;
   location: {
@@ -471,10 +472,16 @@ interface CollegeData {
   website: string;
   description: string;
   media?: { cover?: string };
+  fees?: {
+    annual_fee?: number;
+    currency?: string;
+    fee_structure?: string;
+  };
 }
 
 interface ExamData {
-  id: number;
+  _id?: string;
+  id?: string | number;
   name: string;
   category: string;
   date: string;
@@ -482,17 +489,24 @@ interface ExamData {
   status: string;
   description: string;
   eligibility: string;
+  is_active?: boolean;
 }
 interface CourseData {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
-  slug: string;
-  duration_years: number;
-  degree: string;
-  total_fee: number;
+  slug?: string;
+  category?: string;
+  duration?: string;
+  duration_years?: number;
+  level?: string;
+  degree?: string;
+  fees?: string;
+  total_fee?: number;
   status: string;
+  description?: string;
+  eligibility?: string;
 }
-
 
 export function DataTable({
   data: initialData,
@@ -536,11 +550,16 @@ export function DataTable({
     React.useState<CollegeData | null>(null);
   const [selectedExam, setSelectedExam] = React.useState<ExamData | null>(null);
   const sortableId = React.useId();
-const [initialCoursesData, setInitialCoursesData] = React.useState<CourseData[]>([]);
-const [coursesData, setCoursesData] = React.useState(initialCoursesData);
-const [isCourseModalOpen, setIsCourseModalOpen] = React.useState(false);
-const [isEditCourseModalOpen, setIsEditCourseModalOpen] = React.useState(false);
-const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(null);
+  const [initialCoursesData, setInitialCoursesData] = React.useState<
+    CourseData[]
+  >([]);
+  const [coursesData, setCoursesData] = React.useState(initialCoursesData);
+  const [isCourseModalOpen, setIsCourseModalOpen] = React.useState(false);
+  const [isEditCourseModalOpen, setIsEditCourseModalOpen] =
+    React.useState(false);
+  const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(
+    null,
+  );
 
   React.useEffect(() => {
     const fetchBlogs = async () => {
@@ -587,22 +606,18 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
     setBlogsData((prev) => [newBlog, ...prev]);
   };
   const handleAddCourse = (course: any) => {
-  const newCourse: CourseData = {
-    id: course._id,
-    name: course.name,
-    slug: course.slug,
-    duration_years: course.duration_years,
-    degree: course.degree,
-    total_fee: course.default_fees?.total_fee || 0,
-    status: course.status,
+    const newCourse: CourseData = {
+      id: course._id,
+      name: course.name,
+      slug: course.slug,
+      duration_years: course.duration_years,
+      degree: course.degree,
+      total_fee: course.default_fees?.total_fee || 0,
+      status: course.status,
+    };
+
+    setCoursesData((prev) => [newCourse, ...prev]);
   };
-
-  setCoursesData((prev) => [newCourse, ...prev]);
-};
-
-
-
-
 
   React.useEffect(() => {
     const fetchColleges = async () => {
@@ -623,8 +638,6 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
             website: college.website || "TBD",
             description: college.content?.overview || college.overview || "TBD",
             media: college.media ? { cover: college.media.cover } : undefined,
-            // include fees so edit modal receives current values
-            fees: college.fees || undefined,
           }));
           setCollegesData(colleges);
         }
@@ -641,14 +654,14 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
       type: collegeData.type,
       location: collegeData.location,
       ranking: collegeData.ranking,
-      establishedYear: collegeData.established_year ?? collegeData.establishedYear,
+      establishedYear:
+        collegeData.established_year ?? collegeData.establishedYear,
       website: collegeData.website,
       description: collegeData.content?.overview ?? collegeData.description,
       media: collegeData.media ? { cover: collegeData.media.cover } : undefined,
     };
     setCollegesData((prev) => [...prev, newCollege]);
   };
-  
 
   React.useEffect(() => {
     const fetchExams = async () => {
@@ -684,38 +697,36 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
   }, []);
 
   React.useEffect(() => {
-  const fetchCourses = async () => {
-    try {
-      const res = await fetch("/api/courses?page=1&limit=100");
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch("/api/courses?page=1&limit=100");
 
-      if (!res.ok) throw new Error("Failed to fetch courses");
+        if (!res.ok) throw new Error("Failed to fetch courses");
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.success) {
-       const courses = data.courses.map((course: any) => ({
-  id: course._id,
-  name: course.name,
-  slug: course.slug,
-  duration_years: course.duration_years,
-  degree: course.degree,
-  total_fee: course.default_fees?.total_fee || 0,
-  status: course.status,
-}));
+        if (data.success) {
+          const courses = data.courses.map((course: any) => ({
+            id: course._id,
+            name: course.name,
+            slug: course.slug,
+            duration_years: course.duration_years,
+            degree: course.degree,
+            total_fee: course.default_fees?.total_fee || 0,
+            status: course.status,
+          }));
 
-
-        setCoursesData(courses);
+          setCoursesData(courses);
+        }
+      } catch (error) {
+        console.error("ERROR FETCHING COURSES:", error);
       }
-    } catch (error) {
-      console.error("ERROR FETCHING COURSES:", error);
-    }
-  };
+    };
 
-  fetchCourses();
-}, []);
+    fetchCourses();
+  }, []);
 
-
-  const handleAddExam = (examData: ExamData) => {
+  const handleAddExam = async (examData: ExamData) => {
     const newExam = {
       id: examsData.length + 1,
       name: examData.name,
@@ -793,7 +804,7 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
     }
   };
 
-  const handleEditCollege = async (college: CollegeData) => {
+  const handleEditCollege = async (college: CollegeData): Promise<void> => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("You are not logged in");
@@ -808,20 +819,12 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         ranking: college.ranking,
         established_year: Number(college.establishedYear),
         website: college.website,
-        media: college.media ? { cover: (college.media.cover || "").trim() || undefined } : undefined,
+        media: college.media
+          ? { cover: (college.media.cover || "").trim() || undefined }
+          : undefined,
         content: {
           overview: college.description,
         },
-        // include fees if provided to avoid accidentally clearing them
-        fees: college.fees
-          ? {
-              annual_fee: college.fees.annual_fee
-                ? Number(college.fees.annual_fee)
-                : undefined,
-              currency: college.fees.currency || "INR",
-              fee_structure: college.fees.fee_structure || undefined,
-            }
-          : undefined,
       };
 
       const res = await fetch(`/api/colleges/${college.id}`, {
@@ -848,8 +851,9 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         establishedYear: data.college.established_year,
         website: data.college.website,
         description: data.college.content?.overview || "",
-        media: data.college.media ? { cover: data.college.media.cover } : undefined,
-        fees: data.college.fees || undefined,
+        media: data.college.media
+          ? { cover: data.college.media.cover }
+          : undefined,
       };
 
       setCollegesData((prev) =>
@@ -940,7 +944,7 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
     }
   };
 
-  const handleDeleteCollege = async (id: string) => {
+  const handleDeleteCollege = async (id: string | number) => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("You are not logged in");
@@ -975,102 +979,102 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
     }
   };
 
-  const handleDeleteExam = async (id: string) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("You are not logged in");
-    return;
-  }
-
-  const confirmDelete = confirm(
-    "Are you sure you want to delete this exam?"
-  );
-  if (!confirmDelete) return;
-
-  try {
-    const res = await fetch(`/api/exams/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to delete exam");
+  const handleDeleteExam = async (id: string | number) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
     }
 
-    setExamsData((prev) => prev.filter((e) => e.id !== id));
-  } catch (err: any) {
-    console.error("❌ Failed to delete exam:", err);
-    alert(err.message);
-  }
-};
+    const confirmDelete = confirm("Are you sure you want to delete this exam?");
+    if (!confirmDelete) return;
 
-  const handleEditCourse = async (course: CourseData) => {
-  const token = localStorage.getItem("token");
-  if (!token) return alert("You are not logged in");
+    try {
+      const res = await fetch(`/api/exams/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  try {
-    const payload = {
-      name: course.name,
-      slug: course.slug,
-      duration_years: course.duration_years,
-      degree: course.degree,
-      default_fees: {
-        currency: "INR",
-        total_fee: course.total_fee,
-      },
-      status: course.status,
-    };
+      const data = await res.json();
 
-    const res = await fetch(`/api/courses/${course.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to delete exam");
+      }
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data?.message);
+      setExamsData((prev) => prev.filter((e) => e.id !== id || e._id !== id));
+    } catch (err: any) {
+      console.error("❌ Failed to delete exam:", err);
+      alert(err.message);
+    }
+  };
 
-    setCoursesData((prev) =>
-      prev.map((c) => (c.id === course.id ? course : c))
-    );
-  } catch (err: any) {
-    alert(err.message);
-  }
-};
+  const handleEditCourse = async (course: CourseData): Promise<void> => {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("You are not logged in");
 
-const handleDeleteCourse = async (id: string) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("You are not logged in");
-    return;
-  }
+    try {
+      const courseId = course._id || course.id;
+      const payload = {
+        name: course.name,
+        slug: course.slug || "",
+        duration_years: course.duration_years || 0,
+        degree: course.degree || "",
+        default_fees: {
+          currency: "INR",
+          total_fee: course.total_fee || 0,
+        },
+        status: course.status,
+      };
 
-  if (!confirm("Are you sure you want to delete this course?")) return;
+      const res = await fetch(`/api/courses/${courseId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-  try {
-    const res = await fetch(`/api/courses/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message);
 
-    if (!res.ok) throw new Error("Failed to delete course");
+      setCoursesData((prev) =>
+        prev.map((c) =>
+          c.id === course.id || c._id === course._id ? course : c,
+        ),
+      );
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
 
-    setCoursesData((prev) => prev.filter((c) => c.id !== id));
-  } catch (err: any) {
-    console.error("❌ Failed to delete course:", err);
-    alert(err.message);
-  }
-};
+  const handleDeleteCourse = async (id: string | undefined) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
+    }
 
+    if (!confirm("Are you sure you want to delete this course?")) return;
+
+    try {
+      const res = await fetch(`/api/courses/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to delete course");
+
+      setCoursesData((prev) => prev.filter((c) => c.id !== id));
+    } catch (err: any) {
+      console.error("❌ Failed to delete course:", err);
+      alert(err.message);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -1143,9 +1147,6 @@ const handleDeleteCourse = async (id: string) => {
             <SelectItem value="key-personnel">Key Personnel</SelectItem>
             <SelectItem value="focus-documents">Focus Documents</SelectItem>
           </SelectContent>
-
-
-
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="outline">College</TabsTrigger>
@@ -1196,13 +1197,12 @@ const handleDeleteCourse = async (id: string) => {
               if (activeTab === "outline") setIsCollegeModalOpen(true);
               if (activeTab === "key-personnel") setIsExamModalOpen(true);
               if (activeTab === "key-personnel1") {
-  if (!selectedCollege) {
-    alert("Please select a college first");
-    return;
-  }
-  setIsCourseModalOpen(true);
-}
-
+                if (!selectedCollege) {
+                  alert("Please select a college first");
+                  return;
+                }
+                setIsCourseModalOpen(true);
+              }
             }}
           >
             <IconPlus />
@@ -1254,7 +1254,7 @@ const handleDeleteCourse = async (id: string) => {
                           size="sm"
                           onClick={() => {
                             setSelectedCollege(college);
-                           
+
                             setIsEditCollegeModalOpen(true);
                           }}
                         >
@@ -1268,16 +1268,15 @@ const handleDeleteCourse = async (id: string) => {
                           Delete
                         </Button>
                         <Button
-  variant="secondary"
-  size="sm"
-  onClick={() => {
-    setSelectedCollege(college);
-    setActiveTab("key-personnel1"); // switch to courses tab
-  }}
->
-  View Courses
-</Button>
-
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCollege(college);
+                            setActiveTab("key-personnel1"); // switch to courses tab
+                          }}
+                        >
+                          View Courses
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -1415,7 +1414,9 @@ const handleDeleteCourse = async (id: string) => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDeleteExam(exam.id)}
+                          onClick={() =>
+                            handleDeleteExam((exam.id ?? exam._id)!)
+                          }
                         >
                           Delete
                         </Button>
@@ -1440,71 +1441,70 @@ const handleDeleteCourse = async (id: string) => {
       >
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
- <TabsContent
-  value="key-personnel1"
-  className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
->
-  <div className="overflow-hidden rounded-lg border">
-    <Table>
-      <TableHeader className="bg-muted sticky top-0 z-10">
-        <TableRow>
-          <TableHead>Course Name</TableHead>
-          <TableHead>Level</TableHead>
-          <TableHead>Duration</TableHead>
-          <TableHead>Fees</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
+      <TabsContent
+        value="key-personnel1"
+        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+      >
+        <div className="overflow-hidden rounded-lg border">
+          <Table>
+            <TableHeader className="bg-muted sticky top-0 z-10">
+              <TableRow>
+                <TableHead>Course Name</TableHead>
+                <TableHead>Level</TableHead>
+                <TableHead>Duration</TableHead>
+                <TableHead>Fees</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-      <TableBody>
-        {coursesData.length > 0 ? (
-          coursesData.map((course) => (
-            <TableRow key={course.id}>
-              <TableCell className="font-medium">
-                {course.name}
-              </TableCell>
-              <TableCell>{course.degree}</TableCell>
-              <TableCell>{course.duration_years} Years</TableCell>
-                <TableCell>₹{course.total_fee}</TableCell>
-              <TableCell>{course.status}</TableCell>
+            <TableBody>
+              {coursesData.length > 0 ? (
+                coursesData.map((course) => (
+                  <TableRow key={course.id}>
+                    <TableCell className="font-medium">{course.name}</TableCell>
+                    <TableCell>{course.degree}</TableCell>
+                    <TableCell>{course.duration_years} Years</TableCell>
+                    <TableCell>₹{course.total_fee}</TableCell>
+                    <TableCell>{course.status}</TableCell>
 
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedCourse(course);
-                      setIsEditCourseModalOpen(true);
-                    }}
-                  >
-                    Edit
-                  </Button>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCourse(course);
+                            setIsEditCourseModalOpen(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteCourse(course.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell colSpan={6} className="h-24 text-center">
-              No courses found. Click "Add Course" to create one.
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  </div>
-</TabsContent>
-
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleDeleteCourse(course.id || course._id)
+                          }
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center">
+                    No courses found. Click "Add Course" to create one.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </TabsContent>
 
       <AddNewBlogModal
         isOpen={isBlogModalOpen}
@@ -1541,19 +1541,18 @@ const handleDeleteCourse = async (id: string) => {
       />
 
       <AddNewCourseModal
-  isOpen={isCourseModalOpen}
-  onClose={() => setIsCourseModalOpen(false)}
-  onAddCourse={handleAddCourse}
-   collegeId={selectedCollege?.id || ""} 
-/>
+        isOpen={isCourseModalOpen}
+        onClose={() => setIsCourseModalOpen(false)}
+        onAddCourse={handleAddCourse}
+        collegeId={String(selectedCollege?.id || "")}
+      />
 
-<EditCourseModal
-  isOpen={isEditCourseModalOpen}
-  onClose={() => setIsEditCourseModalOpen(false)}
-  onEditCourse={handleEditCourse}
-  course={selectedCourse}
-/>
-
+      <EditCourseModal
+        isOpen={isEditCourseModalOpen}
+        onClose={() => setIsEditCourseModalOpen(false)}
+        onEditCourse={handleEditCourse}
+        course={selectedCourse}
+      />
     </Tabs>
   );
 }

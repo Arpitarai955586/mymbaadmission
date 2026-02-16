@@ -22,15 +22,20 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 export interface CourseData {
-  _id: string;
+  _id?: string;
+  id?: string;
   name: string;
-  category: string;
-  duration: string;
-  level: string;
-  fees: string;
+  slug?: string;
+  category?: string;
+  duration?: string;
+  duration_years?: number;
+  degree?: string;
+  level?: string;
+  fees?: string;
+  total_fee?: number;
   status: string;
-  description: string;
-  eligibility: string;
+  description?: string;
+  eligibility?: string;
 }
 
 interface EditCourseModalProps {
@@ -122,7 +127,6 @@ export function EditCourseModal({
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-
             <div className="grid gap-2">
               <Label>Course Name</Label>
               <Input
@@ -227,7 +231,6 @@ export function EditCourseModal({
                 rows={2}
               />
             </div>
-
           </div>
 
           <DialogFooter>

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -12,35 +12,42 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface ExamData {
-  id: number
-  name: string
-  category: string
-  date: string
-  duration: string
-  status: string
-  description: string
-  eligibility: string
+  id?: number | string;
+  _id?: string;
+  name: string;
+  category: string;
+  date: string;
+  duration: string;
+  status: string;
+  description: string;
+  eligibility: string;
+  is_active?: boolean;
 }
 
 interface EditExamModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onEditExam: (exam: ExamData) => void
-  exam: ExamData | null
+  isOpen: boolean;
+  onClose: () => void;
+  onEditExam: (exam: ExamData) => void;
+  exam: ExamData | null;
 }
 
-export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamModalProps) {
+export function EditExamModal({
+  isOpen,
+  onClose,
+  onEditExam,
+  exam,
+}: EditExamModalProps) {
   const [formData, setFormData] = useState<ExamData>({
     id: 0,
     name: "",
@@ -50,34 +57,32 @@ export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamMod
     status: "Upcoming",
     description: "",
     eligibility: "",
-  })
+  });
 
   useEffect(() => {
     if (exam) {
-      setFormData(exam)
+      setFormData(exam);
     }
-  }, [exam])
+  }, [exam]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (formData.name && formData.category && formData.date) {
-      onEditExam(formData)
-      onClose()
+      onEditExam(formData);
+      onClose();
     }
-  }
+  };
 
   const handleInputChange = (field: keyof ExamData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Edit Exam</DialogTitle>
-          <DialogDescription>
-            Update the exam details.
-          </DialogDescription>
+          <DialogDescription>Update the exam details.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -91,7 +96,7 @@ export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamMod
                 required
               />
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
               <Select
@@ -107,7 +112,9 @@ export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamMod
                   <SelectItem value="Engineering">Engineering</SelectItem>
                   <SelectItem value="Medical">Medical</SelectItem>
                   <SelectItem value="Management">Management</SelectItem>
-                  <SelectItem value="International MBA">International MBA</SelectItem>
+                  <SelectItem value="International MBA">
+                    International MBA
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -123,14 +130,16 @@ export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamMod
                   required
                 />
               </div>
-              
+
               <div className="grid gap-2">
                 <Label htmlFor="duration">Duration</Label>
                 <Input
                   id="duration"
                   placeholder="e.g., 3 hours"
                   value={formData.duration}
-                  onChange={(e) => handleInputChange("duration", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("duration", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -153,7 +162,7 @@ export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamMod
               </Select>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
@@ -163,5 +172,5 @@ export function EditExamModal({ isOpen, onClose, onEditExam, exam }: EditExamMod
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
