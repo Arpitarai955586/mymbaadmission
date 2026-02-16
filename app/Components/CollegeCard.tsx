@@ -1,11 +1,9 @@
 "use client";
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { MapPin, BookOpen, Award } from 'lucide-react';
-import { themeColors, colorCombos, themeClasses } from '../config/theme';
-import { College } from '../config/colleges';
-import { getCollegeCoverUrl } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { MapPin, BookOpen, DollarSign } from "lucide-react";
+import { College } from "../config/colleges";
+import { getCollegeCoverUrl } from "@/lib/utils";
 
 interface CollegeCardProps {
   college: College;
@@ -13,100 +11,86 @@ interface CollegeCardProps {
 
 const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
   const coverUrl = getCollegeCoverUrl(college.media?.cover);
+  const description =
+    college.content?.overview ||
+    college.highlights?.[0] ||
+    "A premier educational institution";
+  const displayDescription =
+    description.length > 75
+      ? description.substring(0, 75) + "..."
+      : description;
+
   return (
     <Link href={`/colleges/${college.slug}`}>
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer group">
+      <div className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer group h-full flex flex-col">
         {/* College Cover Image */}
-        <div className="relative h-48 overflow-hidden">
-         <img
-  src={coverUrl}
-  alt={college?.name || "college"}
-  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-/>
+        <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#1E40AF] to-[#1E3A8A]">
+          <img
+            src={coverUrl}
+            alt={college?.name || "college"}
+            className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          
-          {/* College Logo Overlay */}
-          <div className="absolute bottom-4 left-4">
-            {/* <div className="bg-white/95 backdrop-blur-sm p-2 rounded-lg">
-              <Image
-                src={college.media?.logo || '/colleges/default-logo.png'}
-                alt={college.name}
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-            </div> */}
-            {/* <Image
-  src={
-    college.media?.cover
-      ? `/uploads/${college.media.cover}`
-      : "/placeholder.jpg"
-  }
-  alt={college.name}
-  fill
-  className="object-cover"
-/> */}
-
-            
-          </div>
+          {/* Type Badge */}
+          {college.type && (
+            <div className="absolute top-3 right-3">
+              <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
+                {college.type}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* College Information */}
-        <div className="p-6 space-y-4">
-          {/* College Name and Type */}
+        <div className="p-5 space-y-3 flex-1 flex flex-col">
+          {/* College Name */}
           <div>
-            <h3 className="text-xl font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#1E40AF] transition-colors mb-2">
+            <h3 className="text-lg font-bold text-[#1A1A1B] line-clamp-2 group-hover:text-[#1E40AF] transition-colors">
               {college.name}
             </h3>
-            <p className="text-sm text-[#F97316] font-medium">{college.short_name}</p>
           </div>
+                {/* Description */}
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+            {displayDescription}
+          </p>
 
           {/* Location */}
           <div className="flex items-center gap-2 text-gray-600">
-            <MapPin size={16} className="text-[#F97316]" />
-            <span className="text-sm">{college.location?.city}{college.location?.state ? `, ${college.location.state}` : ""}</span>
+            <MapPin size={14} className="text-[#F97316] flex-shrink-0" />
+            <span className="text-xs">
+              {college.location.city}
+              {college.location.state ? `, ${college.location.state}` : ""}
+            </span>
           </div>
 
-          {/* Highlights */}
-          <div className="flex flex-wrap gap-2">
-            {(college.highlights || []).slice(0, 2).map((highlight, index: number) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-[#F8F9F9] text-[#1E40AF] text-xs font-medium rounded-full border border-[#F97316]/20"
-              >
-                {highlight}
-              </span>
-            ))}
-          </div>
+          {/* Description
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+            {displayDescription}
+          </p> */}
 
-          {/* Quick Info */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <BookOpen size={14} className="text-[#1E40AF]" />
-              <span>{(college.courses_offered || []).length} Courses</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Award size={14} className="text-[#F97316]" />
-              <span>{(Array.isArray(college.approved_by) ? college.approved_by : []).length} Approved</span>
-            </div>
-          </div>
+          {/* Fees Section */}
+        {typeof college.fees?.annual_fee === "number" && (
+  <div className="flex items-center gap-2 bg-gradient-to-r from-[#F97316]/10 to-orange-100 p-3 rounded-lg border border-[#F97316]/20">
+    <DollarSign size={16} className="text-[#F97316] flex-shrink-0" />
+    <div>
+      <p className="text-xs text-gray-600 font-semibold">
+        Annual Fee
+      </p>
+      <p className="text-sm font-bold text-[#1A1A1B]">
+        ₹{(college.fees.annual_fee / 100000).toFixed(1)}L
+      </p>
+    </div>
+  </div>
+)}
 
-          {/* Exams Accepted */}
-          <div className="flex flex-wrap gap-1">
-            {(college.exams_accepted || []).slice(0, 3).map((exam, index: number) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-[#1E40AF]/10 text-[#1E40AF] text-xs font-medium rounded"
-              >
-                {exam}
-              </span>
-            ))}
-            {(college.exams_accepted || []).length > 3 && (
-              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
-                +{(college.exams_accepted || []).length - 3}
-              </span>
-            )}
+
+          {/* Courses Count */}
+          <div className="flex items-center gap-2 pt-3 border-t border-gray-100 mt-auto">
+            <BookOpen size={16} className="text-[#1E40AF]" />
+            <span className="text-sm text-gray-700 font-medium">
+              {(college.courses_offered || []).length} Courses Available
+            </span>
           </div>
         </div>
       </div>

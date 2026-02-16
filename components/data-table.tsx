@@ -623,6 +623,8 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
             website: college.website || "TBD",
             description: college.content?.overview || college.overview || "TBD",
             media: college.media ? { cover: college.media.cover } : undefined,
+            // include fees so edit modal receives current values
+            fees: college.fees || undefined,
           }));
           setCollegesData(colleges);
         }
@@ -810,6 +812,16 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         content: {
           overview: college.description,
         },
+        // include fees if provided to avoid accidentally clearing them
+        fees: college.fees
+          ? {
+              annual_fee: college.fees.annual_fee
+                ? Number(college.fees.annual_fee)
+                : undefined,
+              currency: college.fees.currency || "INR",
+              fee_structure: college.fees.fee_structure || undefined,
+            }
+          : undefined,
       };
 
       const res = await fetch(`/api/colleges/${college.id}`, {
@@ -837,6 +849,7 @@ const [selectedCourse, setSelectedCourse] = React.useState<CourseData | null>(nu
         website: data.college.website,
         description: data.college.content?.overview || "",
         media: data.college.media ? { cover: data.college.media.cover } : undefined,
+        fees: data.college.fees || undefined,
       };
 
       setCollegesData((prev) =>

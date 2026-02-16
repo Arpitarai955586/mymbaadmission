@@ -26,6 +26,15 @@ const contentSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const feesSchema = new mongoose.Schema(
+  {
+    annual_fee: Number,  // yearly fee in INR
+    currency: { type: String, default: "INR" },
+    fee_structure: String,  // additional notes about fees
+  },
+  { _id: false }
+);
+
 const collegeSchema = new mongoose.Schema(
   {
     college_id: { type: String, required: true, unique: true },
@@ -53,6 +62,12 @@ const collegeSchema = new mongoose.Schema(
     },
 
     content: contentSchema,
+    
+    // 👇 Fees schema
+    fees: {
+      type: feesSchema,
+      default: {},
+    },
   },
   { timestamps: true }
 );

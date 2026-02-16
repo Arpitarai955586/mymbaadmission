@@ -24,6 +24,11 @@ export interface College {
     overview: string;
     admission: string;
   };
+  fees?: {
+    annual_fee?: number;
+    currency?: string;
+    fee_structure?: string;
+  };
   meta?: {
     seo_title: string;
     last_updated: string;

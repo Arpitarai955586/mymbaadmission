@@ -41,6 +41,7 @@ export async function POST(req: Request) {
     let ranking: string | undefined
     let established_year: number | undefined
     let contentOverview: string | undefined
+    let fees: any = undefined
 
     /* ===============================
        HANDLE FORM DATA
@@ -85,6 +86,15 @@ export async function POST(req: Request) {
       ranking = body.ranking != null ? String(body.ranking).trim() : undefined
       established_year = body.established_year != null ? Number(body.established_year) : undefined
       contentOverview = body.content?.overview != null ? String(body.content.overview).trim() : undefined
+      
+      // Extract fees if provided
+      if (body.fees?.annual_fee) {
+        fees = {
+          annual_fee: Number(body.fees.annual_fee),
+          currency: body.fees.currency || "INR",
+          fee_structure: body.fees.fee_structure || undefined,
+        }
+      }
     }
 
     else {
@@ -132,6 +142,7 @@ export async function POST(req: Request) {
     if (ranking !== undefined && ranking !== "") createPayload.ranking = ranking
     if (established_year !== undefined && !Number.isNaN(established_year)) createPayload.established_year = established_year
     if (contentOverview !== undefined && contentOverview !== "") createPayload.content = { overview: contentOverview }
+    if (fees) createPayload.fees = fees
 
     const college = await College.create(createPayload)
 

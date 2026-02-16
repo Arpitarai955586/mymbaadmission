@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -11,35 +11,40 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 export interface CollegeData {
-  id: number | string
-  name: string
-  type: string
+  id: number | string;
+  name: string;
+  type: string;
   location: {
-    city: string
-    state: string
-  }
-  ranking: string
-  establishedYear: number
-  website: string
-  description: string
-  media?: { cover?: string }
+    city: string;
+    state: string;
+  };
+  ranking: string;
+  establishedYear: number;
+  website: string;
+  description: string;
+  media?: { cover?: string };
+  fees?: {
+    annual_fee?: number;
+    currency?: string;
+    fee_structure?: string;
+  };
 }
 
 interface EditCollegeModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onEditCollege: (college: CollegeData) => void
-  college: CollegeData | null
+  isOpen: boolean;
+  onClose: () => void;
+  onEditCollege: (college: CollegeData) => void;
+  college: CollegeData | null;
 }
 
 export function EditCollegeModal({
@@ -49,80 +54,86 @@ export function EditCollegeModal({
   college,
 }: EditCollegeModalProps) {
   const [formData, setFormData] = useState<CollegeData>({
-  id: "",
-  name: "",
-  type: "",
-  location: { city: "", state: "" },
-  ranking: "",
-  establishedYear: 0,
-  website: "",
-  description: "",
-  media: { cover: "" },
-})
-
+    id: "",
+    name: "",
+    type: "",
+    location: { city: "", state: "" },
+    ranking: "",
+    establishedYear: 0,
+    website: "",
+    description: "",
+    media: { cover: "" },
+    fees: { annual_fee: 0, currency: "INR", fee_structure: "" },
+  });
 
   useEffect(() => {
     if (college) {
-      setFormData(college)
+      setFormData(college);
     }
-  }, [college])
+  }, [college]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
+    e.preventDefault();
 
-  const token = localStorage.getItem("token")
-  if (!token) {
-    alert("You are not logged in")
-    return
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You are not logged in");
+      return;
+    }
 
-  const payload = {
-    name: formData.name,
-    type: formData.type,
-    location: {
-      city: formData.location.city,
-      state: formData.location.state,
-    },
-    media: {
-      cover: (formData.media?.cover ?? "").trim() || undefined,
-    },
-    ranking: formData.ranking,
-    established_year: Number(formData.establishedYear),
-    website: formData.website,
-    content: {
-      overview: formData.description,
-    },
-  }
+    const payload = {
+      name: formData.name,
+      type: formData.type,
+      location: {
+        city: formData.location.city,
+        state: formData.location.state,
+      },
+      media: {
+        cover: (formData.media?.cover ?? "").trim() || undefined,
+      },
+      ranking: formData.ranking,
+      established_year: Number(formData.establishedYear),
+      website: formData.website,
+      content: {
+        overview: formData.description,
+      },
+      fees: {
+        annual_fee: formData.fees?.annual_fee
+          ? Number(formData.fees.annual_fee)
+          : undefined,
+        currency: formData.fees?.currency || "INR",
+        fee_structure: formData.fees?.fee_structure || undefined,
+      },
+    };
 
-  const res = await fetch(`/api/colleges/${formData.id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  })
+    const res = await fetch(`/api/colleges/${formData.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-  // ❌ DO NOT CALL res.json() if backend returns nothing
-  if (!res.ok) {
-    const text = await res.text()
-    alert(text || "Failed to update college")
-    return
-  }
+    // ❌ DO NOT CALL res.json() if backend returns nothing
+    if (!res.ok) {
+      const text = await res.text();
+      alert(text || "Failed to update college");
+      return;
+    }
 
-  // ✅ Update UI manually
-  onEditCollege(formData)
-  onClose()
-}
+    // ✅ Update UI manually
+    onEditCollege(formData);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[525px]">
-        <DialogHeader>
-          <DialogTitle>Edit College</DialogTitle>
-          <DialogDescription>
-            Update the college information.
-          </DialogDescription>
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
+        <DialogHeader  className="pb-3 border-b">
+          <DialogTitle className="text-xl font-bold"
+    >Edit College</DialogTitle>
+          <DialogDescription>Update the college information.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
@@ -162,14 +173,14 @@ export function EditCollegeModal({
               <Input
                 value={`${formData.location.city}, ${formData.location.state}`}
                 onChange={(e) => {
-                  const parts = e.target.value.split(",")
+                  const parts = e.target.value.split(",");
                   setFormData({
                     ...formData,
                     location: {
                       city: parts[0]?.trim() || "",
                       state: parts[1]?.trim() || "",
                     },
-                  })
+                  });
                 }}
               />
             </div>
@@ -222,7 +233,80 @@ export function EditCollegeModal({
                   })
                 }
               />
-              <p className="text-xs text-muted-foreground">Optional. Saves in database and shows on colleges list & detail.</p>
+              <p className="text-xs text-muted-foreground">
+                Optional. Saves in database and shows on colleges list & detail.
+              </p>
+            </div>
+
+            {/* Fees Section */}
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-sm font-bold mb-3">Fees Information</h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Annual Fees (₹)</Label>
+                  <Input
+                    type="number"
+                    placeholder="e.g., 500000"
+                    value={formData.fees?.annual_fee ?? ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        fees: {
+                          ...formData.fees,
+                          annual_fee: e.target.value
+                            ? Number(e.target.value)
+                            : 0,
+                        },
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Amount in rupees (e.g., 500000 for 5 Lakhs)
+                  </p>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>Currency</Label>
+                  <Select
+                    value={formData.fees?.currency || "INR"}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        fees: { ...formData.fees, currency: value },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="INR">INR (₹)</SelectItem>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid gap-2 mt-4">
+                <Label>Fee Structure Details</Label>
+                <Input
+                  placeholder="e.g., Includes tuition, facility, and other academic charges"
+                  value={formData.fees?.fee_structure ?? ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      fees: {
+                        ...formData.fees,
+                        fee_structure: e.target.value,
+                      },
+                    })
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Brief description of what's included in the fees
+                </p>
+              </div>
             </div>
           </div>
 
@@ -235,5 +319,5 @@ export function EditCollegeModal({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
