@@ -3,14 +3,14 @@ export interface College {
   college_id: string;
   slug: string;
   name: string;
-  short_name: string;
+  short_name?: string;
   type: string;
   location: {
     city: string;
-    state: string;
-    street_address: string;
-    pincode: string;
-    google_map_link: string;
+    state?: string;
+    street_address?: string;
+    pincode?: string;
+    google_map_link?: string;
   };
   approved_by: string[];
   exams_accepted: string[];
