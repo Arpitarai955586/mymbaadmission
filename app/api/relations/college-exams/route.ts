@@ -40,18 +40,25 @@ export async function POST(req: Request) {
 }
 
 
-// GET /api/relations/college-exams?college_id=XXX
+// GET /api/relations/college-exams?college_id=XXX or get all
 export async function GET(req: Request) {
   await connectDB();
 
   const { searchParams } = new URL(req.url);
   const college_id = searchParams.get("college_id");
 
-  const exams = await CollegeExam.find({ college_id })
-    .populate("exam_id");
+  let query: any = {};
+  if (college_id) {
+    query.college_id = college_id;
+  }
+
+  const collegeExams = await CollegeExam.find(query)
+    .populate("college_id", "college_id name type")
+    .populate("exam_id", "exam_id name category date")
+    .lean();
 
   return NextResponse.json({
     success: true,
-    exams,
+    data: collegeExams,
   });
 }

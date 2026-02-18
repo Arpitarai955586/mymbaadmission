@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       ranking = body.ranking != null ? String(body.ranking).trim() : undefined
       established_year = body.established_year != null ? Number(body.established_year) : undefined
       contentOverview = body.content?.overview != null ? String(body.content.overview).trim() : undefined
-      
+
       // Extract fees if provided
       if (body.fees?.annual_fee) {
         fees = {
@@ -160,6 +160,55 @@ export async function POST(req: Request) {
 }
 
 // get colleges 
+// export async function GET(req: Request) {
+//   try {
+//     await connectDB()
+
+//     const { searchParams } = new URL(req.url)
+//     const slug = searchParams.get("slug")
+
+//     const query: any = { status: "active" }
+//     if (slug) query.slug = slug
+//     const colleges = await College.find().populate("courses_offered");
+//     const colleges = await College.find(query).sort({ createdAt: -1 })
+
+//     // Import models for counting
+//     const Course = require("@/models/Course").default
+//     const CollegeCourse = require("@/models/CollegeCourse").default
+//     const Exam = require("@/models/Exam").default
+//     const CollegeExam = require("@/models/CollegeExam").default
+
+//     // Add counts to each college
+//     const collegesWithCounts = await Promise.all(
+//       colleges.map(async (college: any) => {
+//         const coursesCount = await CollegeCourse.countDocuments({
+//           college_id: college._id,
+//         })
+//         const examsCount = await CollegeExam.countDocuments({
+//           college_id: college._id,
+//         })
+
+//         return {
+//           ...college.toObject(),
+//           coursesCount,
+//           examsCount,
+//         }
+//       })
+//     )
+
+//     return NextResponse.json({
+//       success: true,
+//       count: colleges.length,
+//       colleges: collegesWithCounts,
+//     })
+//   } catch (error: any) {
+//     console.error("GET /api/colleges ERROR:", error)
+//     return NextResponse.json(
+//       { message: error.message || "Internal Server Error" },
+//       { status: 500 }
+//     )
+//   }
+// }
 export async function GET(req: Request) {
   try {
     await connectDB()
@@ -172,29 +221,11 @@ export async function GET(req: Request) {
 
     const colleges = await College.find(query).sort({ createdAt: -1 })
 
-    // Import models for counting
-    const Course = require("@/models/Course").default
-    const CollegeCourse = require("@/models/CollegeCourse").default
-    const Exam = require("@/models/Exam").default
-    const CollegeExam = require("@/models/CollegeExam").default
-
-    // Add counts to each college
-    const collegesWithCounts = await Promise.all(
-      colleges.map(async (college: any) => {
-        const coursesCount = await CollegeCourse.countDocuments({
-          college_id: college._id,
-        })
-        const examsCount = await CollegeExam.countDocuments({
-          college_id: college._id,
-        })
-
-        return {
-          ...college.toObject(),
-          coursesCount,
-          examsCount,
-        }
-      })
-    )
+    const collegesWithCounts = colleges.map((college: any) => ({
+      ...college.toObject(),
+      coursesCount: college.courses_offered?.length || 0,
+      examsCount: college.exams_accepted?.length || 0,
+    }))
 
     return NextResponse.json({
       success: true,
@@ -202,10 +233,10 @@ export async function GET(req: Request) {
       colleges: collegesWithCounts,
     })
   } catch (error: any) {
-    console.error("GET /api/colleges ERROR:", error)
     return NextResponse.json(
       { message: error.message || "Internal Server Error" },
       { status: 500 }
     )
   }
 }
+

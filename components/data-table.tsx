@@ -538,6 +538,7 @@ export function DataTable({
     [],
   );
   const [examsData, setExamsData] = React.useState(initialExamsData);
+  const [collegeExamsData, setCollegeExamsData] = React.useState<any[]>([]);
   const [isBlogModalOpen, setIsBlogModalOpen] = React.useState(false);
   const [isCollegeModalOpen, setIsCollegeModalOpen] = React.useState(false);
   const [isExamModalOpen, setIsExamModalOpen] = React.useState(false);
@@ -726,6 +727,25 @@ export function DataTable({
     fetchCourses();
   }, []);
 
+  React.useEffect(() => {
+    const fetchCollegeExams = async () => {
+      try {
+        const res = await fetch("/api/relations/college-exams");
+        if (!res.ok) throw new Error("Failed to fetch college exams");
+        
+
+        const data = await res.json();
+        if (data.success) {
+          setCollegeExamsData(data.data || []);
+        }
+      } catch (error) {
+        console.error("ERROR FETCHING COLLEGE EXAMS:", error);
+      }
+    };
+
+    fetchCollegeExams();
+  }, []);
+
   const handleAddExam = async (examData: ExamData) => {
     const newExam = {
       id: examsData.length + 1,
@@ -866,50 +886,62 @@ export function DataTable({
   };
 
   const handleEditExam = async (exam: ExamData) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You are not logged in");
-      return;
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("You are not logged in");
+    return;
+  }
+
+  const examId = exam._id || exam.id;
+
+  if (!examId) {
+    alert("Exam ID missing");
+    return;
+  }
+
+  try {
+    const payload = {
+      name: exam.name,
+      category: exam.category,
+      date: exam.date,
+      duration: exam.duration,
+      status: exam.status,
+      description: exam.description,
+      eligibility: exam.eligibility,
+    };
+
+    const res = await fetch(`/api/exams/${examId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.message || "Failed to update exam");
     }
 
-    try {
-      const payload = {
-        name: exam.name,
-        category: exam.category,
-        date: exam.date,
-        duration: exam.duration,
-        status: exam.status,
-        description: exam.description,
-        eligibility: exam.eligibility,
-      };
+    const updatedExam = data.exam;
 
-      const res = await fetch(`/api/exams/${exam.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+    setExamsData((prev) =>
+      prev.map((e) =>
+        (e._id || e.id) === updatedExam._id
+          ? updatedExam
+          : e
+      )
+    );
 
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : null;
+  } catch (err: any) {
+    console.error("❌ Failed to edit exam:", err);
+    alert(err.message);
+  }
+};
 
-      if (!res.ok) {
-        throw new Error(data?.message || "Failed to update exam");
-      }
 
-      const updatedExam = data.exam;
-
-      // ✅ UI sync with DB response
-      setExamsData((prev) =>
-        prev.map((e) => (e.id === updatedExam._id ? updatedExam : e)),
-      );
-    } catch (err: any) {
-      console.error("❌ Failed to edit exam:", err);
-      alert(err.message);
-    }
-  };
 
   const handleDeleteBlog = async (id: number) => {
     const token = localStorage.getItem("token");
@@ -1142,18 +1174,19 @@ export function DataTable({
             <SelectValue placeholder="Select a view" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="outline">Outline</SelectItem>
-            <SelectItem value="past-performance">Past Performance</SelectItem>
-            <SelectItem value="key-personnel">Key Personnel</SelectItem>
-            <SelectItem value="focus-documents">Focus Documents</SelectItem>
+            <SelectItem value="outline">Colleges</SelectItem>
+            <SelectItem value="past-performance">Blogs</SelectItem>
+            <SelectItem value="key-personnel">Exams</SelectItem>
+            <SelectItem value="college-exams">College Exams</SelectItem>
+            <SelectItem value="key-personnel1">Courses</SelectItem>
           </SelectContent>
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
-          <TabsTrigger value="outline">College</TabsTrigger>
+          <TabsTrigger value="outline">Colleges</TabsTrigger>
           <TabsTrigger value="past-performance">Blogs</TabsTrigger>
           <TabsTrigger value="key-personnel">Exams</TabsTrigger>
+          <TabsTrigger value="college-exams">College Exams</TabsTrigger>
           <TabsTrigger value="key-personnel1">Courses</TabsTrigger>
-          {/* <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger> */}
         </TabsList>
         <div className="flex items-center gap-2">
           <DropdownMenu>
@@ -1355,6 +1388,70 @@ export function DataTable({
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
                     No blogs found. Click "Add Section" to create a new blog.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </TabsContent>
+      <TabsContent
+        value="college-exams"
+        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+      >
+        <div className="overflow-hidden rounded-lg border">
+          <Table>
+            <TableHeader className="bg-muted sticky top-0 z-10">
+              <TableRow>
+                <TableHead>College Name</TableHead>
+                <TableHead>Exams Linked</TableHead>
+                <TableHead>Total Exams</TableHead>
+                <TableHead>Last Updated</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {collegesData.length > 0 ? (
+                collegesData.map((college) => {
+                  const linkedExams = examsData.filter((exam) =>
+                    collegeExamsData.some(
+                      (ce) =>
+                        ce.college_id === college.id && ce.exam_id === exam.id,
+                    ),
+                  );
+                  return (
+                    <TableRow key={college.id}>
+                      <TableCell className="font-medium">
+                        {college.name}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {linkedExams.length > 0 ? (
+                            linkedExams.map((exam) => (
+                              <span
+                                key={exam.id}
+                                className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"
+                              >
+                                {exam.name}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-gray-500">
+                              No exams linked
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {linkedExams.length}/{examsData.length}
+                      </TableCell>
+                      <TableCell>{new Date().toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No colleges found.
                   </TableCell>
                 </TableRow>
               )}

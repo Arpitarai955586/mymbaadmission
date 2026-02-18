@@ -36,6 +36,7 @@ export interface CourseData {
   status: string;
   description?: string;
   eligibility?: string;
+  image?: string;
 }
 
 interface EditCourseModalProps {
@@ -61,12 +62,17 @@ export function EditCourseModal({
     status: "",
     description: "",
     eligibility: "",
+    image: "",
   });
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   /* ✅ Properly set full course including _id */
   useEffect(() => {
     if (course && isOpen) {
       setFormData(course);
+      if (course.image) {
+        setPreviewImage(course.image);
+      }
     }
   }, [course, isOpen]);
 
@@ -134,6 +140,40 @@ export function EditCourseModal({
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 required
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="image">Course Image URL</Label>
+              <Input
+                type="url"
+                id="image"
+                placeholder="https://example.com/image.jpg"
+                value={formData.image || ""}
+                onChange={(e) => {
+                  handleInputChange("image", e.target.value);
+                  setPreviewImage(e.target.value);
+                }}
+              />
+              {previewImage && (
+                <div className="mt-2 relative">
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="w-full h-32 object-cover rounded-lg"
+                    onError={() => setPreviewImage(null)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, image: "" }));
+                      setPreviewImage(null);
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="grid gap-2">

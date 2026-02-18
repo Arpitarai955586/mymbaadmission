@@ -1,10 +1,10 @@
 "use client";
-import React from 'react';
-import { ArrowRight, Calendar, Globe, ExternalLink } from 'lucide-react';
-import { useModal } from '../Context/ModalContext';
-import Link from 'next/link';
-import { getActiveExams, Exam } from '../config/exams';
-import { themeColors, colorCombos, themeClasses } from '../config/theme';
+import React from "react";
+import { ArrowRight, Calendar, Globe, ExternalLink } from "lucide-react";
+import { useModal } from "../Context/ModalContext";
+import Link from "next/link";
+import { getActiveExams, Exam } from "../config/exams";
+import { themeColors, colorCombos, themeClasses } from "../config/theme";
 
 interface ExamCardProps {
   exam: Exam;
@@ -12,6 +12,10 @@ interface ExamCardProps {
 }
 
 const ExamCard = ({ exam, openModal }: ExamCardProps) => {
+  const handleCardClick = () => {
+    // Card click is handled by the Link wrapper
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group">
       <div className="p-4 border-b border-[#1E40AF]/10">
@@ -23,10 +27,15 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
             {exam.status}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-[#1A1A1B] mb-2 group-hover:text-[#1E40AF] transition-colors">
+        <h3 className="text-lg font-bold text-[#1A1A1A] mb-2 group-hover:text-[#1E40AF] transition-colors">
           {exam.name}
         </h3>
-        <p className="text-[#2C3E50] text-sm leading-relaxed">{exam.full_name}</p>
+        <p className="text-[#2C3E50] text-sm leading-relaxed">
+          {exam.full_name}
+        </p>
+        <p className="text-[#2C3E50] text-sm leading-relaxed">
+          {exam.description}
+        </p>
       </div>
 
       <div className="p-4">
@@ -34,42 +43,49 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar size={14} className="text-[#1E40AF]" />
             <div>
-              <p className="text-xs text-[#2C3E50]">Month</p>
-              <p className="text-sm font-bold text-[#1A1A1B]">{exam.exam_month}</p>
+              <p className="text-xs text-[#2C3E50]">Exam Month</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">
+                {exam.exam_month}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Globe size={14} className="text-[#1E40AF]" />
             <div>
-              <p className="text-xs text-[#2C3E50]">Type</p>
-              <p className="text-sm font-bold text-[#1A1A1B]">{exam.type}</p>
+              <p className="text-xs text-[#2C3E50]">Exam Type</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">{exam.type}</p>
             </div>
           </div>
         </div>
 
         <div className="mb-4">
-          <a 
+          <a
             href={exam.website}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#1E40AF] hover:text-[#1E3A8A] text-sm font-medium flex items-center gap-1 transition-colors"
           >
-            {exam.website.replace('https://', '').replace('http://', '')}
+            {exam.website.replace("https://", "").replace("http://", "")}
             <ExternalLink size={12} />
           </a>
         </div>
 
         <div className="flex gap-2">
-          <button 
-            onClick={openModal}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (openModal) openModal();
+            }}
             className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-2 rounded-lg transition-colors text-sm"
           >
             Apply Now
           </button>
-          <a 
+          <a
             href={exam.website}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center px-3 py-2 border border-[#1E40AF]/30 text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white rounded-lg transition-colors"
           >
             <ExternalLink size={14} />
@@ -92,25 +108,27 @@ const TopExams = () => {
             <span className="w-2 h-2 bg-[#F97316] rounded-full animate-pulse" />
             TOP EXAMS
           </div>
-          
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1B] leading-tight">
+
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1A] leading-tight">
             Upcoming <span className="text-[#1E40AF]">Entrance Exams</span>
           </h2>
-          
+
           <p className="text-[#2C3E50] text-xl max-w-3xl mx-auto leading-relaxed">
-            Stay updated with the most important management entrance exams. 
-            Get detailed information and apply directly through our platform.
+            Stay updated with the most important management entrance exams. Get
+            detailed information and apply directly through our platform.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {examData.map((exam) => (
-            <ExamCard key={exam.exam_id} exam={exam} openModal={openModal} />
+            <Link href={`/exams/${exam.slug}`} key={exam.exam_id} className="block">
+              <ExamCard exam={exam} openModal={openModal} />
+            </Link>
           ))}
         </div>
 
         <div className="text-center">
-          <Link 
+          <Link
             href="/exams"
             className="bg-[#1E40AF] hover:bg-[#1E3A8A] text-white px-8 py-4 rounded-xl text-lg font-bold inline-flex items-center gap-3 transition-all active:scale-95 shadow-lg hover:shadow-[#1E40AF]/20"
           >

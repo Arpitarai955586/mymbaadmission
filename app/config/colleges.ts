@@ -33,6 +33,8 @@ export interface College {
     seo_title?: string;
     last_updated?: string;
   };
+  coursesCount?: number;   // ✅ add this
+  examsCount?: number;
 }
 
 export const collegesData: College[] = [
@@ -54,6 +56,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA", "MBA (I&E)", "Executive MBA"],
     "highlights": ["100% Residential MBA", "Average Package ₹28+ LPA", "Bloomberg Lab Facility"],
     "status": "active",
+    "coursesCount": 3,
     "media": {
       "cover": "https://assets.kollegeapply.com/collegeImage/7050139-1763555033332-SIBM%20view.jpg/1763555033332-SIBM%20view.jpg"
     },
@@ -80,6 +83,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA", "MBA Core", "MBA HR", "MBA Business Analytics"],
     "highlights": ["Prime Location in Mumbai", "AACSB Global Accreditation", "Strong Finance Placements"],
     "status": "active",
+    "coursesCount": 4,
     "media": {
       "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6VDJS5l_Q6ET1R4KQGOS7xg4BTMaYH5u7ag&s"
     },
@@ -106,6 +110,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MMS", "PGDBM"],
     "highlights": ["Extremely Low Fees (ROI King)", "Churchgate Location", "Legacy Alumni Network"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://timess3spore.s3.amazonaws.com/ndata/media/Counsellor/CollegeImage/3a6e2ed580d93c16461f24e65682b93f2.webp"
     },
@@ -132,6 +137,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA", "MBA (Sports Management)", "MBA (Health Care Management)"],
     "highlights": ["Large Green Campus in Mumbai", "Diverse Specialized MBA Programs", "High Industry Engagement"],
     "status": "active",
+    "coursesCount": 3,
     "media": {
       "cover": "https://newsletter.somaiya.edu/wp-content/uploads/2023/08/KJ-SIM.gif"
     },
@@ -158,6 +164,7 @@ export const collegesData: College[] = [
     "courses_offered": ["PGDM", "PGDM (Business Design)", "PGDM (Retail)"],
     "highlights": ["Focus on Design Thinking", "Innovative Global Internships", "Centrally Located"],
     "status": "active",
+    "coursesCount": 3,
     "media": {
       "cover": "https://drupal.mbauniverse.com/sites/default/files/2025-11/We-School-Bangalore-Campus-01.jpg"
     },
@@ -184,6 +191,7 @@ export const collegesData: College[] = [
     "courses_offered": ["PGDM", "PGPM", "GMP"],
     "highlights": ["Top 10 B-School in India", "Autumn Internships", "Global Fast Track Program"],
     "status": "active",
+    "coursesCount": 3,
     "media": {
       "cover": "https://drupal.mbauniverse.com/sites/default/files/2025-06/college_gallery_71291719634667.jpg"
     },
@@ -210,6 +218,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA (BM)", "Executive MBA"],
     "highlights": ["Iconic Brand in Management", "Strong Rural Management Focus", "Excellent Campus Culture"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://xim.edu.in/wp-content/uploads/2020/04/Xavier-University-Bhubaneswar.jpg"
     },
@@ -236,6 +245,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA (General)", "MBA (Business Analytics)"],
     "highlights": ["Strict Discipline & Academic Rigor", "Beautiful Urban Campus", "Holistic Development"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://zolostays.com/blog/wp-content/uploads/2025/05/christ-university-y-1160x852.jpg"
     },
@@ -262,6 +272,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA", "MBA (Digital Transformation)"],
     "highlights": ["60+ Acre Lush Green Campus", "International Faculty Exchange", "Modern Infrastructure"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://www.alliance.edu.in/uploads/infra_gallery/1.webp"
     },
@@ -288,6 +299,7 @@ export const collegesData: College[] = [
     "courses_offered": ["PGP", "PGPpro", "PGPMAX"],
     "highlights": ["Global Ranking in Top 50", "1-Year Fast Track MBA", "World-Class Faculty"],
     "status": "active",
+    "coursesCount": 3,
     "media": {
       "cover": "https://admitexpert.com/wp-content/uploads/2022/06/ISB-Indian-School-of-Business.webp"
     },
@@ -314,6 +326,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA"],
     "highlights": ["150+ Year Legacy", "Strong Tech-Management Interface", "Low Fees Structure"],
     "status": "active",
+    "coursesCount": 1,
     "media": {
       "cover": "https://www.coeptech.ac.in/wp-content/uploads/elementor/thumbs/COEP-Website-Pic-6-r4qfmbqfe8bwc0r15m898t1radkhlgc2hsiukrh0uw.jpg"
     },
@@ -340,6 +353,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA (General)", "MBA (Pharma)"],
     "highlights": ["Prestigious University Department", "Top Choice for Pharma MBA", "Excellent ROI"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://e2pconsultancy.com/wp-content/uploads/2019/03/pumba.jpg"
     },
@@ -366,6 +380,7 @@ export const collegesData: College[] = [
     "courses_offered": ["IMB (International Master in Business)"],
     "highlights": ["Semester in Milan, Italy", "International Faculty", "Powai Start-up Hub Location"],
     "status": "active",
+    "coursesCount": 1,
     "media": {
       "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbQJuzLCwnbZsv--1Y24JgCO_Mjc2xwILhkQ&s"
     },
@@ -392,6 +407,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA", "MBA (BKFS)", "MBA (HRM)"],
     "highlights": ["Dual Global Accreditation", "Experiential Learning Focus", "Rich Alumni Base"],
     "status": "active",
+    "coursesCount": 3,
     "media": {
       "cover": "https://www.tapmi.edu.in/wp-content/uploads/2024/11/C78A6510-1.webp"
     },
@@ -418,6 +434,7 @@ export const collegesData: College[] = [
     "courses_offered": ["PGPM"],
     "highlights": ["Case-Study Based Learning", "Large Batch Size (Strong Networking)", "Strategic Corporate Location"],
     "status": "active",
+    "coursesCount": 1,
     "media": {
       "cover": "https://static.boostmytalent.com/img/univ/icfai-ibs-jaipur-campus-admission.webp"
     },
@@ -444,6 +461,7 @@ export const collegesData: College[] = [
     "courses_offered": ["PGDM", "PGPM (1 Year)"],
     "highlights": ["Focus on Values & Ethics", "Small Batch Size", "Gurgaon Corporate Hub"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://images.shiksha.com/mediadata/images/1662364835phpPh8QUd.jpeg"
     },
@@ -470,6 +488,7 @@ export const collegesData: College[] = [
     "courses_offered": ["MBA", "MBA (Communications Management)"],
     "highlights": ["Liberal Education Foundation", "High Faculty-Student Ratio", "World-class Sports Infra"],
     "status": "active",
+    "coursesCount": 2,
     "media": {
       "cover": "https://image-static.collegedunia.com/public/college_data/images/campusimage/1464681315flame_1459398202.jpg"
     },
@@ -496,7 +515,7 @@ export const getCourseNames = (courseIds: string[]): string[] => {
     // Simple mapping for now - in real app, this would use getCourseById
     const courseMap: { [key: string]: string } = {
       'mba': 'MBA',
-      'bba': 'BBA', 
+      'bba': 'BBA',
       'executive-mba': 'Executive MBA',
       'pgdm': 'PGDM',
       'bcom': 'B.Com',

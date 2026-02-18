@@ -6,6 +6,7 @@ export interface Exam {
   full_name: string;
   type: string;
   conducting_body: string;
+  date?: string | Date;
   exam_month: string;
   website: string;
   status: string;
@@ -16,6 +17,7 @@ export interface Exam {
   eligibility: string;
   application_fee: string;
   highlights: string[];
+  description?: string;
   media?: {
     logo: string;
     cover: string;
@@ -44,6 +46,7 @@ export const examsData: Exam[] = [
     "eligibility": "Bachelor's degree with 50% marks (45% for SC/ST/PwD)",
     "application_fee": "₹1200 (General), ₹600 (SC/ST/PwD)",
     "highlights": ["Gateway to IIMs", "200+ colleges accept CAT", "Most prestigious MBA exam", "3 lakh+ applicants annually"],
+    "description": "CAT is the most prestigious MBA entrance exam in India, conducted by IIMs for admission to 20 IIMs and over 200 other B-schools. With over 3 lakh applicants annually, it offers multiple test windows and no negative marking in recent years.",
     "media": {
       "logo": "/exams/cat-logo.png",
       "cover": "/exams/cat-cover.jpg"
@@ -70,6 +73,7 @@ export const examsData: Exam[] = [
     "eligibility": "Bachelor's degree with 50% marks (45% for SC/ST/PwD)",
     "application_fee": "₹2000 (General), ₹1700 (SC/ST/PwD)",
     "highlights": ["XLRI flagship exam", "Unique Decision Making section", "150+ participating institutes", "Essay writing component"],
+    "description": "XAT is conducted by XLRI Jamshedpur for admission to its programs and over 150 other B-schools across India. It features a unique Decision Making section and an essay writing component, making it distinct among MBA entrance exams.",
     "media": {
       "logo": "/exams/xat-logo.png",
       "cover": "/exams/xat-cover.jpg"
@@ -96,6 +100,7 @@ export const examsData: Exam[] = [
     "eligibility": "Bachelor's degree with 50% marks (45% for SC/ST/PwD)",
     "application_fee": "₹2250 (General), ₹1750 (SC/ST/PwD)",
     "highlights": ["Gateway to Symbiosis institutes", "15+ Symbiosis B-schools", "Shortest duration MBA exam", "60 questions only"],
+    "description": "SNAP is the entrance exam for admission to all Symbiosis International University MBA programs across 15+ institutes. It is the shortest MBA entrance exam with just 60 questions in 60 minutes and features no negative marking.",
     "media": {
       "logo": "/exams/snap-logo.png",
       "cover": "/exams/snap-cover.jpg"
@@ -122,6 +127,7 @@ export const examsData: Exam[] = [
     "eligibility": "Bachelor's degree with 50% marks",
     "application_fee": "₹2300 (Early), ₹2800 (Late)",
     "highlights": ["GMAC conducted exam", "3 attempts allowed", "No negative marking", "International acceptance"],
+    "description": "NMAT by GMAC is the entrance exam for NMIMS and other B-schools conducted by the Graduate Management Admission Council. It allows up to 3 attempts within a testing window and has no negative marking, with international recognition.",
     "media": {
       "logo": "/exams/nmat-logo.png",
       "cover": "/exams/nmat-cover.jpg"
@@ -148,6 +154,7 @@ export const examsData: Exam[] = [
     "eligibility": "Bachelor's degree with 50% marks (45% for reserved categories)",
     "application_fee": "₹1000 (General), ₹800 (Reserved)",
     "highlights": ["Maharashtra state exam", "300+ participating colleges", "Lowest fee structure", "Home state advantage"],
+    "description": "MAH MBA CET is the state-level entrance exam for MBA/MMS programs in Maharashtra. It is accepted by over 300 colleges across the state, has the lowest application fee, and offers a home state advantage for Maharashtra residents.",
     "media": {
       "logo": "/exams/cet-logo.png",
       "cover": "/exams/cet-cover.jpg"

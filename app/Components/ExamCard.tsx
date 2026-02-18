@@ -1,7 +1,7 @@
 "use client";
-import React from 'react';
-import { Exam } from '../config/exams';
-import { Calendar, Globe, ExternalLink, Tag } from 'lucide-react';
+import React from "react";
+import { Exam } from "../config/exams";
+import { Calendar, Globe, ExternalLink, Tag } from "lucide-react";
 
 interface ExamCardProps {
   exam: Exam;
@@ -30,6 +30,15 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
 
       {/* Body with exam details */}
       <div className="p-6 space-y-4">
+        {/* Description */}
+        {exam.description && (
+          <div className="bg-[#F8F9F9] p-4 rounded-lg">
+            <p className="text-sm text-[#2C3E50] leading-relaxed">
+              {exam.description}
+            </p>
+          </div>
+        )}
+
         {/* Exam Month */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[#F8F9F9] rounded-lg flex items-center justify-center">
@@ -48,13 +57,13 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
           </div>
           <div className="flex-1">
             <p className="text-sm text-gray-500">Official Website</p>
-            <a 
+            <a
               href={exam.website}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#922B21] hover:text-[#7A2318] text-sm font-medium flex items-center gap-1 transition-colors"
             >
-              {exam.website.replace('https://', '').replace('http://', '')}
+              {exam.website.replace("https://", "").replace("http://", "")}
               <ExternalLink size={12} />
             </a>
           </div>

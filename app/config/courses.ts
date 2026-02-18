@@ -9,6 +9,9 @@ export interface Course {
     total_fee: number;
   };
   entrance_exams: string[]; // Referral IDs to exams
+  media?: {
+    cover?: string;
+  };
 }
 
 export const coursesData: Course[] = [

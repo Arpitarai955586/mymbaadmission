@@ -20,6 +20,22 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
       ? description.substring(0, 75) + "..."
       : description;
 
+  // Compute courses count robustly: prefer backend `coursesCount`,
+  // fall back to `courses_offered` length or any `courses` array.
+  const computedCoursesCount = (() => {
+    const raw =
+      (college as any).coursesCount ??
+      college.courses_offered ??
+      (college as any).courses;
+    if (typeof raw === "number") return raw;
+    if (Array.isArray(raw)) return raw.length;
+    if (typeof raw === "string") {
+      const n = Number(raw);
+      return Number.isNaN(n) ? 0 : n;
+    }
+    return 0;
+  })();
+
   return (
     <Link href={`/colleges/${college.slug}`}>
       <div className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer group h-full flex flex-col">
@@ -50,7 +66,7 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
               {college.name}
             </h3>
           </div>
-                {/* Description */}
+          {/* Description */}
           <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
             {displayDescription}
           </p>
@@ -70,26 +86,28 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
           </p> */}
 
           {/* Fees Section */}
-        {typeof college.fees?.annual_fee === "number" && (
-  <div className="flex items-center gap-2 bg-gradient-to-r from-[#F97316]/10 to-orange-100 p-3 rounded-lg border border-[#F97316]/20">
-    <DollarSign size={16} className="text-[#F97316] flex-shrink-0" />
-    <div>
-      <p className="text-xs text-gray-600 font-semibold">
-        Annual Fee
-      </p>
-      <p className="text-sm font-bold text-[#1A1A1B]">
-        ₹{(college.fees.annual_fee / 100000).toFixed(1)}L
-      </p>
-    </div>
-  </div>
-)}
-
+          {typeof college.fees?.annual_fee === "number" && (
+            <div className="flex items-center gap-2 bg-gradient-to-r from-[#F97316]/10 to-orange-100 p-3 rounded-lg border border-[#F97316]/20">
+              <DollarSign size={16} className="text-[#F97316] flex-shrink-0" />
+              <div>
+                <p className="text-xs text-gray-600 font-semibold">
+                  Annual Fee
+                </p>
+                <p className="text-sm font-bold text-[#1A1A1B]">
+                  ₹{(college.fees.annual_fee / 100000).toFixed(1)}L
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Courses Count */}
-          <div className="flex items-center gap-2 pt-3 border-t border-gray-100 mt-auto">
+          <div className="flex items-center gap-2 text-gray-700 mt-2">
             <BookOpen size={16} className="text-[#1E40AF]" />
-            <span className="text-sm text-gray-700 font-medium">
-              {(college.courses_offered || []).length} Courses Available
+            <span className="text-sm font-medium">
+              {computedCoursesCount}{" "}
+              {computedCoursesCount === 1
+                ? "Course Available"
+                : "Courses Available"}
             </span>
           </div>
         </div>

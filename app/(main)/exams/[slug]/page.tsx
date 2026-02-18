@@ -129,7 +129,8 @@ export default function ExamDynamicPage() {
   return (
     <div className="min-h-screen bg-[#F8F9F9]">
       {/* Hero Section with Background */}
-      <div className="bg-gradient-to-br from-[#922B21] via-[#7A2318] to-[#1A1A1B] text-white relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1E3A8A] via-[#1E40AF] to-[#0F172A]
+ text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 py-16">
           {/* Breadcrumb */}
@@ -193,7 +194,7 @@ export default function ExamDynamicPage() {
 
               <button 
                 onClick={openModal}
-                className="w-full mt-6 px-6 py-3 bg-[#D4AC0D] text-white font-bold rounded-lg hover:bg-[#B8940F] transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-6 px-6 py-3 bg-[#1E40AF] text-white font-bold rounded-lg hover:bg-[#B8940F] transition-colors flex items-center justify-center gap-2"
               >
                 <Target size={18} />
                 Apply Now
@@ -264,7 +265,8 @@ export default function ExamDynamicPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Preparation Tips */}
-            <div className="bg-gradient-to-br from-[#D4AC0D] to-[#B8940F] rounded-2xl p-6 text-white">
+            <div className="bg-gradient-to-br from-[#2563EB] to-[#1E40AF]
+ rounded-2xl p-6 text-white">
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <Award size={24} />
                 Quick Tips

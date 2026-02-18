@@ -350,6 +350,7 @@ const BlogsPageContent = () => {
                         <p className="text-gray-600 text-sm line-clamp-3 flex-grow">
                           {blog.excerpt}
                         </p>
+                       
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2">

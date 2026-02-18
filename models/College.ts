@@ -35,6 +35,7 @@ const feesSchema = new mongoose.Schema(
   { _id: false }
 );
 
+
 const collegeSchema = new mongoose.Schema(
   {
     college_id: { type: String, required: true, unique: true },
@@ -68,6 +69,7 @@ const collegeSchema = new mongoose.Schema(
       type: feesSchema,
       default: {},
     },
+    
   },
   { timestamps: true }
 );

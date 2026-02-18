@@ -190,77 +190,91 @@ function ExamsPageContent() {
           {/* Exam Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayedExams.map((exam, index) => (
-            <div
-              key={`${exam.exam_id}-${index}`}
-              className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1"
-            >
-              {/* Card Header */}
-              <div className="p-4 border-b border-[#1E40AF]/10">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
-                    {exam.type}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-[#2C3E50]">Difficulty:</span>
-                    <span className="text-xs font-bold text-[#1E40AF]">Active</span>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-[#1A1A1B] mb-2">{exam.name}</h3>
-                <p className="text-[#2C3E50] text-sm leading-relaxed">{exam.full_name}</p>
-              </div>
-
-              {/* Card Body - Stats */}
-              <div className="p-4">
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-[#1E40AF]" />
-                    <div>
-                      <p className="text-xs text-[#2C3E50]">Exam Month</p>
-                      <p className="text-sm font-bold text-[#1A1A1B]">{exam.exam_month}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Globe size={14} className="text-[#1E40AF]" />
-                    <div>
-                      <p className="text-xs text-[#2C3E50]">Type</p>
-                      <p className="text-sm font-bold text-[#1A1A1B]">{exam.type}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Website Link */}
-                {/* <a
-                  href={exam.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#1E40AF] hover:text-[#1E3A8A] text-sm font-medium flex items-center gap-1 transition-colors"
+              <Link href={`/exams/${exam.slug}`} key={`${exam.exam_id}-${index}`} className="block">
+                <div
+                  className="bg-white rounded-xl shadow-sm border border-[#1E40AF]/10 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer h-full"
                 >
-                  {exam.website.replace('https://', '').replace('http://', '')}
-                  <BookOpen size={12} />
-                </a> */}
-              </div>
+                  {/* Card Header */}
+                  <div className="p-4 border-b border-[#1E40AF]/10">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full">
+                        {exam.type}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-[#2C3E50]">Difficulty:</span>
+                        <span className="text-xs font-bold text-[#1E40AF]">Active</span>
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold text-[#1A1A1B] mb-2">{exam.name}</h3>
+                    <p className="text-[#2C3E50] text-sm leading-relaxed">{exam.full_name}</p>
+                    <p className="text-sm  text-[#1A1A1B]">{exam.description}</p>
+                  </div>
 
-              {/* Card Footer - Actions */}
-              <div className="p-4 pt-0">
-                <div className="flex gap-2">
-                  <button 
-                    onClick={openModal}
-                    className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-2 rounded-lg transition-colors text-sm"
-                  >
-                    Apply Now
-                  </button>
-                  <a
-                    href={exam.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center px-3 py-2 border border-[#1E40AF]/30 text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white rounded-lg transition-colors"
-                  >
-                    <BookOpen size={16} />
-                  </a>
+                  {/* Card Body - Stats */}
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={14} className="text-[#1E40AF]" />
+                        <div>
+                          {/* <p className="text-xs text-[#2C3E50]">Exam Month</p> */}
+                        <p className="text-sm font-semibold text-[#1A1A1B]">
+                          {exam.date ? new Date(exam.date).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          }) : "TBA"}
+                        </p>
+            
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} className="text-[#1E40AF]" />
+                        <div>
+                          {/* <p className="text-xs text-[#2C3E50]">Duration</p> */}
+                          <p className="text-sm font-semibold text-[#1A1A1B]">{exam.duration}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Website Link */}
+                    {/* <a
+                      href={exam.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#1E40AF] hover:text-[#1E3A8A] text-sm font-medium flex items-center gap-1 transition-colors"
+                    >
+                      {exam.website.replace('https://', '').replace('http://', '')}
+                      <BookOpen size={12} />
+                    </a> */}
+                  </div>
+
+                  {/* Card Footer - Actions */}
+                  <div className="p-4 pt-0">
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openModal();
+                        }}
+                        className="flex-1 bg-[#1E40AF] hover:bg-[#1E3A8A] text-white font-bold py-2 rounded-lg transition-colors text-sm"
+                      >
+                        Apply Now
+                      </button>
+                      <a
+                        href={exam.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center justify-center px-3 py-2 border border-[#1E40AF]/30 text-[#1E40AF] hover:bg-[#1E40AF] hover:text-white rounded-lg transition-colors"
+                      >
+                        <BookOpen size={16} />
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </Link>
+            ))}
           </div>
 
           {/* Load More Button */}

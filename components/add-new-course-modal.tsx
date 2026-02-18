@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -11,40 +11,40 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface CourseData {
-  _id?: string
-  name: string
-  category: string
-  duration: string
-  level: string
-  fees: string
-  description: string
-  eligibility: string
-  is_active?: boolean
+  _id?: string;
+  name: string;
+  category: string;
+  duration: string;
+  level: string;
+  fees: string;
+  description: string;
+  eligibility: string;
+  image?: string;
+  is_active?: boolean;
 }
 interface AddNewCourseModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAddCourse: (course: CourseData) => void
-  collegeId: string   // ✅ ADD THIS
+  isOpen: boolean;
+  onClose: () => void;
+  onAddCourse: (course: CourseData) => void;
+  collegeId: string; // ✅ ADD THIS
 }
-
 
 export function AddNewCourseModal({
   isOpen,
   onClose,
   onAddCourse,
-   collegeId, 
+  collegeId,
 }: AddNewCourseModalProps) {
   const [formData, setFormData] = useState<CourseData>({
     name: "",
@@ -54,78 +54,85 @@ export function AddNewCourseModal({
     fees: "",
     description: "",
     eligibility: "",
-  })
+    image: "",
+  });
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
+    e.preventDefault();
 
-  if (!collegeId) {
-    alert("College ID missing")
-    return
-  }
-
-  if (!formData.name || !formData.duration || !formData.level || !formData.fees) {
-    alert("All required fields must be filled")
-    return
-  }
-
-  const generatedSlug = formData.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-
-  try {
-    const res = await fetch("/api/courses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: generatedSlug,
-        name: formData.name,
-        college_id: collegeId,   // ✅ VERY IMPORTANT
-        duration_years: Number(formData.duration),
-        degree: formData.level,
-        default_fees: {
-          currency: "INR",
-          total_fee: Number(formData.fees),
-        },
-        status: "Active",
-        entrance_exams: [],
-      }),
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      throw new Error(data.message)
+    if (!collegeId) {
+      alert("College ID missing");
+      return;
     }
 
-    onAddCourse(data.course)
+    if (
+      !formData.name ||
+      !formData.duration ||
+      !formData.level ||
+      !formData.fees
+    ) {
+      alert("All required fields must be filled");
+      return;
+    }
 
-    setFormData({
-      name: "",
-      category: "",
-      duration: "",
-      level: "",
-      fees: "",
-      description: "",
-      eligibility: "",
-    })
+    const generatedSlug = formData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
-    onClose()
+    try {
+      const res = await fetch("/api/courses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: generatedSlug,
+          name: formData.name,
+          college_id: collegeId, // ✅ VERY IMPORTANT
+          duration_years: Number(formData.duration),
+          degree: formData.level,
+          default_fees: {
+            currency: "INR",
+            total_fee: Number(formData.fees),
+          },
+          status: "Active",
+          media: {
+            cover: formData.image || null,
+          },
+          entrance_exams: [],
+        }),
+      });
 
-  } catch (error: any) {
-    alert(error.message)
-  }
-}
+      const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(data.message);
+      }
 
+      onAddCourse(data.course);
 
+      setFormData({
+        name: "",
+        category: "",
+        duration: "",
+        level: "",
+        fees: "",
+        description: "",
+        eligibility: "",
+        image: "",
+      });
+      setPreviewImage(null);
+      onClose();
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
 
   const handleInputChange = (field: keyof CourseData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -139,27 +146,56 @@ export function AddNewCourseModal({
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-
             <div className="grid gap-2">
               <Label htmlFor="name">Course Name</Label>
               <Input
                 id="name"
                 placeholder="Enter course name"
                 value={formData.name}
-                onChange={(e) =>
-                  handleInputChange("name", e.target.value)
-                }
+                onChange={(e) => handleInputChange("name", e.target.value)}
                 required
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="image">Course Image URL</Label>
+              <Input
+                type="url"
+                id="image"
+                placeholder="https://example.com/image.jpg"
+                value={formData.image}
+                onChange={(e) => {
+                  handleInputChange("image", e.target.value);
+                  setPreviewImage(e.target.value);
+                }}
+              />
+              {previewImage && (
+                <div className="mt-2 relative">
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="w-full h-32 object-cover rounded-lg"
+                    onError={() => setPreviewImage(null)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, image: "" }));
+                      setPreviewImage(null);
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) =>
-                  handleInputChange("category", value)
-                }
+                onValueChange={(value) => handleInputChange("category", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select course category" />
@@ -178,21 +214,20 @@ export function AddNewCourseModal({
               <div className="grid gap-2">
                 <Label htmlFor="duration">Duration</Label>
                 <Input
-  type="number"
-  placeholder="e.g., 4"
-  value={formData.duration}
-  onChange={(e) => handleInputChange("duration", e.target.value)}
-/>
-
+                  type="number"
+                  placeholder="e.g., 4"
+                  value={formData.duration}
+                  onChange={(e) =>
+                    handleInputChange("duration", e.target.value)
+                  }
+                />
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="level">Level</Label>
                 <Select
                   value={formData.level}
-                  onValueChange={(value) =>
-                    handleInputChange("level", value)
-                  }
+                  onValueChange={(value) => handleInputChange("level", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select level" />
@@ -210,12 +245,11 @@ export function AddNewCourseModal({
             <div className="grid gap-2">
               <Label htmlFor="fees">Fees</Label>
               <Input
-  type="number"
-  placeholder="e.g., 250000"
-  value={formData.fees}
-  onChange={(e) => handleInputChange("fees", e.target.value)}
-/>
-
+                type="number"
+                placeholder="e.g., 250000"
+                value={formData.fees}
+                onChange={(e) => handleInputChange("fees", e.target.value)}
+              />
             </div>
 
             <div className="grid gap-2">
@@ -243,7 +277,6 @@ export function AddNewCourseModal({
                 rows={2}
               />
             </div>
-
           </div>
 
           <DialogFooter>
@@ -255,5 +288,5 @@ export function AddNewCourseModal({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

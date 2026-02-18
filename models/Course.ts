@@ -27,6 +27,10 @@ const CourseSchema = new Schema({
     default: "Upcoming",
   },
 
+  media: {
+    cover: { type: String, default: null },
+  },
+
   entrance_exams: [{ type: String }],
 }, { timestamps: true })
 
