@@ -1,10 +1,25 @@
 "use client";
-import React from "react";
-import { ArrowRight, Calendar, Globe, ExternalLink } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowRight, Calendar, Globe, ExternalLink, Clock } from "lucide-react";
 import { useModal } from "../Context/ModalContext";
 import Link from "next/link";
-import { getActiveExams, Exam } from "../config/exams";
 import { themeColors, colorCombos, themeClasses } from "../config/theme";
+
+interface Exam {
+  exam_id: string;
+  slug: string;
+  name: string;
+  full_name: string;
+  type: string;
+  category: string;
+  date: string;
+  duration: string;
+  status: string;
+  description: string;
+  eligibility: string;
+  website: string;
+  is_active: boolean;
+}
 
 interface ExamCardProps {
   exam: Exam;
@@ -43,29 +58,30 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar size={14} className="text-[#1E40AF]" />
             <div>
-              <p className="text-xs text-[#2C3E50]">Exam Month</p>
+              {/* <p className="text-xs text-[#2C3E50]">Exam Date</p> */}
               <p className="text-sm font-bold text-[#1A1A1A]">
-                {exam.exam_month}
-              </p>
+  {new Date(exam.date).toLocaleDateString("en-IN")}
+</p>
+
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Globe size={14} className="text-[#1E40AF]" />
+            <Clock size={14} className="text-[#1E40AF]" />
             <div>
-              <p className="text-xs text-[#2C3E50]">Exam Type</p>
-              <p className="text-sm font-bold text-[#1A1A1A]">{exam.type}</p>
+              {/* <p className="text-xs text-[#2C3E50]">Exam Type</p> */}
+              <p className="text-sm font-bold text-[#1A1A1A]">{exam.duration}</p>
             </div>
           </div>
         </div>
 
         <div className="mb-4">
           <a
-            href={exam.website}
+            href={exam.website || '#'}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#1E40AF] hover:text-[#1E3A8A] text-sm font-medium flex items-center gap-1 transition-colors"
           >
-            {exam.website.replace("https://", "").replace("http://", "")}
+            {exam.website ? exam.website.replace("https://", "").replace("http://", "") : "Visit Website"}
             <ExternalLink size={12} />
           </a>
         </div>
@@ -96,9 +112,40 @@ const ExamCard = ({ exam, openModal }: ExamCardProps) => {
   );
 };
 
-const TopExams = () => {
+const TopExamsComponent = () => {
   const { openModal } = useModal();
-  const examData = getActiveExams().slice(0, 6);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const response = await fetch('/api/exams?limit=10');
+        if (response.ok) {
+          const data = await response.json();
+          setExams(data.exams.slice(0, 6));
+        }
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExams();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="bg-[#F8F9F9] py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E40AF] mx-auto"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-[#F8F9F9] py-16 px-6">
@@ -120,7 +167,7 @@ const TopExams = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {examData.map((exam) => (
+          {exams.map((exam) => (
             <Link href={`/exams/${exam.slug}`} key={exam.exam_id} className="block">
               <ExamCard exam={exam} openModal={openModal} />
             </Link>
@@ -141,4 +188,4 @@ const TopExams = () => {
   );
 };
 
-export default TopExams;
+export default TopExamsComponent;

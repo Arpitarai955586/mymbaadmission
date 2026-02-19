@@ -1,13 +1,61 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CourseCard from './CourseCard';
-import { getAllCourses } from '../config/courses';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { themeColors, colorCombos, themeClasses } from '../config/theme';
 
+interface Course {
+  _id: string;
+  name: string;
+  slug: string;
+  degree: string;
+  duration_years: number;
+  default_fees: {
+    total_fee: number;
+    currency: string;
+  };
+  entrance_exams: string[];
+  media?: {
+    cover?: string;
+  };
+  status: string;
+}
+
 const FeaturedCourses: React.FC = () => {
-  const featuredCourses = getAllCourses().slice(0, 4); // Get first 4 courses
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch('/api/courses');
+        if (response.ok) {
+          const data = await response.json();
+          // Take first 4 courses for featured section
+          setCourses(data.courses.slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E40AF] mx-auto"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 px-6 bg-white">
@@ -31,7 +79,7 @@ const FeaturedCourses: React.FC = () => {
 
         {/* Courses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {featuredCourses.map((course) => (
+          {courses.map((course) => (
             <CourseCard key={course._id} course={course} />
           ))}
         </div>

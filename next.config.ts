@@ -82,11 +82,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'image-static.collegedunia.com',
         pathname: '/**',
-      } , 
+      },
       {
-        protocol : "https",
-        hostname : "assets.kollegeapply.com",
-        pathname : "/**"
+        protocol: "https",
+        hostname: "assets.kollegeapply.com",
+        pathname: "/**"
       }
     ],
   },

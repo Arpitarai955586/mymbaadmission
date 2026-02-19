@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Course, formatFees } from "../config/courses";
 import { Clock, DollarSign, GraduationCap, BookOpen } from "lucide-react";
@@ -11,6 +11,7 @@ interface CourseCardProps {
 
 const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const [imageError, setImageError] = useState(false);
+
 
   return (
     <Link href={`/courses/${course._id}`}>
