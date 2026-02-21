@@ -639,6 +639,11 @@ export function DataTable({
             website: college.website || "TBD",
             description: college.content?.overview || college.overview || "TBD",
             media: college.media ? { cover: college.media.cover } : undefined,
+            fees: college.fees ? {
+              annual_fee: college.fees.annual_fee,
+              currency: college.fees.currency || "INR",
+              fee_structure: college.fees.fee_structure,
+            } : undefined,
           }));
           setCollegesData(colleges);
         }
@@ -660,6 +665,11 @@ export function DataTable({
       website: collegeData.website,
       description: collegeData.content?.overview ?? collegeData.description,
       media: collegeData.media ? { cover: collegeData.media.cover } : undefined,
+      fees: collegeData.fees ? {
+        annual_fee: collegeData.fees.annual_fee,
+        currency: collegeData.fees.currency || "INR",
+        fee_structure: collegeData.fees.fee_structure,
+      } : undefined,
     };
     setCollegesData((prev) => [...prev, newCollege]);
   };
@@ -845,6 +855,11 @@ export function DataTable({
         content: {
           overview: college.description,
         },
+        fees: college.fees ? {
+          annual_fee: college.fees.annual_fee,
+          currency: college.fees.currency || "INR",
+          fee_structure: college.fees.fee_structure,
+        } : undefined,
       };
 
       const res = await fetch(`/api/colleges/${college.id}`, {
@@ -874,6 +889,11 @@ export function DataTable({
         media: data.college.media
           ? { cover: data.college.media.cover }
           : undefined,
+        fees: data.college.fees ? {
+          annual_fee: data.college.fees.annual_fee,
+          currency: data.college.fees.currency || "INR",
+          fee_structure: data.college.fees.fee_structure,
+        } : undefined,
       };
 
       setCollegesData((prev) =>

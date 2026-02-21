@@ -68,7 +68,25 @@ export function EditCollegeModal({
 
   useEffect(() => {
     if (college) {
-      setFormData(college);
+      setFormData({
+        id: college.id,
+        name: college.name || "",
+        type: college.type || "",
+        location: { 
+          city: college.location?.city || "", 
+          state: college.location?.state || "" 
+        },
+        ranking: college.ranking || "",
+        establishedYear: college.establishedYear || 0,
+        website: college.website || "",
+        description: college.description || "",
+        media: { cover: college.media?.cover || "" },
+        fees: { 
+          annual_fee: college.fees?.annual_fee || 0, 
+          currency: college.fees?.currency || "INR", 
+          fee_structure: college.fees?.fee_structure || "" 
+        },
+      });
     }
   }, [college]);
 
@@ -182,6 +200,17 @@ export function EditCollegeModal({
                     },
                   });
                 }}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Description</Label>
+              <Input
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Enter college description..."
               />
             </div>
 
